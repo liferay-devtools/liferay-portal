@@ -95,6 +95,10 @@ public class ProjectTemplatesArgs {
 		return _maven;
 	}
 
+	public boolean isNewTemplate() {
+		return _newTemplate;
+	}
+
 	public void setArchetypesDirs(List<File> archetypesDirs) {
 		_archetypesDirs = archetypesDirs;
 	}
@@ -143,6 +147,10 @@ public class ProjectTemplatesArgs {
 
 	public void setName(String name) {
 		_name = name;
+	}
+
+	public void setNewTemplate(boolean newTemplate) {
+		_newTemplate = newTemplate;
 	}
 
 	public void setPackageName(String packageName) {
@@ -245,6 +253,12 @@ public class ProjectTemplatesArgs {
 		required = true
 	)
 	private String _name;
+
+	@Parameter(
+		description = "Support to create Portlet Provider and Simulation Panel Entry project.",
+		names = "--newTemplate"
+	)
+	private boolean _newTemplate;
 
 	@Parameter(
 		description = "The main package name to use in the project.",
