@@ -36,33 +36,5 @@ public class SimulationPanelEntryProjectTemplateCustomizer
 			ProjectTemplatesArgs projectTemplatesArgs,
 			ArchetypeGenerationRequest archetypeGenerationRequest)
 		throws Exception {
-
-		setProperty(
-			archetypeGenerationRequest.getProperties(), "newTemplate",
-			String.valueOf(_isNewTemplate(projectTemplatesArgs)));
 	}
-
-	private boolean _isNewTemplate(ProjectTemplatesArgs projectTemplatesArgs) {
-		String liferayVersion = projectTemplatesArgs.getLiferayVersion();
-
-		if (liferayVersion.startsWith("7.4")) {
-			String qualifiedVersion = liferayVersion.substring(
-				liferayVersion.lastIndexOf(".") + 1);
-
-			String liferayProduct = projectTemplatesArgs.getLiferayProduct();
-
-			if (liferayProduct.equals("dxp")) {
-				qualifiedVersion = qualifiedVersion.substring(1);
-			}
-
-			if (Integer.valueOf(qualifiedVersion) > 71) {
-				return true;
-			}
-
-			return false;
-		}
-
-		return false;
-	}
-
 }

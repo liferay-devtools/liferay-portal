@@ -47,6 +47,8 @@ public class ProjectGenerator {
 		String liferayVersion = projectTemplatesArgs.getLiferayVersion();
 		String packageName = projectTemplatesArgs.getPackageName();
 
+		boolean newTemplate = projectTemplatesArgs.isNewTemplate();
+
 		String template = projectTemplatesArgs.getTemplate();
 
 		if (template.equals("portlet")) {
@@ -134,6 +136,7 @@ public class ProjectGenerator {
 		_setProperty(properties, "liferayVersion", liferayVersion);
 		_setProperty(properties, "package", packageName);
 		_setProperty(properties, "projectType", projectType);
+		_setProperty(properties, "newTemplate", String.valueOf(newTemplate));
 
 		archetypeGenerationRequest.setProperties(properties);
 

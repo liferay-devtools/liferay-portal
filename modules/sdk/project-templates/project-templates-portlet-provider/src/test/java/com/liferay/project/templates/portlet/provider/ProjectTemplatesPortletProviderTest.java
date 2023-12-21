@@ -41,9 +41,9 @@ public class ProjectTemplatesPortletProviderTest
 	public static Iterable<Object[]> data() {
 		return Arrays.asList(
 			new Object[][] {
-				{"dxp", "7.0.10.17"}, {"dxp", "7.1.10.7"}, {"dxp", "7.2.10.7"},
-				{"portal", "7.3.7"}, {"portal", "7.4.3.56"},
-				{"portal", "7.4.3.86"}
+				{"dxp", "7.0.10.17", "false"}, {"dxp", "7.1.10.7", "false"}, {"dxp", "7.2.10.7", "false"},
+				{"portal", "7.3.7", "false"}, {"portal", "7.4.3.56", "false"},
+				{"portal", "7.4.3.86", "true"}
 			});
 	}
 
@@ -64,10 +64,11 @@ public class ProjectTemplatesPortletProviderTest
 	}
 
 	public ProjectTemplatesPortletProviderTest(
-		String liferayProduct, String liferayVersion) {
+		String liferayProduct, String liferayVersion, String newTemplate) {
 
 		_liferayProduct = liferayProduct;
 		_liferayVersion = liferayVersion;
+		_newTemplate = newTemplate;
 	}
 
 	@Test
@@ -93,7 +94,7 @@ public class ProjectTemplatesPortletProviderTest
 
 		File gradleProjectDir = buildTemplateWithGradle(
 			gradleWorkspaceModulesDir, template, name, "--liferay-product",
-			_liferayProduct, "--liferay-version", _liferayVersion);
+			_liferayProduct, "--liferay-version", _liferayVersion, "--newTemplate", _newTemplate);
 
 		testExists(gradleProjectDir, "bnd.bnd");
 		testExists(
@@ -138,26 +139,11 @@ public class ProjectTemplatesPortletProviderTest
 
 		File mavenModulesDir = new File(mavenWorkspaceDir, "modules");
 
-		String newTemplate = "false";
-
-		if (_liferayVersion.startsWith("7.4")) {
-			String qualifiedVersion = _liferayVersion.substring(
-				_liferayVersion.lastIndexOf(".") + 1);
-
-			if (_liferayProduct.equals("dxp")) {
-				qualifiedVersion = qualifiedVersion.substring(1);
-			}
-
-			if (Integer.valueOf(qualifiedVersion) > 71) {
-				newTemplate = "true";
-			}
-		}
-
 		File mavenProjectDir = buildTemplateWithMaven(
 			mavenModulesDir, mavenModulesDir, template, name, "com.test",
 			mavenExecutor, "-DclassName=ProviderTest",
 			"-DliferayProduct=" + _liferayProduct,
-			"-DnewTemplate=" + newTemplate,
+			"-DnewTemplate=" + _newTemplate,
 			"-DliferayVersion=" + _liferayVersion, "-Dpackage=provider.test");
 
 		if (!_liferayVersion.startsWith("7.0")) {
@@ -184,5 +170,7 @@ public class ProjectTemplatesPortletProviderTest
 
 	private final String _liferayProduct;
 	private final String _liferayVersion;
+
+	private final String _newTemplate;
 
 }
