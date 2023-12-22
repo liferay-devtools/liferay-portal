@@ -133,8 +133,8 @@ public class ProjectTemplatesArgs {
 		_groupId = groupId;
 	}
 
-	public void setLiferayProduct(String liferayiProduct) {
-		_liferayProduct = liferayiProduct;
+	public void setLiferayProduct(String liferayProduct) {
+		_liferayProduct = liferayProduct;
 	}
 
 	public void setLiferayVersion(String version) {
@@ -255,6 +255,7 @@ public class ProjectTemplatesArgs {
 	private String _name;
 
 	@Parameter(
+		arity = 1,
 		description = "Support to create Portlet Provider and Simulation Panel Entry project.",
 		names = "--newTemplate"
 	)

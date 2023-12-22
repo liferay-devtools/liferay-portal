@@ -452,7 +452,7 @@ public interface BaseProjectTemplatesTestCase {
 
 	public default File buildTemplateWithGradle(
 			File destinationDir, String template, String name, boolean gradle,
-			boolean maven, String... args)
+			boolean maven, boolean newTemplate, String... args)
 		throws Exception {
 
 		List<String> completeArgs = new ArrayList<>(args.length + 6);
@@ -478,6 +478,11 @@ public interface BaseProjectTemplatesTestCase {
 
 		for (String arg : args) {
 			completeArgs.add(arg);
+		}
+
+		if (newTemplate){
+			completeArgs.add("--newTemplate");
+			completeArgs.add(String.valueOf(true));
 		}
 
 		ProjectTemplates.main(completeArgs.toArray(new String[0]));
@@ -538,7 +543,7 @@ public interface BaseProjectTemplatesTestCase {
 		throws Exception {
 
 		return buildTemplateWithGradle(
-			destinationDir, template, name, true, false, args);
+			destinationDir, template, name, true, false, false, args);
 	}
 
 	public default File buildTemplateWithGradle(
