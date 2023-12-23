@@ -180,13 +180,13 @@ public class ProjectTemplatesTest implements BaseProjectTemplatesTestCase {
 	@Test
 	public void testBuildTemplateWithGradle() throws Exception {
 		buildTemplateWithGradle(
-			temporaryFolder.newFolder(), null, "foo-portlet", false, false,false);
+			temporaryFolder.newFolder(), null, "foo-portlet", false, false);
 		buildTemplateWithGradle(
-			temporaryFolder.newFolder(), null, "foo-portlet", false, true, false);
+			temporaryFolder.newFolder(), null, "foo-portlet", false, true);
 		buildTemplateWithGradle(
-			temporaryFolder.newFolder(), null, "foo-portlet", true, false, false);
+			temporaryFolder.newFolder(), null, "foo-portlet", true, false);
 		buildTemplateWithGradle(
-			temporaryFolder.newFolder(), null, "foo-portlet", true, true, false);
+			temporaryFolder.newFolder(), null, "foo-portlet", true, true);
 	}
 
 	@Test
