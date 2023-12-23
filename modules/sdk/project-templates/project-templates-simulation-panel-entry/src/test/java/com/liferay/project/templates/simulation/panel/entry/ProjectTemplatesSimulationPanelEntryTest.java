@@ -40,9 +40,9 @@ public class ProjectTemplatesSimulationPanelEntryTest
 	public static Iterable<Object[]> data() {
 		return Arrays.asList(
 			new Object[][] {
-				{"dxp", "7.0.10.17", "false"}, {"dxp", "7.1.10.7", "false"}, {"dxp", "7.2.10.7", "false"},
-				{"portal", "7.3.7", "false"}, {"portal", "7.4.3.56", "false"},
-				{"dxp", "7.4.13.u72", "true"}
+				{"dxp", "7.0.10.17", "false"}, {"dxp", "7.1.10.7", "false"},
+				{"dxp", "7.2.10.7", "false"}, {"portal", "7.3.7", "false"},
+				{"portal", "7.4.3.56", "false"}, {"dxp", "7.4.13.u72", "true"}
 			});
 	}
 
@@ -198,7 +198,6 @@ public class ProjectTemplatesSimulationPanelEntryTest
 
 	private final String _liferayProduct;
 	private final String _liferayVersion;
-
 	private final String _newTemplate;
 
 }

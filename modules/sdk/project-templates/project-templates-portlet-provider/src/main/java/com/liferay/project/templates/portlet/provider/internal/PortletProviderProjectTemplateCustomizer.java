@@ -37,4 +37,5 @@ public class PortletProviderProjectTemplateCustomizer
 			ArchetypeGenerationRequest archetypeGenerationRequest)
 		throws Exception {
 	}
+
 }

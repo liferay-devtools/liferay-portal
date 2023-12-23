@@ -37,4 +37,5 @@ public class SimulationPanelEntryProjectTemplateCustomizer
 			ArchetypeGenerationRequest archetypeGenerationRequest)
 		throws Exception {
 	}
+
 }
