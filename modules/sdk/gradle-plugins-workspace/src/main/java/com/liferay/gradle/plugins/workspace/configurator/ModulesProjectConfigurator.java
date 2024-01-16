@@ -29,6 +29,7 @@ import com.liferay.gradle.plugins.workspace.WorkspacePlugin;
 import com.liferay.gradle.plugins.workspace.internal.JSModuleConfigGeneratorDefaultsPlugin;
 import com.liferay.gradle.plugins.workspace.internal.util.FileUtil;
 import com.liferay.gradle.plugins.workspace.internal.util.GradleUtil;
+import com.liferay.gradle.plugins.workspace.internal.util.VersionUtil;
 import com.liferay.gradle.plugins.wsdd.builder.WSDDBuilderPlugin;
 
 import groovy.json.JsonSlurper;
@@ -316,6 +317,13 @@ public class ModulesProjectConfigurator extends BaseProjectConfigurator {
 
 				@Override
 				public File call() throws Exception {
+					if (VersionUtil.isDXPQuarterlyVersion(
+							workspaceExtension.getTargetPlatformVersion())) {
+
+						return new File(
+							workspaceExtension.getHomeDir(), "tomcat");
+					}
+
 					return new File(
 						workspaceExtension.getHomeDir(),
 						"tomcat-" +

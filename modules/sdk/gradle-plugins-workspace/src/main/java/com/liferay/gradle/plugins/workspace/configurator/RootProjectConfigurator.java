@@ -32,6 +32,7 @@ import com.liferay.gradle.plugins.workspace.internal.configurator.TargetPlatform
 import com.liferay.gradle.plugins.workspace.internal.util.FileUtil;
 import com.liferay.gradle.plugins.workspace.internal.util.GradleUtil;
 import com.liferay.gradle.plugins.workspace.internal.util.StringUtil;
+import com.liferay.gradle.plugins.workspace.internal.util.VersionUtil;
 import com.liferay.gradle.plugins.workspace.task.CreateTokenTask;
 import com.liferay.gradle.plugins.workspace.task.InitBundleTask;
 import com.liferay.gradle.plugins.workspace.task.VerifyBundleTask;
@@ -1145,7 +1146,10 @@ public class RootProjectConfigurator implements Plugin<Project> {
 								copySpec, workspaceExtension);
 						});
 
-					if (workResult.getDidWork()) {
+					if (workResult.getDidWork() &&
+						!VersionUtil.isDXPQuarterlyVersion(
+							workspaceExtension.getTargetPlatformVersion())) {
+
 						project.delete(new File(homeDir, "tomcat"));
 					}
 				}
@@ -1697,6 +1701,12 @@ public class RootProjectConfigurator implements Plugin<Project> {
 	private void _configureCopySpecExpandTomcatVersion(
 		CopySpec copySpec, WorkspaceExtension workspaceExtension) {
 
+		if (VersionUtil.isDXPQuarterlyVersion(
+				workspaceExtension.getTargetPlatformVersion())) {
+
+			return;
+		}
+
 		String tomcatVersion = workspaceExtension.getAppServerTomcatVersion();
 
 		copySpec.eachFile(
@@ -1860,6 +1870,9 @@ public class RootProjectConfigurator implements Plugin<Project> {
 
 		copy.dependsOn(download);
 
+		WorkspaceExtension workspaceExtension = GradleUtil.getExtension(
+			(ExtensionAware)project.getGradle(), WorkspaceExtension.class);
+
 		copy.doLast(
 			new Action<Task>() {
 
@@ -1875,7 +1888,10 @@ public class RootProjectConfigurator implements Plugin<Project> {
 							destinationDir);
 					}
 
-					if (copy.getDidWork()) {
+					if (copy.getDidWork() &&
+						!VersionUtil.isDXPQuarterlyVersion(
+							workspaceExtension.getTargetPlatformVersion())) {
+
 						project.delete(new File(destinationDir, "tomcat"));
 					}
 				}
@@ -1924,9 +1940,6 @@ public class RootProjectConfigurator implements Plugin<Project> {
 				}
 
 			});
-
-		WorkspaceExtension workspaceExtension = GradleUtil.getExtension(
-			(ExtensionAware)project.getGradle(), WorkspaceExtension.class);
 
 		_configureCopySpecExpandTomcatVersion(copy, workspaceExtension);
 	}

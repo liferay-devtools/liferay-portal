@@ -5,6 +5,7 @@
 
 package com.liferay.gradle.plugins.workspace.internal.util;
 
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -14,6 +15,21 @@ import org.gradle.api.GradleException;
  * @author Gregory Amerson
  */
 public class VersionUtil {
+
+	public static boolean isDXPQuarterlyVersion(String targetPlatformVersion) {
+		if (Objects.isNull(targetPlatformVersion)){
+			return false;
+		}
+
+		Matcher dxpQuarterlyVersionMatcher =
+			_dxpQuarterlyVersionPattern.matcher(targetPlatformVersion);
+
+		if (dxpQuarterlyVersionMatcher.matches()) {
+			return true;
+		}
+
+		return false;
+	}
 
 	public static boolean isDXPVersion(String targetPlatformVersion) {
 		Matcher dxpQuarterlyVersionMatcher =
