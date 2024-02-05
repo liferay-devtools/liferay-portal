@@ -34,6 +34,7 @@ import com.liferay.gradle.plugins.workspace.internal.util.GradleUtil;
 import com.liferay.gradle.plugins.workspace.internal.util.StringUtil;
 import com.liferay.gradle.plugins.workspace.task.CreateTokenTask;
 import com.liferay.gradle.plugins.workspace.task.InitBundleTask;
+import com.liferay.gradle.plugins.workspace.task.LiferayDownloadTask;
 import com.liferay.gradle.plugins.workspace.task.VerifyBundleTask;
 import com.liferay.gradle.plugins.workspace.task.VerifyProductTask;
 import com.liferay.gradle.util.ArrayUtil;
@@ -245,7 +246,7 @@ public class RootProjectConfigurator implements Plugin<Project> {
 		VerifyProductTask verifyProductTask = _addTaskVerifyProduct(
 			project, workspaceExtension);
 
-		Download downloadBundleTask = _addTaskDownloadBundle(
+		LiferayDownloadTask downloadBundleTask = _addTaskDownloadBundle(
 			project, verifyProductTask, workspaceExtension);
 
 		VerifyBundleTask verifyBundleTask = _addTaskVerifyBundle(
@@ -452,7 +453,7 @@ public class RootProjectConfigurator implements Plugin<Project> {
 
 	@SuppressWarnings("serial")
 	private Copy _addTaskCopyBundle(
-		Project project, String taskName, Download downloadBundleTask,
+		Project project, String taskName, LiferayDownloadTask downloadBundleTask,
 		final WorkspaceExtension workspaceExtension, String environment,
 		Configuration providedModulesConfiguration) {
 
@@ -793,7 +794,7 @@ public class RootProjectConfigurator implements Plugin<Project> {
 	}
 
 	private Copy _addTaskDistBundle(
-		Project project, Download downloadBundleTask, String taskName,
+		Project project, LiferayDownloadTask downloadBundleTask, String taskName,
 		WorkspaceExtension workspaceExtension, String environment,
 		Configuration providedModulesConfiguration) {
 
@@ -1006,12 +1007,12 @@ public class RootProjectConfigurator implements Plugin<Project> {
 		return dockerTagImage;
 	}
 
-	private Download _addTaskDownloadBundle(
+	private LiferayDownloadTask _addTaskDownloadBundle(
 		final Project project, VerifyProductTask verifyProductTask,
 		final WorkspaceExtension workspaceExtension) {
 
-		final Download download = GradleUtil.addTask(
-			project, DOWNLOAD_BUNDLE_TASK_NAME, Download.class);
+		final LiferayDownloadTask download = GradleUtil.addTask(
+			project, DOWNLOAD_BUNDLE_TASK_NAME, LiferayDownloadTask.class);
 
 		download.dependsOn(verifyProductTask);
 
@@ -1106,7 +1107,7 @@ public class RootProjectConfigurator implements Plugin<Project> {
 
 	private InitBundleTask _addTaskInitBundle(
 		Project project, VerifyProductTask verifyProductTask,
-		Download downloadBundleTask, VerifyBundleTask verifyBundleTask,
+		LiferayDownloadTask downloadBundleTask, VerifyBundleTask verifyBundleTask,
 		final WorkspaceExtension workspaceExtension,
 		Configuration osgiModulesConfiguration) {
 
@@ -1408,7 +1409,7 @@ public class RootProjectConfigurator implements Plugin<Project> {
 	}
 
 	private void _addTasksDistBundleEnvironments(
-		Project project, Download downloadBundleTask,
+		Project project, LiferayDownloadTask downloadBundleTask,
 		WorkspaceExtension workspaceExtension,
 		Configuration providedModulesConfiguration) {
 
@@ -1570,7 +1571,7 @@ public class RootProjectConfigurator implements Plugin<Project> {
 
 	private VerifyBundleTask _addTaskVerifyBundle(
 		Project project, VerifyProductTask verifyProductTask,
-		Download downloadBundleTask, WorkspaceExtension workspaceExtension) {
+		LiferayDownloadTask downloadBundleTask, WorkspaceExtension workspaceExtension) {
 
 		VerifyBundleTask verifyBundleTask = GradleUtil.addTask(
 			project, VERIFY_BUNDLE_TASK_NAME, VerifyBundleTask.class);
@@ -1693,7 +1694,7 @@ public class RootProjectConfigurator implements Plugin<Project> {
 	}
 
 	private void _configureDownloadTask(
-		Project project, Download download,
+		Project project, LiferayDownloadTask download,
 		WorkspaceExtension workspaceExtension) {
 
 		File destinationDir = workspaceExtension.getBundleCacheDir();
@@ -1850,7 +1851,7 @@ public class RootProjectConfigurator implements Plugin<Project> {
 
 	@SuppressWarnings("serial")
 	private void _configureTaskCopyBundleFromDownload(
-		Copy copy, final Download download) {
+		Copy copy, final LiferayDownloadTask download) {
 
 		final Project project = copy.getProject();
 
@@ -2046,7 +2047,7 @@ public class RootProjectConfigurator implements Plugin<Project> {
 		return version.toString();
 	}
 
-	private File _getDownloadFile(Download download) {
+	private File _getDownloadFile(LiferayDownloadTask download) {
 		String fileName = String.valueOf((URL)download.getSrc());
 
 		return new File(
@@ -2072,7 +2073,7 @@ public class RootProjectConfigurator implements Plugin<Project> {
 		return sb.toString();
 	}
 
-	private List<?> _getSrcList(Download download) {
+	private List<?> _getSrcList(LiferayDownloadTask download) {
 		Object src = download.getSrc();
 
 		if (src == null) {
