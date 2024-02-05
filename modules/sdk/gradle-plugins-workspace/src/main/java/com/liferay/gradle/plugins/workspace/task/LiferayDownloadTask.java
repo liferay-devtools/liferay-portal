@@ -53,14 +53,14 @@ public class LiferayDownloadTask extends DefaultTask implements DownloadSpec {
 								).getLogger(
 								).info(
 									"Skipping existing file '" + f.getName() +
-									"' in offline mode."
+										"' in offline mode."
 								);
 							}
 						}
 						else {
 							throw new IllegalStateException(
 								"Unable to download file '" + f.getName() +
-								"' in offline mode.");
+									"' in offline mode.");
 						}
 					}
 
