@@ -42,8 +42,6 @@ import com.liferay.gradle.util.OSDetector;
 import com.liferay.gradle.util.Validator;
 import com.liferay.gradle.util.copy.StripPathSegmentsAction;
 
-import de.undercouch.gradle.tasks.download.Download;
-
 import groovy.lang.Closure;
 
 import java.io.File;
@@ -453,7 +451,8 @@ public class RootProjectConfigurator implements Plugin<Project> {
 
 	@SuppressWarnings("serial")
 	private Copy _addTaskCopyBundle(
-		Project project, String taskName, LiferayDownloadTask downloadBundleTask,
+		Project project, String taskName,
+		LiferayDownloadTask downloadBundleTask,
 		final WorkspaceExtension workspaceExtension, String environment,
 		Configuration providedModulesConfiguration) {
 
@@ -794,9 +793,9 @@ public class RootProjectConfigurator implements Plugin<Project> {
 	}
 
 	private Copy _addTaskDistBundle(
-		Project project, LiferayDownloadTask downloadBundleTask, String taskName,
-		WorkspaceExtension workspaceExtension, String environment,
-		Configuration providedModulesConfiguration) {
+		Project project, LiferayDownloadTask downloadBundleTask,
+		String taskName, WorkspaceExtension workspaceExtension,
+		String environment, Configuration providedModulesConfiguration) {
 
 		Copy copy = _addTaskCopyBundle(
 			project, taskName, downloadBundleTask, workspaceExtension,
@@ -1107,7 +1106,8 @@ public class RootProjectConfigurator implements Plugin<Project> {
 
 	private InitBundleTask _addTaskInitBundle(
 		Project project, VerifyProductTask verifyProductTask,
-		LiferayDownloadTask downloadBundleTask, VerifyBundleTask verifyBundleTask,
+		LiferayDownloadTask downloadBundleTask,
+		VerifyBundleTask verifyBundleTask,
 		final WorkspaceExtension workspaceExtension,
 		Configuration osgiModulesConfiguration) {
 
@@ -1571,7 +1571,8 @@ public class RootProjectConfigurator implements Plugin<Project> {
 
 	private VerifyBundleTask _addTaskVerifyBundle(
 		Project project, VerifyProductTask verifyProductTask,
-		LiferayDownloadTask downloadBundleTask, WorkspaceExtension workspaceExtension) {
+		LiferayDownloadTask downloadBundleTask,
+		WorkspaceExtension workspaceExtension) {
 
 		VerifyBundleTask verifyBundleTask = GradleUtil.addTask(
 			project, VERIFY_BUNDLE_TASK_NAME, VerifyBundleTask.class);
