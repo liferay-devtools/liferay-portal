@@ -25,15 +25,12 @@ import com.liferay.gradle.plugins.workspace.WorkspacePlugin;
 import com.liferay.gradle.plugins.workspace.internal.client.extension.ClientExtension;
 import com.liferay.gradle.plugins.workspace.internal.client.extension.NodeBuildConfigurer;
 import com.liferay.gradle.plugins.workspace.internal.client.extension.ThemeCSSTypeConfigurer;
+import com.liferay.gradle.plugins.workspace.internal.client.extension.validator.ClientExtensionValidator;
 import com.liferay.gradle.plugins.workspace.internal.util.GradleUtil;
 import com.liferay.gradle.plugins.workspace.internal.util.StringUtil;
 import com.liferay.gradle.plugins.workspace.internal.util.copy.HashifyAction;
 import com.liferay.gradle.plugins.workspace.task.CreateClientExtensionConfigTask;
-import com.liferay.gradle.util.ArrayUtil;
 import com.liferay.gradle.util.Validator;
-
-import groovy.json.JsonException;
-import groovy.json.JsonSlurper;
 
 import groovy.lang.Closure;
 
@@ -49,7 +46,6 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
@@ -227,7 +223,11 @@ public class ClientExtensionProjectConfigurator
 
 									@Override
 									public void execute(Task task1) {
-										_validateClientExtension(
+										ClientExtensionValidator
+											clientExtensionValidator =
+												new ClientExtensionValidator();
+
+										clientExtensionValidator.validate(
 											clientExtension, project);
 									}
 
@@ -1143,184 +1143,6 @@ public class ClientExtensionProjectConfigurator
 		}
 	}
 
-	private void _validateClientExtension(
-		ClientExtension clientExtension, Project project) {
-
-		if (Objects.equals(clientExtension.type, "batch")) {
-			_validateRequiredDirectory(clientExtension, project, "batch");
-			_validateRequiredTypeSettingsKeys(
-				clientExtension, "oAuthApplicationHeadlessServer");
-		}
-		else if (Objects.equals(clientExtension.type, "globalJS")) {
-			_validateGlobalJSScriptElementAttributes(clientExtension);
-		}
-		else if (Objects.equals(clientExtension.type, "instanceSettings")) {
-			_validateRequiredTypeSettingsKeys(clientExtension, "pid");
-		}
-		else if (Objects.equals(clientExtension.type, "siteInitializer")) {
-			_validateRequiredDirectory(
-				clientExtension, project, "site-initializer");
-			_validateRequiredTypeSettingsKeys(
-				clientExtension, "oAuthApplicationHeadlessServer",
-				"siteExternalReferenceCode", "siteName");
-			_validateTypeSettingsValues(
-				clientExtension, "builtInTemplateType", "site-initializer",
-				"site-template");
-			_validateTypeSettingsValues(
-				clientExtension, "membershipType", "open", "private",
-				"restricted");
-		}
-
-		if (Objects.equals(clientExtension.type, "themeCSS")) {
-			_validateFrontendTokenDefinitionFile(clientExtension, project);
-		}
-	}
-
-	private void _validateFrontendTokenDefinitionFile(
-		ClientExtension clientExtension, Project project) {
-
-		String frontendTokenDefinitionFilePath = null;
-
-		try {
-			Map<String, Object> typeSettings = clientExtension.typeSettings;
-
-			if (typeSettings.containsKey(_FRONTEND_TOKEN_DEFINITION_JSON_KEY)) {
-				frontendTokenDefinitionFilePath = String.valueOf(
-					typeSettings.get(_FRONTEND_TOKEN_DEFINITION_JSON_KEY));
-
-				File file = project.file(frontendTokenDefinitionFilePath);
-
-				if (!file.exists() || !file.isFile()) {
-					throw new GradleException(
-						String.format(
-							"Unable to find file %s",
-							StringUtil.quote(frontendTokenDefinitionFilePath)));
-				}
-
-				JsonSlurper jsonSlurper = new JsonSlurper();
-
-				jsonSlurper.parse(file);
-			}
-		}
-		catch (JsonException jsonException) {
-			throw new GradleException(
-				String.format(
-					"Unable to parse file %s",
-					StringUtil.quote(frontendTokenDefinitionFilePath)));
-		}
-	}
-
-	private void _validateGlobalJSScriptElementAttributes(
-		ClientExtension clientExtension) {
-
-		Map<String, Object> typeSettings = clientExtension.typeSettings;
-
-		if (!typeSettings.containsKey("scriptElementAttributes")) {
-			return;
-		}
-
-		Object scriptElementAttributes = typeSettings.get(
-			"scriptElementAttributes");
-
-		if (!(scriptElementAttributes instanceof Map)) {
-			throw new GradleException(
-				"The property 'scriptElementAttributes' must be an object");
-		}
-
-		Map<String, Object> scriptElementAttributesMap =
-			(Map<String, Object>)scriptElementAttributes;
-
-		for (Map.Entry<String, Object> entry :
-				scriptElementAttributesMap.entrySet()) {
-
-			if (Objects.equals(entry.getKey(), "src")) {
-				throw new GradleException(
-					"The key 'src' is not allowed as a script element " +
-						"attribute. Use 'url' instead.");
-			}
-
-			Object value = entry.getValue();
-
-			if (value == null) {
-				throw new GradleException(
-					String.format(
-						"The value for the script element attribute '%s' " +
-							"must be specified",
-						entry.getKey()));
-			}
-
-			if (value instanceof List || value instanceof Map) {
-				throw new GradleException(
-					String.format(
-						"The value for the script element attribute '%s' " +
-							"must be a scalar",
-						entry.getKey()));
-			}
-		}
-	}
-
-	private void _validateRequiredDirectory(
-			ClientExtension clientExtension, Project project,
-			String requiredDirectoryName)
-		throws GradleException {
-
-		File file = project.file(requiredDirectoryName);
-
-		if (file.isDirectory()) {
-			return;
-		}
-
-		throw new GradleException(
-			String.format(
-				"A %s directory is required for client extension %s with " +
-					"type %s",
-				StringUtil.quote(requiredDirectoryName), clientExtension.id,
-				clientExtension.type));
-	}
-
-	private void _validateRequiredTypeSettingsKeys(
-			ClientExtension clientExtension, String... requiredTypeSettingsKeys)
-		throws GradleException {
-
-		for (String requiredTypeSettingsKey : requiredTypeSettingsKeys) {
-			if (clientExtension.typeSettings.containsKey(
-					requiredTypeSettingsKey)) {
-
-				continue;
-			}
-
-			throw new GradleException(
-				String.format(
-					"Client extension %s with type %s must define the " +
-						"property %s",
-					clientExtension.id, clientExtension.type,
-					StringUtil.quote(requiredTypeSettingsKey)));
-		}
-	}
-
-	private void _validateTypeSettingsValues(
-			ClientExtension clientExtension, String typeSettingsKey,
-			String... validValues)
-		throws GradleException {
-
-		Object typeSettingsValue = clientExtension.typeSettings.get(
-			typeSettingsKey);
-
-		if ((typeSettingsValue == null) ||
-			ArrayUtil.contains(validValues, typeSettingsValue)) {
-
-			return;
-		}
-
-		throw new GradleException(
-			String.format(
-				"Client extension %s has an invalid value %s for the " +
-					"property %s. Valid values are: %s.",
-				clientExtension.id, StringUtil.quote(typeSettingsValue),
-				StringUtil.quote(typeSettingsKey),
-				StringUtil.join(StringUtil.COMMA_AND_SPACE, validValues)));
-	}
-
 	private static final String _CLIENT_EXTENSION_YAML =
 		"client-extension.yaml";
 
@@ -1330,9 +1152,6 @@ public class ClientExtensionProjectConfigurator
 		"LIFERAY_ROUTES_CLIENT_EXTENSION";
 
 	private static final String _ENV_LIFERAY_ROUTES_DXP = "LIFERAY_ROUTES_DXP";
-
-	private static final String _FRONTEND_TOKEN_DEFINITION_JSON_KEY =
-		"frontendTokenDefinitionJSON";
 
 	private static final Pattern _overrideClientExtensionYamlPattern =
 		Pattern.compile("^client-extension\\.([a-z]+)\\.yaml$");
