@@ -110,19 +110,17 @@ public class CreateClientExtensionConfigTask extends DefaultTask {
 		String batchType = null;
 
 		for (ClientExtension clientExtension : _clientExtensions) {
-			if (clientExtension.type.equals("batch")) {
+			if (Objects.equals(clientExtension.type, "batch")) {
 				pluginPackageProperties.put(
 					"Liferay-Client-Extension-Batch", "batch/");
 
 				batchType = "batch";
 			}
-
-			if (Objects.equals(clientExtension.type, "globalJS")) {
+			else if (Objects.equals(clientExtension.type, "globalJS")) {
 				_mapGlobalJSScriptElementAttributesToJSONString(
 					clientExtension);
 			}
-
-			if (clientExtension.type.equals("siteInitializer")) {
+			else if (Objects.equals(clientExtension.type, "siteInitializer")) {
 				pluginPackageProperties.put(
 					"Liferay-Client-Extension-Site-Initializer",
 					"site-initializer/");
@@ -131,16 +129,15 @@ public class CreateClientExtensionConfigTask extends DefaultTask {
 
 				_createSiteInitializerJsonFile(clientExtension);
 			}
+			else if (Objects.equals(clientExtension.type, "themeCSS")) {
+				_inlineFrontendTokenDefinitionJSON(clientExtension);
+			}
 
 			if (Objects.equals(clientExtension.classification, "frontend")) {
 				_expandWildcards(clientExtension.typeSettings);
 
 				pluginPackageProperties.put(
 					"Liferay-Client-Extension-Frontend", "static/");
-			}
-
-			if (Objects.equals(clientExtension.type, "themeCSS")) {
-				_inlineFrontendTokenDefinitionJSON(clientExtension);
 			}
 
 			String pid = _clientExtensionProperties.getProperty(
