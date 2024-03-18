@@ -32,12 +32,10 @@ public class ClientExtensionValidator {
 			_validateRequiredTypeSettingsKeys(
 				clientExtension, "oAuthApplicationHeadlessServer");
 		}
-
-		if (Objects.equals(clientExtension.type, "instanceSettings")) {
+		else if (Objects.equals(clientExtension.type, "instanceSettings")) {
 			_validateRequiredTypeSettingsKeys(clientExtension, "pid");
 		}
-
-		if (Objects.equals(clientExtension.type, "siteInitializer")) {
+		else if (Objects.equals(clientExtension.type, "siteInitializer")) {
 			_validateRequiredDirectory(
 				clientExtension, project, "site-initializer");
 			_validateRequiredTypeSettingsKeys(
@@ -50,8 +48,7 @@ public class ClientExtensionValidator {
 				clientExtension, "membershipType", "open", "private",
 				"restricted");
 		}
-
-		if (Objects.equals(clientExtension.type, "themeCSS")) {
+		else if (Objects.equals(clientExtension.type, "themeCSS")) {
 			_validateFrontendTokenDefinitionFile(clientExtension, project);
 		}
 	}
