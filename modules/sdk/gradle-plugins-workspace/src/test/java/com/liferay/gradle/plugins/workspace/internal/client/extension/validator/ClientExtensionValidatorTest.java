@@ -6,7 +6,6 @@
 package com.liferay.gradle.plugins.workspace.internal.client.extension.validator;
 
 import com.liferay.gradle.plugins.workspace.internal.client.extension.ClientExtension;
-import com.liferay.gradle.plugins.workspace.internal.client.extension.validator.ClientExtensionValidator;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,7 +13,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 import java.util.HashMap;
-import java.util.Map;
 
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
@@ -30,26 +28,22 @@ import org.mockito.Mockito;
 public class ClientExtensionValidatorTest {
 
 	@Test
-	public void testShouldValidateSuccessfullyIfNoFrontendTokenDefinitionProvided() {
-		ClientExtension clientExtension = _getThemeCSSClientExtension();
+	public void testValidate() throws IOException {
+		ClientExtension clientExtension = new ClientExtension();
 
-		Map<String, Object> typeSettings = clientExtension.typeSettings;
-
-		typeSettings.clear();
+		clientExtension.type = "themeCSS";
 
 		Project project = Mockito.mock(Project.class);
 
-		try {
-			_clientExtensionValidator.validate(clientExtension, project);
-		}
-		catch (GradleException gradleException) {
-			Assert.fail();
-		}
-	}
+		_clientExtensionValidator.validate(clientExtension, project);
 
-	@Test
-	public void testThrowsUnableToFindFrontendTokenDefinitionFileException() {
-		Project project = Mockito.mock(Project.class);
+		clientExtension.typeSettings = new HashMap<String, Object>() {
+			{
+				put(
+					"frontendTokenDefinitionJSON",
+					"frontend-token-definition.json");
+			}
+		};
 
 		Mockito.when(
 			project.file(Mockito.anyString())
@@ -57,10 +51,9 @@ public class ClientExtensionValidatorTest {
 			new File("")
 		);
 
-		ClientExtension clientExtension = _getThemeCSSClientExtension();
-
 		try {
 			_clientExtensionValidator.validate(clientExtension, project);
+
 			Assert.fail();
 		}
 		catch (GradleException gradleException) {
@@ -68,15 +61,8 @@ public class ClientExtensionValidatorTest {
 
 			Assert.assertTrue(exceptionMessage.contains("Unable to find file"));
 		}
-	}
 
-	@Test
-	public void testThrowsUnableToParseFrontendTokenDefinitionFileException()
-		throws IOException {
-
-		Project project = Mockito.mock(Project.class);
-
-		File file = File.createTempFile("frontend-token-definition", "json");
+		File file = File.createTempFile("frontend-token-definition", ".json");
 
 		file.deleteOnExit();
 
@@ -90,10 +76,9 @@ public class ClientExtensionValidatorTest {
 			file
 		);
 
-		ClientExtension clientExtension = _getThemeCSSClientExtension();
-
 		try {
 			_clientExtensionValidator.validate(clientExtension, project);
+
 			Assert.fail();
 		}
 		catch (GradleException gradleException) {
@@ -102,19 +87,6 @@ public class ClientExtensionValidatorTest {
 			Assert.assertTrue(
 				exceptionMessage.contains("Unable to parse file"));
 		}
-	}
-
-	private ClientExtension _getThemeCSSClientExtension() {
-		ClientExtension clientExtension = new ClientExtension();
-
-		clientExtension.type = "themeCSS";
-		clientExtension.typeSettings = new HashMap<String, Object>() {
-			{
-				put("frontendTokenDefinitionJSON", "file.json");
-			}
-		};
-
-		return clientExtension;
 	}
 
 	private final ClientExtensionValidator _clientExtensionValidator =
