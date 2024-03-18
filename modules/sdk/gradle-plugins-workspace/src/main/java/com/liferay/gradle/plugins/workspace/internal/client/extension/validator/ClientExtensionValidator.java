@@ -83,7 +83,8 @@ public class ClientExtensionValidator {
 			throw new GradleException(
 				String.format(
 					"Unable to parse file %s",
-					StringUtil.quote(frontendTokenDefinitionFilePath)));
+					StringUtil.quote(frontendTokenDefinitionFilePath)),
+				jsonException);
 		}
 	}
 
