@@ -12,16 +12,25 @@ import com.liferay.gradle.plugins.node.task.NpmInstallTask;
 import com.liferay.gradle.plugins.node.task.PackageRunTask;
 import com.liferay.gradle.plugins.node.task.PackageRunTestTask;
 import com.liferay.gradle.plugins.node.task.YarnInstallTask;
+import com.liferay.gradle.plugins.source.formatter.FormatSourceTask;
+import com.liferay.gradle.plugins.source.formatter.SourceFormatterPlugin;
 import com.liferay.gradle.plugins.workspace.internal.util.GradleUtil;
+import com.liferay.gradle.plugins.workspace.internal.util.StringUtil;
 import com.liferay.gradle.plugins.workspace.task.SetUpYarnTask;
+
+import groovy.json.JsonSlurper;
 
 import java.io.File;
 import java.io.IOException;
 
 import java.nio.file.Files;
 
+import java.util.Map;
+import java.util.Objects;
+
 import org.gradle.api.Project;
 import org.gradle.api.logging.Logger;
+import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.tasks.TaskContainer;
 import org.gradle.api.tasks.TaskProvider;
 
@@ -48,22 +57,111 @@ public class LiferayWorkspaceYarnPlugin extends YarnPlugin {
 			GradleUtil.getTaskProvider(
 				project, YARN_INSTALL_TASK_NAME, YarnInstallTask.class);
 
+		_addWorkspacesTasks(project.getRootProject());
+
+		TaskProvider<PackageRunTask> workspacesCheckFormatTaskProvider =
+			GradleUtil.fetchTaskProvider(
+				project.getRootProject(),
+				_WORKSPACES_TASK_NAME_PREFIX + "CheckFormat",
+				PackageRunTask.class);
+		TaskProvider<PackageRunTask> workspacesFormatTaskProvider =
+			GradleUtil.fetchTaskProvider(
+				project.getRootProject(),
+				_WORKSPACES_TASK_NAME_PREFIX + "Format", PackageRunTask.class);
+
 		_configureTaskYarnInstallProvider(
 			project, yarnInstallTaskProvider, setUpYarnTaskProvider);
 
 		project.allprojects(
 			project1 -> _configureNodeProject(
-				project1, yarnInstallTaskProvider));
+				project1, workspacesCheckFormatTaskProvider,
+				workspacesFormatTaskProvider, yarnInstallTaskProvider));
+	}
+
+	@SuppressWarnings("unchecked")
+	private void _addWorkspacesTasks(Project rootProject) {
+		File rootDir = rootProject.getRootDir();
+
+		File file = new File(rootDir.getParentFile(), "package.json");
+
+		if (!file.exists()) {
+			return;
+		}
+
+		JsonSlurper jsonSlurper = new JsonSlurper();
+
+		Map<String, Object> map = (Map<String, Object>)jsonSlurper.parse(file);
+
+		Map<String, String> scriptsJsonMap = (Map<String, String>)map.get(
+			"scripts");
+
+		if (scriptsJsonMap == null) {
+			return;
+		}
+
+		TaskProvider<YarnInstallTask> workspacesYarnInstallTaskProvider =
+			GradleUtil.addTaskProvider(
+				rootProject, _WORKSPACES_TASK_NAME_PREFIX + "YarnInstall",
+				YarnInstallTask.class);
+
+		workspacesYarnInstallTaskProvider.configure(
+			yarnInstallTask -> {
+				yarnInstallTask.setDescription(
+					"Installs Node packages from package.json.");
+				yarnInstallTask.setFrozenLockFile(
+					Boolean.parseBoolean(
+						System.getProperty(
+							"frozen.lockfile", Boolean.TRUE.toString())));
+				yarnInstallTask.setWorkingDir(rootDir.getParentFile());
+			});
+
+		for (String scriptName : scriptsJsonMap.keySet()) {
+			PackageRunTask packageRunTask = GradleUtil.addTask(
+				rootProject,
+				_WORKSPACES_TASK_NAME_PREFIX +
+					StringUtil.camelCase(scriptName, true),
+				PackageRunTask.class);
+
+			packageRunTask.dependsOn(workspacesYarnInstallTaskProvider);
+
+			packageRunTask.setDescription(
+				"Runs the \"" + scriptName + "\" package.json script.");
+			packageRunTask.setGroup(BasePlugin.BUILD_GROUP);
+			packageRunTask.setScriptName(scriptName);
+			packageRunTask.setWorkingDir(rootDir.getParentFile());
+		}
 	}
 
 	private void _configureNodeProject(
 		Project project,
+		TaskProvider<PackageRunTask> workspacesCheckFormatTaskProvider,
+		TaskProvider<PackageRunTask> workspacesFormatTaskProvider,
 		TaskProvider<YarnInstallTask> yarnInstallTaskProvider) {
 
 		project.afterEvaluate(
 			project1 -> {
 				TaskContainer taskContainer = project1.getTasks();
 
+				taskContainer.withType(
+					FormatSourceTask.class,
+					formatSourceTask -> {
+						String name = formatSourceTask.getName();
+
+						if ((workspacesCheckFormatTaskProvider != null) &&
+							Objects.equals(
+								name, _CHECK_SOURCE_FORMATTING_TASK_NAME)) {
+
+							formatSourceTask.finalizedBy(
+								workspacesCheckFormatTaskProvider);
+						}
+
+						if ((workspacesFormatTaskProvider != null) &&
+							Objects.equals(name, _FORMAT_SOURCE_TASK_NAME)) {
+
+							formatSourceTask.finalizedBy(
+								workspacesFormatTaskProvider);
+						}
+					});
 				taskContainer.withType(
 					NpmInstallTask.class,
 					npmInstallTask -> {
@@ -120,5 +218,13 @@ public class LiferayWorkspaceYarnPlugin extends YarnPlugin {
 				}
 			});
 	}
+
+	private static final String _CHECK_SOURCE_FORMATTING_TASK_NAME =
+		SourceFormatterPlugin.CHECK_SOURCE_FORMATTING_TASK_NAME;
+
+	private static final String _FORMAT_SOURCE_TASK_NAME =
+		SourceFormatterPlugin.FORMAT_SOURCE_TASK_NAME;
+
+	private static final String _WORKSPACES_TASK_NAME_PREFIX = "workspaces";
 
 }
