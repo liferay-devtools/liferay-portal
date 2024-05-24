@@ -19,14 +19,6 @@ import java.util.Locale;
  */
 public class InfoFormValidationException extends InfoFormException {
 
-	public InfoFormValidationException() {
-		_infoFieldUniqueId = StringPool.BLANK;
-	}
-
-	public InfoFormValidationException(String infoFieldUniqueId) {
-		_infoFieldUniqueId = infoFieldUniqueId;
-	}
-
 	public String getInfoFieldUniqueId() {
 		return _infoFieldUniqueId;
 	}
@@ -344,6 +336,14 @@ public class InfoFormValidationException extends InfoFormException {
 
 		private final String _infoFieldLabel;
 
+	}
+
+	private InfoFormValidationException() {
+		_infoFieldUniqueId = StringPool.BLANK;
+	}
+
+	private InfoFormValidationException(String infoFieldUniqueId) {
+		_infoFieldUniqueId = infoFieldUniqueId;
 	}
 
 	private final String _infoFieldUniqueId;
