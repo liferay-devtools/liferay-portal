@@ -200,12 +200,13 @@ public class UpgradeCatchAllCheck extends BaseFileCheck {
 	private static Pattern _getPattern(JSONObject jsonObject) {
 		String from = jsonObject.getString("from");
 
+		if (jsonObject.getBoolean("fromRegex")) {
+			return Pattern.compile(from);
+		}
+
 		String regex = StringBundler.concat("\\b", from, "\\b");
 
-		if (from.contains("::")) {
-			return Pattern.compile(regex);
-		}
-		else if (regex.contains(StringPool.SLASH)) {
+		if (regex.contains(StringPool.SLASH)) {
 			return Pattern.compile(
 				StringUtil.replace(regex, CharPool.SLASH, "\\/"));
 		}
