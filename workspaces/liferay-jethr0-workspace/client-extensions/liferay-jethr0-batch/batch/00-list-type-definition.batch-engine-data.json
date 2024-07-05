@@ -1,7 +1,6 @@
 {
 	"configuration": {
 		"className": "com.liferay.headless.admin.list.type.dto.v1_0.ListTypeDefinition",
-		"multiCompany": false,
 		"parameters": {
 			"containsHeaders": "false",
 			"createStrategy": "UPSERT",
