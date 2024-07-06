@@ -53,7 +53,7 @@ HTMLWhitespaceCheck | .html or .path | Finds missing and unnecessary whitespace 
 [IfStatementCheck](check/if_statement_check.markdown#ifstatementcheck) | .java, .jsp, .jspf, .jspx, .tag, .tpl or .vm | Finds empty if-statements and consecutive if-statements with identical bodies. |
 [InstanceInitializerCheck](check/instance_initializer_check.markdown#instanceinitializercheck) | .java | Performs several checks on class instance initializer. |
 InstanceofOrderCheck | .java, .jsp, .jspf, .jspx, .tag, .tpl or .vm | Check the order of `instanceof` calls. |
-JSONBatchEngineDataFileCheck | .ipynb, .json or .npmbridgerc | Remove elements in `*.batch-engine-data.json` files. |
+JSONBatchEngineDataFileCheck | .ipynb, .json or .npmbridgerc | Removes default elements and sorts by `externalReferenceCode` in `*.batch-engine-data.json` files. |
 JSONPageFileCheck | .ipynb, .json or .npmbridgerc | Sorts by `roleName` in `page.json` files. |
 JSONPortletResponseUtilCheck | .java | Checks if `JSONPortletResponseUtil.writeJSON ` should come before method calling `hideDefaultSuccessMessage`. |
 JSONReplacementsFileCheck | .ipynb, .json or .npmbridgerc | Sorts by `issueKey`, `from` and `to` in `replacements.json` file. |
