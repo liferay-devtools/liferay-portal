@@ -122,7 +122,7 @@ public class JSONBatchEngineDataFileCheck extends BaseFileCheck {
 			}
 
 			NaturalOrderStringComparator comparator =
-				new NaturalOrderStringComparator();
+				new NaturalOrderStringComparator(true, true);
 
 			return comparator.compare(
 				externalReferenceCode1, externalReferenceCode2);
