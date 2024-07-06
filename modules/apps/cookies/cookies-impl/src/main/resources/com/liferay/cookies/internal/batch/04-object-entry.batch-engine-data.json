@@ -14,6 +14,22 @@
 	"items": [
 		{
 			"expiration": "365 Days",
+			"externalReferenceCode": "100522f5-949f-410e-a983-ed156cec2775",
+			"host": "Liferay",
+			"name": "ac_client_channel_id",
+			"purpose": "Stores the current site's Channel ID to send to Analytics Cloud. Statistics.",
+			"type": "First Party"
+		},
+		{
+			"expiration": "365 Days",
+			"externalReferenceCode": "192a7263-1d3f-4ab8-aa6b-449a69ec470d",
+			"host": "Liferay",
+			"name": "ac_client_identity",
+			"purpose": "Stores the current user's Analytics Cloud SHA-256 hashed user ID combined with email so users with accounts can be tracked by Analytics Cloud as known individuals. Statistics.",
+			"type": "First Party"
+		},
+		{
+			"expiration": "365 Days",
 			"externalReferenceCode": "2d43f854-d24f-4c07-854c-2c3f975fecdd",
 			"host": "Liferay",
 			"name": "ac_message_queue_identity",
@@ -38,10 +54,10 @@
 		},
 		{
 			"expiration": "365 Days",
-			"externalReferenceCode": "8e1fd120-ae3c-4af2-9ce8-573c3ded34e8",
+			"externalReferenceCode": "50913b94-dd64-4812-b311-9c428cd40590",
 			"host": "Liferay",
-			"name": "ac_message_queue",
-			"purpose": "Stores an array of events to send to Analytics Cloud when possible. Statistics.",
+			"name": "ac_client_previous_email_address_hash",
+			"purpose": "Stores the last known user's SHA-256 hashed email ID to match with the current user to assign events from current session's anonymous browsing to this user. Statistics.",
 			"type": "First Party"
 		},
 		{
@@ -70,10 +86,10 @@
 		},
 		{
 			"expiration": "365 Days",
-			"externalReferenceCode": "192a7263-1d3f-4ab8-aa6b-449a69ec470d",
+			"externalReferenceCode": "79765961-2d08-444d-b549-7c3bbdabb580",
 			"host": "Liferay",
-			"name": "ac_client_identity",
-			"purpose": "Stores the current user's Analytics Cloud SHA-256 hashed user ID combined with email so users with accounts can be tracked by Analytics Cloud as known individuals. Statistics.",
+			"name": "ac_client_context",
+			"purpose": "Stores a list of page and user properties to send to Analytics Cloud so event analysis has the necessary context. Statistics.",
 			"type": "First Party"
 		},
 		{
@@ -86,26 +102,10 @@
 		},
 		{
 			"expiration": "365 Days",
-			"externalReferenceCode": "50913b94-dd64-4812-b311-9c428cd40590",
+			"externalReferenceCode": "8e1fd120-ae3c-4af2-9ce8-573c3ded34e8",
 			"host": "Liferay",
-			"name": "ac_client_previous_email_address_hash",
-			"purpose": "Stores the last known user's SHA-256 hashed email ID to match with the current user to assign events from current session's anonymous browsing to this user. Statistics.",
-			"type": "First Party"
-		},
-		{
-			"expiration": "365 Days",
-			"externalReferenceCode": "100522f5-949f-410e-a983-ed156cec2775",
-			"host": "Liferay",
-			"name": "ac_client_channel_id",
-			"purpose": "Stores the current site's Channel ID to send to Analytics Cloud. Statistics.",
-			"type": "First Party"
-		},
-		{
-			"expiration": "365 Days",
-			"externalReferenceCode": "79765961-2d08-444d-b549-7c3bbdabb580",
-			"host": "Liferay",
-			"name": "ac_client_context",
-			"purpose": "Stores a list of page and user properties to send to Analytics Cloud so event analysis has the necessary context. Statistics.",
+			"name": "ac_message_queue",
+			"purpose": "Stores an array of events to send to Analytics Cloud when possible. Statistics.",
 			"type": "First Party"
 		},
 		{

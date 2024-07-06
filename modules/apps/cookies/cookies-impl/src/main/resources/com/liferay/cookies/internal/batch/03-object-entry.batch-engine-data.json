@@ -21,6 +21,30 @@
 			"type": "First Party"
 		},
 		{
+			"expiration": "",
+			"externalReferenceCode": "15367faf-4404-4d79-a91c-bce191b25973",
+			"host": "Liferay",
+			"name": "HIGHLIGHTED_COMMENT_ID_KEY",
+			"purpose": "Stores the highlighted fragment comment's ID when entering the page editor from a comment notification. Strictly necessary.",
+			"type": "First Party"
+		},
+		{
+			"expiration": "",
+			"externalReferenceCode": "4222c0a9-8877-4c4d-a8a7-d1e846b8bf4b",
+			"host": "Liferay",
+			"name": "SERVER_ID",
+			"purpose": "Stores the web server ID to keep the user connected to the same Liferay instance with access to the session and cached data. Strictly necessary.",
+			"type": "First Party"
+		},
+		{
+			"expiration": "365 Days",
+			"externalReferenceCode": "57a36b90-89d3-437c-8093-7eada10d4d5d",
+			"host": "Liferay",
+			"name": "CONSENT_TYPE_PERFORMANCE",
+			"purpose": "Stores the end user's consent option (true/false) for performance cookies to manage performance-related preferences. Strictly necessary.",
+			"type": "First Party"
+		},
+		{
 			"expiration": "365 Days",
 			"externalReferenceCode": "5de342bd-1117-491a-9de9-7b88d9cf8d80",
 			"host": "Liferay",
@@ -34,22 +58,6 @@
 			"host": "Liferay",
 			"name": "CONSENT_TYPE_NECESSARY",
 			"purpose": "Stores the end user's consent option (true/false) for necessary cookies to ensure essential functionality. Strictly necessary.",
-			"type": "First Party"
-		},
-		{
-			"expiration": "365 Days",
-			"externalReferenceCode": "9bfb8f39-0483-4a70-9e0f-b08c17b4b56c",
-			"host": "Liferay",
-			"name": "com.liferay.commerce.model.CommerceOrder#groupId",
-			"purpose": "Stores an order ID to link it to the account the guest creates later. Strictly necessary.",
-			"type": "First Party"
-		},
-		{
-			"expiration": "365 Days",
-			"externalReferenceCode": "57a36b90-89d3-437c-8093-7eada10d4d5d",
-			"host": "Liferay",
-			"name": "CONSENT_TYPE_PERFORMANCE",
-			"purpose": "Stores the end user's consent option (true/false) for performance cookies to manage performance-related preferences. Strictly necessary.",
 			"type": "First Party"
 		},
 		{
@@ -69,27 +77,19 @@
 			"type": "First Party"
 		},
 		{
-			"expiration": "",
-			"externalReferenceCode": "4222c0a9-8877-4c4d-a8a7-d1e846b8bf4b",
-			"host": "Liferay",
-			"name": "SERVER_ID",
-			"purpose": "Stores the web server ID to keep the user connected to the same Liferay instance with access to the session and cached data. Strictly necessary.",
-			"type": "First Party"
-		},
-		{
-			"expiration": "",
-			"externalReferenceCode": "15367faf-4404-4d79-a91c-bce191b25973",
-			"host": "Liferay",
-			"name": "HIGHLIGHTED_COMMENT_ID_KEY",
-			"purpose": "Stores the highlighted fragment comment's ID when entering the page editor from a comment notification. Strictly necessary.",
-			"type": "First Party"
-		},
-		{
 			"expiration": "Session Time",
 			"externalReferenceCode": "9903020c-e43c-46fa-9ed5-828b1ac6d56c",
 			"host": "Liferay",
 			"name": "JSESSIONID",
 			"purpose": "Stores a unique identifier to maintain the user's session on the server. Strictly necessary.",
+			"type": "First Party"
+		},
+		{
+			"expiration": "365 Days",
+			"externalReferenceCode": "9bfb8f39-0483-4a70-9e0f-b08c17b4b56c",
+			"host": "Liferay",
+			"name": "com.liferay.commerce.model.CommerceOrder#groupId",
+			"purpose": "Stores an order ID to link it to the account the guest creates later. Strictly necessary.",
 			"type": "First Party"
 		},
 		{

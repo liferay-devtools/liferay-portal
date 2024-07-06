@@ -13,6 +13,22 @@
 	},
 	"items": [
 		{
+			"expiration": "",
+			"externalReferenceCode": "2171285c-08b1-4531-9067-7688eece3829",
+			"host": "Liferay",
+			"name": "_com_liferay_layout_content_page_editor_web_internal_portlet_ContentPageEditorPortlet_scrollPosition",
+			"purpose": "Stores the scroll position for fragments and widget panels in the page editor for the user's convenience. Marketing.",
+			"type": "First Party"
+		},
+		{
+			"expiration": "",
+			"externalReferenceCode": "3850f785-6b1a-428f-a63f-5d934f9f5642",
+			"host": "Liferay",
+			"name": "portlet_com_liferay_site_navigation_admin_web_portlet_SiteNavigationAdminPortlet___selectedMenuItemId",
+			"purpose": "Stores the selected item's ID in the navigation menu administration for the user's convenience. Marketing.",
+			"type": "First Party"
+		},
+		{
 			"expiration": "365 Days",
 			"externalReferenceCode": "524c3049-b6d0-488c-b8a1-777708af9527",
 			"host": "Liferay",
@@ -38,18 +54,10 @@
 		},
 		{
 			"expiration": "",
-			"externalReferenceCode": "3850f785-6b1a-428f-a63f-5d934f9f5642",
+			"externalReferenceCode": "b739c129-37f0-4803-b498-dbcb18b8ec38",
 			"host": "Liferay",
-			"name": "portlet_com_liferay_site_navigation_admin_web_portlet_SiteNavigationAdminPortlet___selectedMenuItemId",
-			"purpose": "Stores the selected item's ID in the navigation menu administration for the user's convenience. Marketing.",
-			"type": "First Party"
-		},
-		{
-			"expiration": "",
-			"externalReferenceCode": "2171285c-08b1-4531-9067-7688eece3829",
-			"host": "Liferay",
-			"name": "_com_liferay_layout_content_page_editor_web_internal_portlet_ContentPageEditorPortlet_scrollPosition",
-			"purpose": "Stores the scroll position for fragments and widget panels in the page editor for the user's convenience. Marketing.",
+			"name": "FRAGMENTS_DISPLAY_STYLE_KEY",
+			"purpose": "Stores the end user's display style preference (cards or list) for fragments and widgets panels. Marketing.",
 			"type": "First Party"
 		},
 		{
@@ -58,14 +66,6 @@
 			"host": "Liferay",
 			"name": "portlet_com_liferay_site_navigation_admin_web_portlet_SiteNavigationAdminPortlet___scrollPosition",
 			"purpose": "Stores the scroll position for the info panel in the navigation menu item admin for the user's convenience. Marketing.",
-			"type": "First Party"
-		},
-		{
-			"expiration": "",
-			"externalReferenceCode": "b739c129-37f0-4803-b498-dbcb18b8ec38",
-			"host": "Liferay",
-			"name": "FRAGMENTS_DISPLAY_STYLE_KEY",
-			"purpose": "Stores the end user's display style preference (cards or list) for fragments and widgets panels. Marketing.",
 			"type": "First Party"
 		},
 		{
