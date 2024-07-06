@@ -1022,7 +1022,7 @@
 
 		<check name="JSONBatchEngineDataFileCheck">
 			<category name="Styling" />
-			<description name="Remove elements in `*.batch-engine-data.json` files." />
+			<description name="Removes default elements and sorts by `externalReferenceCode` in `*.batch-engine-data.json` files." />
 		</check>
 		<check name="JSONDeprecatedPackagesCheck">
 			<category name="Bug Prevention" />
