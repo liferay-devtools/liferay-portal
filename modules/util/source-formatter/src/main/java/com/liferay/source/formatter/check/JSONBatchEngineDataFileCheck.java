@@ -5,10 +5,17 @@
 
 package com.liferay.source.formatter.check;
 
+import com.liferay.portal.json.JSONArrayImpl;
 import com.liferay.portal.json.JSONObjectImpl;
+import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
+import com.liferay.portal.kernel.util.NaturalOrderStringComparator;
+
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * @author Qi Zhang
@@ -53,7 +60,59 @@ public class JSONBatchEngineDataFileCheck extends BaseFileCheck {
 			jsonObject.put("configuration", configurationJSONObject);
 		}
 
+		jsonObject = _sortByExternalReferenceCode(jsonObject, "items");
+
 		return JSONUtil.toString(jsonObject);
+	}
+
+	private JSONObject _sortByExternalReferenceCode(
+		JSONObject jsonObject, String name) {
+
+		if (!jsonObject.has(name)) {
+			return jsonObject;
+		}
+
+		JSONArray jsonArray = jsonObject.getJSONArray(name);
+
+		List<Object> objectList = JSONUtil.toObjectList(jsonArray);
+
+		Collections.sort(objectList, new BatchEngineDataComparator());
+
+		jsonArray = new JSONArrayImpl();
+
+		for (Object object : objectList) {
+			JSONObject innerJSONObject = (JSONObject)object;
+
+			innerJSONObject = _sortByExternalReferenceCode(
+				innerJSONObject, "listTypeEntries");
+
+			jsonArray.put(innerJSONObject);
+		}
+
+		jsonObject.put(name, jsonArray);
+
+		return jsonObject;
+	}
+
+	private class BatchEngineDataComparator implements Comparator<Object> {
+
+		@Override
+		public int compare(Object object1, Object object2) {
+			NaturalOrderStringComparator comparator =
+				new NaturalOrderStringComparator();
+
+			JSONObject jsonObject1 = (JSONObject)object1;
+			JSONObject jsonObject2 = (JSONObject)object2;
+
+			String externalReferenceCode1 = jsonObject1.getString(
+				"externalReferenceCode");
+			String externalReferenceCode2 = jsonObject2.getString(
+				"externalReferenceCode");
+
+			return comparator.compare(
+				externalReferenceCode1, externalReferenceCode2);
+		}
+
 	}
 
 }
