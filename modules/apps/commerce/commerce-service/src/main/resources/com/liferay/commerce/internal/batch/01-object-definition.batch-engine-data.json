@@ -14,26 +14,6 @@
 	"items": [
 		{
 			"enableCategorization": true,
-			"externalReferenceCode": "L_COMMERCE_RETURN_ITEM",
-			"label": {
-				"en_US": "Commerce Return Item"
-			},
-			"modifiable": true,
-			"name": "CommerceReturnItem",
-			"panelCategoryKey": "",
-			"parameterRequired": false,
-			"pluralLabel": {
-				"en_US": "Commerce Return Items"
-			},
-			"portlet": false,
-			"scope": "company",
-			"status": {
-				"code": 2
-			},
-			"system": true
-		},
-		{
-			"enableCategorization": true,
 			"externalReferenceCode": "L_COMMERCE_RETURN",
 			"label": {
 				"en_US": "Commerce Return"
@@ -100,6 +80,26 @@
 			},
 			"system": true,
 			"titleObjectFieldName": "id"
+		},
+		{
+			"enableCategorization": true,
+			"externalReferenceCode": "L_COMMERCE_RETURN_ITEM",
+			"label": {
+				"en_US": "Commerce Return Item"
+			},
+			"modifiable": true,
+			"name": "CommerceReturnItem",
+			"panelCategoryKey": "",
+			"parameterRequired": false,
+			"pluralLabel": {
+				"en_US": "Commerce Return Items"
+			},
+			"portlet": false,
+			"scope": "company",
+			"status": {
+				"code": 2
+			},
+			"system": true
 		}
 	]
 }

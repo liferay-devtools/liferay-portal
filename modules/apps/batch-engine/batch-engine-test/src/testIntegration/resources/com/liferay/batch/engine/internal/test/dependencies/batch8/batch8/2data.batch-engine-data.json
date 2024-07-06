@@ -4,6 +4,18 @@
 	},
 	"items": [
 		{
+			"description": "B01 Account 001 - We Test Business in Zip Files",
+			"externalReferenceCode": "ERC-B01-A001",
+			"name": "B0-01 Name",
+			"type": "business"
+		},
+		{
+			"description": "B02 Account 002 - We Test Business in Zip Files",
+			"externalReferenceCode": "ERC-B02-A002",
+			"name": "B0-02 Name",
+			"type": "business"
+		},
+		{
 			"description": "B03 Account 003 - We Test Business in Zip Files",
 			"externalReferenceCode": "ERC-B03-A003",
 			"name": "B0-03 Name",
@@ -25,18 +37,6 @@
 			"description": "B06 Account 006 - We Test Business in Zip Files",
 			"externalReferenceCode": "ERC-B06-A006",
 			"name": "B0-06 Name",
-			"type": "business"
-		},
-		{
-			"description": "B01 Account 001 - We Test Business in Zip Files",
-			"externalReferenceCode": "ERC-B01-A001",
-			"name": "B0-01 Name",
-			"type": "business"
-		},
-		{
-			"description": "B02 Account 002 - We Test Business in Zip Files",
-			"externalReferenceCode": "ERC-B02-A002",
-			"name": "B0-02 Name",
 			"type": "business"
 		},
 		{

@@ -272,15 +272,6 @@
 			"valueDescription": "e.g. 2023.q4.0, 7.4.13-u106"
 		},
 		{
-			"externalReferenceCode": "portalPatchTicketURL",
-			"key": "portalPatchTicketURL",
-			"label": "Portal Patch Ticket URL",
-			"type": "url",
-			"valueDefault": "https://help.liferay.com/hc/en-us/requests/PATCHERTEST",
-			"valueDescription": "e.g. https://help.liferay.com/hc/en-us/requests/PATCHERTEST",
-			"valueRegex": "https?://.+"
-		},
-		{
 			"externalReferenceCode": "portalPatcherBuildID",
 			"key": "portalPatcherBuildID",
 			"label": "Portal Patcher Build ID",
@@ -300,6 +291,15 @@
 			"label": "Portal Patcher User ID",
 			"type": "string",
 			"valueDescription": "Insert your portal patcher user ID here"
+		},
+		{
+			"externalReferenceCode": "portalPatchTicketURL",
+			"key": "portalPatchTicketURL",
+			"label": "Portal Patch Ticket URL",
+			"type": "url",
+			"valueDefault": "https://help.liferay.com/hc/en-us/requests/PATCHERTEST",
+			"valueDescription": "e.g. https://help.liferay.com/hc/en-us/requests/PATCHERTEST",
+			"valueRegex": "https?://.+"
 		},
 		{
 			"externalReferenceCode": "portalPullRequestURL",
@@ -487,13 +487,6 @@
 			"valueDescription": "Insert your target dir path here"
 		},
 		{
-			"externalReferenceCode": "testSuiteName",
-			"key": "testSuiteName",
-			"label": "Test Suite Name",
-			"type": "string",
-			"valueDescription": "Insert your test suite name here"
-		},
-		{
 			"externalReferenceCode": "testrayBuildID",
 			"key": "testrayBuildID",
 			"label": "Testray Build ID",
@@ -565,6 +558,13 @@
 			"label": "Testray Slack User Name",
 			"type": "string",
 			"valueDescription": "Insert your Testray Slack user name here"
+		},
+		{
+			"externalReferenceCode": "testSuiteName",
+			"key": "testSuiteName",
+			"label": "Test Suite Name",
+			"type": "string",
+			"valueDescription": "Insert your test suite name here"
 		}
 	]
 }
