@@ -630,23 +630,23 @@
 		},
 		{
 			"cron": "0 0 0 ? * * *",
-			"externalReferenceCode": "portalUpstreamTestSuiteControllerMasterDataEngine",
-			"jobName": "ci:test:data-engine - master - $[current_date]",
-			"jobParameters": "[{\"key\":\"portalBranchURL\",\"value\":\"https://github.com/liferay/liferay-portal/tree/master\"},{\"key\":\"portalUpstreamBranchName\",\"value\":\"master\"},{\"key\":\"testSuiteName\",\"value\":\"data-engine\"}]",
-			"jobPriority": 5,
-			"jobType": "portalUpstreamTestSuite",
-			"name": "ci:test:data-engine - master",
-			"r_gitBranchToRoutines_c_gitBranchERC": "liferayPortalMaster",
-			"type": "upstreamBranchCron"
-		},
-		{
-			"cron": "0 0 0 ? * * *",
 			"externalReferenceCode": "portalUpstreamTestSuiteControllerMasterDBPartition",
 			"jobName": "ci:test:db-partition - master - $[current_date]",
 			"jobParameters": "[{\"key\":\"portalBranchURL\",\"value\":\"https://github.com/liferay/liferay-portal/tree/master\"},{\"key\":\"portalUpstreamBranchName\",\"value\":\"master\"},{\"key\":\"testSuiteName\",\"value\":\"db-partition\"}]",
 			"jobPriority": 5,
 			"jobType": "portalUpstreamTestSuite",
 			"name": "ci:test:db-partition - master",
+			"r_gitBranchToRoutines_c_gitBranchERC": "liferayPortalMaster",
+			"type": "upstreamBranchCron"
+		},
+		{
+			"cron": "0 0 0 ? * * *",
+			"externalReferenceCode": "portalUpstreamTestSuiteControllerMasterDataEngine",
+			"jobName": "ci:test:data-engine - master - $[current_date]",
+			"jobParameters": "[{\"key\":\"portalBranchURL\",\"value\":\"https://github.com/liferay/liferay-portal/tree/master\"},{\"key\":\"portalUpstreamBranchName\",\"value\":\"master\"},{\"key\":\"testSuiteName\",\"value\":\"data-engine\"}]",
+			"jobPriority": 5,
+			"jobType": "portalUpstreamTestSuite",
+			"name": "ci:test:data-engine - master",
 			"r_gitBranchToRoutines_c_gitBranchERC": "liferayPortalMaster",
 			"type": "upstreamBranchCron"
 		},
