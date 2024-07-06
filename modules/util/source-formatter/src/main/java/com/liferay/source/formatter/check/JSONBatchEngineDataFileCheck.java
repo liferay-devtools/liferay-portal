@@ -5,6 +5,7 @@
 
 package com.liferay.source.formatter.check;
 
+import com.liferay.petra.string.CharPool;
 import com.liferay.portal.json.JSONArrayImpl;
 import com.liferay.portal.json.JSONObjectImpl;
 import com.liferay.portal.kernel.json.JSONArray;
@@ -12,6 +13,7 @@ import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.util.NaturalOrderStringComparator;
+import com.liferay.portal.kernel.util.StringUtil;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -98,9 +100,6 @@ public class JSONBatchEngineDataFileCheck extends BaseFileCheck {
 
 		@Override
 		public int compare(Object object1, Object object2) {
-			NaturalOrderStringComparator comparator =
-				new NaturalOrderStringComparator();
-
 			JSONObject jsonObject1 = (JSONObject)object1;
 			JSONObject jsonObject2 = (JSONObject)object2;
 
@@ -108,6 +107,22 @@ public class JSONBatchEngineDataFileCheck extends BaseFileCheck {
 				"externalReferenceCode");
 			String externalReferenceCode2 = jsonObject2.getString(
 				"externalReferenceCode");
+
+			if (externalReferenceCode1.matches(
+					"(?i)[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}") &&
+				externalReferenceCode2.matches(
+					"(?i)[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}")) {
+
+				String hex1 = StringUtil.removeChar(
+					externalReferenceCode1, CharPool.DASH);
+				String hex2 = StringUtil.removeChar(
+					externalReferenceCode2, CharPool.DASH);
+
+				return hex1.compareToIgnoreCase(hex2);
+			}
+
+			NaturalOrderStringComparator comparator =
+				new NaturalOrderStringComparator();
 
 			return comparator.compare(
 				externalReferenceCode1, externalReferenceCode2);
