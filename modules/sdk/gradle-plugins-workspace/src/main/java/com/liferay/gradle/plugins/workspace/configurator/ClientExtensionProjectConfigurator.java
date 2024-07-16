@@ -486,7 +486,9 @@ public class ClientExtensionProjectConfigurator
 
 		addTaskDockerDeploy(
 			project, buildClientExtensionZipTaskProvider,
-			new File(workspaceExtension.getDockerDir(), "client-extensions"));
+			new File(
+				workspaceExtension.getDockerDir(),
+				_getFolderPath("client-extensions", project, "")));
 
 		_configureArtifacts(project, buildClientExtensionZipTaskProvider);
 		_configureRootTaskDistBundle(
@@ -880,7 +882,7 @@ public class ClientExtensionProjectConfigurator
 				public File call() throws Exception {
 					File dir = new File(
 						liferayExtension.getAppServerParentDir(),
-						"osgi/client-extensions");
+						_getFolderPath("osgi/client-extensions", project, ""));
 
 					dir.mkdirs();
 
@@ -896,19 +898,17 @@ public class ClientExtensionProjectConfigurator
 
 		Map<String, String> environmentVariables = new HashMap<>();
 
-		String liferayVirtualInstanceId = GradleUtil.getProperty(
-			project.getRootProject(), "liferay.virtual.instance.id", "default");
+		String folderPath = _getFolderPath("routes", project, "default");
 
 		environmentVariables.put(
 			_ENV_LIFERAY_ROUTES_CLIENT_EXTENSION,
 			String.format(
-				"%s/routes/%s/%s", workspaceExtension.getHomeDir(),
-				liferayVirtualInstanceId, project.getName()));
+				"%s/%s/%s", workspaceExtension.getHomeDir(), folderPath,
+				project.getName()));
 		environmentVariables.put(
 			_ENV_LIFERAY_ROUTES_DXP,
 			String.format(
-				"%s/routes/%s/dxp", workspaceExtension.getHomeDir(),
-				liferayVirtualInstanceId));
+				"%s/%s/dxp", workspaceExtension.getHomeDir(), folderPath));
 
 		Gradle gradle = project.getGradle();
 
@@ -978,7 +978,7 @@ public class ClientExtensionProjectConfigurator
 		copy.dependsOn(assembleTask);
 
 		copy.into(
-			"osgi/client-extensions",
+			_getFolderPath("osgi/client-extensions", project, ""),
 			new Closure<Void>(project) {
 
 				public void doCall(CopySpec copySpec) {
@@ -1029,6 +1029,20 @@ public class ClientExtensionProjectConfigurator
 		}
 
 		return project.getName() + ":latest";
+	}
+
+	private String _getFolderPath(
+		String path, Project project, String defaultValue) {
+
+		String virtualInstanceId = (String)GradleUtil.getProperty(
+			project.getRootProject(), "liferay.virtual.instance.id",
+			defaultValue);
+
+		if ((virtualInstanceId != null) && !virtualInstanceId.isEmpty()) {
+			return path + "/" + virtualInstanceId;
+		}
+
+		return path;
 	}
 
 	private JsonNode _getJsonNode(File file) {
