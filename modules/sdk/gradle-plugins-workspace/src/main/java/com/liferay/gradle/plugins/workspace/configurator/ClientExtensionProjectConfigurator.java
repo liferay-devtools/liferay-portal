@@ -41,6 +41,7 @@ import java.io.IOException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 
@@ -486,7 +487,10 @@ public class ClientExtensionProjectConfigurator
 
 		addTaskDockerDeploy(
 			project, buildClientExtensionZipTaskProvider,
-			new File(workspaceExtension.getDockerDir(), "client-extensions"));
+			new File(
+				workspaceExtension.getDockerDir(),
+				_getFolderPath(
+					"client-extensions", _getVirtualInstanceId(project, ""))));
 
 		_configureArtifacts(project, buildClientExtensionZipTaskProvider);
 		_configureRootTaskDistBundle(
@@ -880,7 +884,9 @@ public class ClientExtensionProjectConfigurator
 				public File call() throws Exception {
 					File dir = new File(
 						liferayExtension.getAppServerParentDir(),
-						"osgi/client-extensions");
+						_getFolderPath(
+							"osgi/client-extensions",
+							_getVirtualInstanceId(project, "")));
 
 					dir.mkdirs();
 
@@ -896,19 +902,19 @@ public class ClientExtensionProjectConfigurator
 
 		Map<String, String> environmentVariables = new HashMap<>();
 
-		String liferayVirtualInstanceId = GradleUtil.getProperty(
-			project.getRootProject(), "liferay.virtual.instance.id", "default");
-
 		environmentVariables.put(
 			_ENV_LIFERAY_ROUTES_CLIENT_EXTENSION,
 			String.format(
-				"%s/routes/%s/%s", workspaceExtension.getHomeDir(),
-				liferayVirtualInstanceId, project.getName()));
+				"%s/%s/%s", workspaceExtension.getHomeDir(),
+				_getFolderPath(
+					"routes", _getVirtualInstanceId(project, "default")),
+				project.getName()));
 		environmentVariables.put(
 			_ENV_LIFERAY_ROUTES_DXP,
 			String.format(
-				"%s/routes/%s/dxp", workspaceExtension.getHomeDir(),
-				liferayVirtualInstanceId));
+				"%s/%s/dxp", workspaceExtension.getHomeDir(),
+				_getFolderPath(
+					"routes", _getVirtualInstanceId(project, "default"))));
 
 		Gradle gradle = project.getGradle();
 
@@ -978,7 +984,8 @@ public class ClientExtensionProjectConfigurator
 		copy.dependsOn(assembleTask);
 
 		copy.into(
-			"osgi/client-extensions",
+			_getFolderPath(
+				"osgi/client-extensions", _getVirtualInstanceId(project, "")),
 			new Closure<Void>(project) {
 
 				public void doCall(CopySpec copySpec) {
@@ -1031,6 +1038,10 @@ public class ClientExtensionProjectConfigurator
 		return project.getName() + ":latest";
 	}
 
+	private String _getFolderPath(String path, String virtualInstanceId) {
+		return Paths.get(path,virtualInstanceId).toString();
+	}
+
 	private JsonNode _getJsonNode(File file) {
 		if (!file.exists()) {
 			return _yamlObjectMapper.createObjectNode();
@@ -1044,6 +1055,12 @@ public class ClientExtensionProjectConfigurator
 				String.format("Unable to parse %s.", file.getName()),
 				ioException);
 		}
+	}
+
+	private String _getVirtualInstanceId(Project project, String defaultValue) {
+		return GradleUtil.getProperty(
+			project.getRootProject(), "liferay.virtual.instance.id",
+			defaultValue);
 	}
 
 	private boolean _isActiveProfile(Project project, String profileName) {
