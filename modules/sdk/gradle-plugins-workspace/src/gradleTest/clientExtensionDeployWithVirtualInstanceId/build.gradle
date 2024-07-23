@@ -1,0 +1,11 @@
+task runGradleTest
+
+runGradleTest {
+	dependsOn ":client-extension:deploy"
+
+	doLast {
+		FileTree fileTree = project.fileTree("bundles/osgi/client-extensions/vi.localtest.me")
+
+		assert fileTree.contains(project.file("bundles/osgi/client-extensions/vi.localtest.me/client-extension.zip"))
+	}
+}
