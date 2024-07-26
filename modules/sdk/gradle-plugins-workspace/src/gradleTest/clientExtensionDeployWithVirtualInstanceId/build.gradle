@@ -1,0 +1,13 @@
+task runGradleTest
+
+runGradleTest {
+	dependsOn ":client-extension:deploy"
+
+	doLast {
+		String virtualInstanceId = "vi.localtest.me"
+
+		File clientExtensionZip = new File("${gradle.liferayWorkspace.homeDir}/osgi/client-extensions/${virtualInstanceId}/client-extension.zip")
+
+		assert clientExtensionZip.exists()
+	}
+}
