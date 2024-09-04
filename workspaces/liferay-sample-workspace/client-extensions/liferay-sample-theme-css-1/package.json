@@ -2,10 +2,20 @@
 	"dependencies": {
 		"sassy-inputs": "1.0.6"
 	},
-	"liferayDesignPack": {
-		"baseTheme": "styled"
+	"devDependencies": {
+		"gulp": "^4.0.0",
+		"liferay-frontend-theme-styled": "^6.0.84",
+		"liferay-frontend-theme-unstyled": "^6.0.66",
+		"liferay-theme-tasks": "^11.5.3"
+	},
+	"liferayTheme": {
+		"baseTheme": "styled",
+		"version": "0.0.0"
 	},
 	"main": "package.json",
 	"name": "@liferay/liferay-sample-theme-css-1",
+	"scripts": {
+		"build": "gulp build"
+	},
 	"version": "0.0.0"
 }
