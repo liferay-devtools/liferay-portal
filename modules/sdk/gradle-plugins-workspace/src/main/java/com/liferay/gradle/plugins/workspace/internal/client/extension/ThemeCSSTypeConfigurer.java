@@ -48,51 +48,50 @@ public class ThemeCSSTypeConfigurer implements ClientExtensionConfigurer {
 
 		LiferayWorkspaceNodePlugin.INSTANCE.apply(project);
 
-		GradleUtil.applyPlugin(project, ThemeBuilderPlugin.class);
+		if (!_isGulpBuild(project)) {
+			GradleUtil.applyPlugin(project, ThemeBuilderPlugin.class);
 
-		_addDependenciesParentThemes(project);
-		_addDependenciesPortalCommonCSS(project);
+			War war = (War)GradleUtil.getTask(project, WarPlugin.WAR_TASK_NAME);
 
-		_configureTaskBuildTheme(project);
+			war.setEnabled(false);
 
-		BuildCSSTask buildCSSTask = _configureTaskBuildCSS(project);
+			_addDependenciesParentThemes(project);
+			_addDependenciesPortalCommonCSS(project);
 
-		War war = (War)GradleUtil.getTask(project, WarPlugin.WAR_TASK_NAME);
+			_configureTaskBuildTheme(project);
 
-		war.setEnabled(false);
+			BuildCSSTask buildCSSTask = _configureTaskBuildCSS(project);
 
-		assembleClientExtensionTaskProvider.configure(
-			new Action<Copy>() {
+			assembleClientExtensionTaskProvider.configure(
+				new Action<Copy>() {
 
-				@Override
-				@SuppressWarnings("serial")
-				public void execute(Copy copy) {
-					copy.dependsOn(buildCSSTask);
+					@Override
+					@SuppressWarnings("serial")
+					public void execute(Copy copy) {
+						copy.dependsOn(buildCSSTask);
 
-					copy.into(
-						new Callable<String>() {
+						_copyCss(copy, project);
+					}
 
-							@Override
-							public String call() throws Exception {
-								return "static";
-							}
+				});
+		}
+		else {
+			assembleClientExtensionTaskProvider.configure(
+				new Action<Copy>() {
 
-						},
-						new Closure<Void>(copy) {
+					@Override
+					@SuppressWarnings("serial")
+					public void execute(Copy copy) {
+						copy.dependsOn(
+							GradleUtil.getTask(
+								project,
+								NodePlugin.PACKAGE_RUN_BUILD_TASK_NAME));
 
-							@SuppressWarnings("unused")
-							public void doCall(CopySpec copySpec) {
-								copySpec.from(
-									new File(
-										project.getBuildDir(), "buildTheme"));
-								copySpec.include("css/*.css");
-								copySpec.into("static");
-							}
+						_copyCss(copy, project);
+					}
 
-						});
-				}
-
-			});
+				});
+		}
 	}
 
 	private void _addDependenciesParentThemes(Project project) {
@@ -232,6 +231,29 @@ public class ThemeCSSTypeConfigurer implements ClientExtensionConfigurer {
 		return buildThemeTask;
 	}
 
+	private void _copyCss(Copy copy, Project project) {
+		copy.into(
+			new Callable<String>() {
+
+				@Override
+				public String call() throws Exception {
+					return "static";
+				}
+
+			},
+			new Closure<Void>(copy) {
+
+				@SuppressWarnings("unused")
+				public void doCall(CopySpec copySpec) {
+					copySpec.from(
+						new File(project.getBuildDir(), "buildTheme"));
+					copySpec.include("css/*.css", "css/*.css.map");
+					copySpec.into("static");
+				}
+
+			});
+	}
+
 	@SuppressWarnings("unchecked")
 	private Map<String, Object> _getPackageJsonMap(File packageJsonFile) {
 		if (!packageJsonFile.exists()) {
@@ -241,6 +263,19 @@ public class ThemeCSSTypeConfigurer implements ClientExtensionConfigurer {
 		JsonSlurper jsonSlurper = new JsonSlurper();
 
 		return (Map<String, Object>)jsonSlurper.parse(packageJsonFile);
+	}
+
+	@SuppressWarnings("unchecked")
+	private boolean _isGulpBuild(Project project) {
+		File packageJsonFile = project.file("package.json");
+
+		Map<String, Object> packageJsonMap = _getPackageJsonMap(
+			packageJsonFile);
+
+		Map<String, String> liferayThemeMap =
+			(Map<String, String>)packageJsonMap.get("liferayTheme");
+
+		return Objects.nonNull(liferayThemeMap);
 	}
 
 }
