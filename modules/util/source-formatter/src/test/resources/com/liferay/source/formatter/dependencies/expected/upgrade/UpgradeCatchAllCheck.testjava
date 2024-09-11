@@ -18,6 +18,7 @@ import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
 import com.liferay.portal.kernel.util.HtmlParser;
 import com.liferay.portal.kernel.util.HttpComponentsUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
+import com.liferay.portal.security.auth.session.AuthenticatedSessionManagerUtil;
 
 import java.util.ArrayList;
 
@@ -33,6 +34,12 @@ public class UpgradeCatchAllCheck implements ConfigurationBeanDeclaration {
 
 		AccountPortletKeys.ACCOUNT_USERS_ADMIN;
 		AccountPortletKeys.ACCOUNT_GROUPS_ADMIN;
+
+		AuthenticatedSessionManagerUtil.getAuthenticatedUserId(null, null, null, null, null, null);
+		AuthenticatedSessionManagerUtil.login(null, null, null, null, null, null);
+		AuthenticatedSessionManagerUtil.logout(null, null, null, null, null, null);
+		AuthenticatedSessionManagerUtil.renewSession(null, null, null, null, null, null);
+		AuthenticatedSessionManagerUtil.signOutSimultaneousLogins(null, null, null, null, null, null);
 
 		CommerceOrderPaymentConstants.STATUS_AUTHORIZED;
 		CommerceOrderPaymentConstants.STATUS_COMPLETED;
@@ -1229,6 +1236,9 @@ public class UpgradeCatchAllCheck implements ConfigurationBeanDeclaration {
 
 	@Reference
 	private AssetVocabularyService _assetVocabularyService;
+
+	@Reference
+	private AuthenticatedSessionManager _authenticatedSessionManager;
 
 	@Reference
 	private CalendarBookingLocalService _calendarBookingLocalService;

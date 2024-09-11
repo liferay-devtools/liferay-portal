@@ -18,6 +18,12 @@ public class UpgradeCatchAllCheck implements ConfigurationBeanDeclaration {
 		AccountPortletKeys.COMMERCE_ACCOUNT_ADMIN;
 		AccountPortletKeys.COMMERCE_ACCOUNT_GROUP_ADMIN;
 
+		_authenticatedSessionManager.getAuthenticatedUserId(null, null, null, null, null, null);
+		_authenticatedSessionManager.login(null, null, null, null, null, null);
+		_authenticatedSessionManager.logout(null, null, null, null, null, null);
+		_authenticatedSessionManager.renewSession(null, null, null, null, null, null);
+		_authenticatedSessionManager.signOutSimultaneousLogins(null, null, null, null, null, null);
+
 		CommerceOrderConstants.PAYMENT_STATUS_AUTHORIZED;
 		CommerceOrderConstants.PAYMENT_STATUS_PAID;
 		CommerceOrderConstants.PAYMENT_STATUS_PENDING;
@@ -1219,6 +1225,9 @@ public class UpgradeCatchAllCheck implements ConfigurationBeanDeclaration {
 
 	@Reference
 	private AssetVocabularyService _assetVocabularyService;
+
+	@Reference
+	private AuthenticatedSessionManager _authenticatedSessionManager;
 
 	@Reference
 	private CalendarBookingLocalService _calendarBookingLocalService;
