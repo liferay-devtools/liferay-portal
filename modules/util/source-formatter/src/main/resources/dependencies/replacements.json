@@ -3187,6 +3187,17 @@
 		"to": "getPreferences(param#0#)"
 	},
 	{
+		"classNames": [
+			"AuthenticatedSessionManager"
+		],
+		"from": "regex:\\w+\\.(?<methodName>getAuthenticatedUserId|login|logout|renewSession|signOutSimultaneousLogins)",
+		"issueKey": "LPD-35991",
+		"newImports": [
+			"com.liferay.portal.security.auth.session.AuthenticatedSessionManagerUtil"
+		],
+		"to": "AuthenticatedSessionManagerUtil.${methodName}"
+	},
+	{
 		"from": "CookieKeys.COMMERCE_CONTINUE_AS_GUEST",
 		"issueKey": "LPS-159679",
 		"newImports": [
