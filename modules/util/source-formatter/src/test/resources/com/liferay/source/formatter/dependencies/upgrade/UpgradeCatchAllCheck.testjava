@@ -1309,6 +1309,9 @@ public class UpgradeCatchAllCheck implements ConfigurationBeanDeclaration {
 	private DDMFormViewFormInstanceRecordsDisplayContext _ddmFormViewFormInstanceRecordsDisplayContext;
 
 	@Reference
+	private DDMStructureManager _ddmStructureManager;
+
+	@Reference
 	private DLAppLocalService _dlAppLocalService;
 
 	@Reference
