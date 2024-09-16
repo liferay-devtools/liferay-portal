@@ -29,8 +29,6 @@ public class UpgradeCatchAllCheck implements ConfigurationBeanDeclaration {
 		DDMStructureManagerUtil.getStructure(123, 123, "test123");
 		_ddmStructureManager.getStructure(123, 123, "test123");
 
-		_ddmFormViewFormInstanceRecordsDisplayContext.getSearch;
-
 		DestinationNames.BASE_PRICE_LIST;
 		DestinationNames.ORDER_STATUS;
 		DestinationNames.PAYMENT_STATUS;
@@ -696,6 +694,13 @@ public class UpgradeCatchAllCheck implements ConfigurationBeanDeclaration {
 		contact.setSuffixId();
 	}
 
+	public void method(
+		DDMFormViewFormInstanceRecordsDisplayContext
+			ddmFormViewFormInstanceRecordsDisplayContext) {
+		
+		ddmFormViewFormInstanceRecordsDisplayContext.getSearch();
+	}
+
 	public void method(DDMStructure ddmStructure, Fields ddmFields) {
 		_journalConverter.getContent(ddmStructure, null);
 		_journalConverter.getContent(ddmStructure, ddmFields);
@@ -1305,12 +1310,6 @@ public class UpgradeCatchAllCheck implements ConfigurationBeanDeclaration {
 	@Reference
 	private DDMStructureManager _ddmStructureManager;
 	
-	@Reference
-	private DDMFormViewFormInstanceRecordsDisplayContext _ddmFormViewFormInstanceRecordsDisplayContext;
-
-	@Reference
-	private DDMStructureManager _ddmStructureManager;
-
 	@Reference
 	private DLAppLocalService _dlAppLocalService;
 
