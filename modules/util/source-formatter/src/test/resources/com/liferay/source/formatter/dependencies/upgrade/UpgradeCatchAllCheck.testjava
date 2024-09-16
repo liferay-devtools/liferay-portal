@@ -25,6 +25,8 @@ public class UpgradeCatchAllCheck implements ConfigurationBeanDeclaration {
 		CookieKeys.COMMERCE_CONTINUE_AS_GUEST;
 		CookieKeys.ID;
 		CookieKeys.SCREEN_NAME;
+		
+		DDMFormViewFormInstanceRecordsDisplayContext.getSearch;
 
 		DestinationNames.BASE_PRICE_LIST;
 		DestinationNames.ORDER_STATUS;
