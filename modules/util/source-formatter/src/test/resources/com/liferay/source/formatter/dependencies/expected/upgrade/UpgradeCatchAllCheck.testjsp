@@ -19,6 +19,8 @@ for (CommerceOrderItem commerceOrderItem : commerceOrder.getCommerceOrderItems()
 	commerceOrderItem.getQuantity();
 }
 
+DDMFormViewFormInstanceRecordsDisplayContext.getSearchContainer;
+
 PortalUtil.getCurrentAndAncestorSiteGroupIds(themeDisplay.getScopeGroupId());
 
 DLURLHelperUtil.getDownloadURL(null, null, null, null, null, null);
