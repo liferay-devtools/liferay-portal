@@ -14,6 +14,8 @@ for (CommerceOrderItem commerceOrderItem : commerceOrder.getCommerceOrderItems()
 	commerceOrderItem.getQuantity();
 }
 
+ddmFormViewFormInstanceRecordsDisplayContext.getFormViewRecordsDisplayContext();
+
 DLUtil.getGroupIds(themeDisplay);
 
 DLUtil.getDownloadURL(null, null, null, null, null, null);
