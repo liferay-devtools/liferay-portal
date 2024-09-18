@@ -43,6 +43,8 @@ public class UpgradeCatchAllCheck implements ConfigurationBeanDeclaration {
 		CookiesConstants.NAME_COMMERCE_CONTINUE_AS_GUEST;
 		CookiesConstants.NAME_ID;
 		CookiesConstants.NAME_USER_UUID;
+
+		_ddmFormViewFormInstanceRecordsDisplayContext.getDDMFormViewFormInstanceRecordsDisplayContext();
 		
 		DDMStructureManagerUtil.fetchStructure(123, 123, "test123");
 		_ddmStructureManager.fetchStructure(123, 123, "test123");
@@ -1338,6 +1340,9 @@ public class UpgradeCatchAllCheck implements ConfigurationBeanDeclaration {
 
 	@Reference
 	private CPInstanceService _cpInstanceService;
+
+	@Reference
+	DDMFormViewFormInstanceRecordsDisplayContext _ddmFormViewFormInstanceRecordsDisplayContext;
 
 	@Reference
 	private DDMStructureManager _ddmStructureManager;
