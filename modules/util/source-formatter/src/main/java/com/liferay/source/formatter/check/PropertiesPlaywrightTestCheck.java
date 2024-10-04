@@ -150,13 +150,42 @@ public class PropertiesPlaywrightTestCheck extends BaseFileCheck {
 				return content;
 			}
 
-			file = new File(file, "test.properties");
+			File[] environmentDirectories = file.listFiles(
+				childFile -> {
+					if (childFile.isDirectory() &&
+						childFile.getName(
+						).endsWith(
+							"-environment"
+						)) {
+
+						return true;
+					}
+
+					return false;
+				});
+
+			String message =
+				"Missing test.properties in playwright/tests/" + moduleName;
+
+			if ((environmentDirectories != null) &&
+				(environmentDirectories.length != 0)) {
+
+				for (File environmentDirectory : environmentDirectories) {
+					file = new File(environmentDirectory, "test.properties");
+
+					if (!file.exists()) {
+						message += "/" + environmentDirectory.getName();
+
+						break;
+					}
+				}
+			}
+			else {
+				file = new File(file, "test.properties");
+			}
 
 			if (!file.exists()) {
-				addMessage(
-					fileName,
-					"Missing test.properties in playwright/tests/" +
-						moduleName);
+				addMessage(fileName, message);
 
 				return content;
 			}
