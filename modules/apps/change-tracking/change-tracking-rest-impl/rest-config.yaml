@@ -2,9 +2,9 @@ apiDir: "../change-tracking-rest-api/src/main/java"
 apiPackagePath: "com.liferay.change.tracking.rest"
 application:
     baseURI: "/change-tracking-rest"
-    className: "ChangeTrackingRESTApplication"
+    className: ChangeTrackingRESTApplication
     name: "Liferay.Change.Tracking.REST"
-author: "David Truong"
+author: David Truong
 clientDir: "../change-tracking-rest-client/src/main/java"
 compatibilityVersion: 6
 forcePredictableOperationId: true

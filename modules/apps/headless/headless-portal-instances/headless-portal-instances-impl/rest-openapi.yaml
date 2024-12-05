@@ -192,7 +192,7 @@ paths:
                                 $ref: "#/components/schemas/PortalInstance"
                     # @review
                     description:
-                        "Portal instance successfully updated"
+                        Portal instance successfully updated
             # @review
             tags: ["PortalInstance"]
     /portal-instances/{portalInstanceId}/activate:

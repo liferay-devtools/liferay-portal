@@ -2,7 +2,7 @@ apiDir: "../scim-rest-api/src/main/java"
 apiPackagePath: "com.liferay.scim.rest"
 application:
     baseURI: "/scim"
-    className: "ScimRESTApplication"
+    className: ScimRESTApplication
     name: "Liferay.Scim.REST"
 author: "Olivér Kecskeméty"
 clientDir: "../scim-rest-client/src/main/java"

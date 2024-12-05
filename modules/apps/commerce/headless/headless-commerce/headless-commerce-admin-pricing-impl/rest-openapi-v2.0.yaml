@@ -132,7 +132,7 @@ components:
                 amountFormatted:
                     type: string
                 couponCode:
-                    example: "SAVE20"
+                    example: SAVE20
                     type: string
                 customFields:
                     additionalProperties: true
@@ -199,7 +199,7 @@ components:
                     minimum: 0
                     type: integer
                 limitationType:
-                    example: "unlimited"
+                    example: unlimited
                     type: string
                 maximumDiscountAmount:
                     example: 25
@@ -243,7 +243,7 @@ components:
                     example: true
                     type: boolean
                 target:
-                    example: "subtotal"
+                    example: subtotal
                     type: string
                 title:
                     example: "20% Off"
@@ -1132,7 +1132,7 @@ components:
                     format: bigdecimal
                     type: number
                 modifierType:
-                    example: "percentage"
+                    example: percentage
                     type: string
                 neverExpire:
                     example: true
@@ -1162,7 +1162,7 @@ components:
                     format: double
                     type: number
                 target:
-                    example: "product"
+                    example: product
                     type: string
                 title:
                     example: "20% Off"

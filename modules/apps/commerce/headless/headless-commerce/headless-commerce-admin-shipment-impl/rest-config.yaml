@@ -2,9 +2,9 @@ apiDir: "../headless-commerce-admin-shipment-api/src/main/java"
 apiPackagePath: "com.liferay.headless.commerce.admin.shipment"
 application:
     baseURI: "/headless-commerce-admin-shipment"
-    className: "HeadlessCommerceAdminShipmentApplication"
+    className: HeadlessCommerceAdminShipmentApplication
     name: "Liferay.Headless.Commerce.Admin.Shipment"
-author: "Andrea Sbarra"
+author: Andrea Sbarra
 clientDir: "../headless-commerce-admin-shipment-client/src/main/java"
 compatibilityVersion: 6
 forcePredictableSchemaPropertyName: false

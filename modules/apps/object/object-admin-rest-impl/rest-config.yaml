@@ -2,9 +2,9 @@ apiDir: "../object-admin-rest-api/src/main/java"
 apiPackagePath: "com.liferay.object.admin.rest"
 application:
     baseURI: "/object-admin"
-    className: "ObjectAdminRESTApplication"
+    className: ObjectAdminRESTApplication
     name: "Liferay.Object.Admin.REST"
-author: "Javier Gamarra"
+author: Javier Gamarra
 clientDir: "../object-admin-rest-client/src/main/java"
 compatibilityVersion: 6
 forcePredictableOperationId: true

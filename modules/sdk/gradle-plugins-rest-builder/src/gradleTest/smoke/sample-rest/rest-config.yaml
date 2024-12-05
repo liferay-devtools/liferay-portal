@@ -2,6 +2,6 @@ apiDir: "../sample-api/src/main/java"
 apiPackagePath: "com.example.sample"
 application:
     baseURI: "/sample"
-    className: "SampleApplication"
+    className: SampleApplication
     name: "sample-application"
-author: "John Doe"
+author: John Doe

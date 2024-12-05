@@ -188,7 +188,7 @@ info:
     license:
         name: "Apache 2.0"
         url: "http://www.apache.org/licenses/LICENSE-2.0.html"
-    title: "Headless Admin Content"
+    title: Headless Admin Content
     version: v1.0
 openapi: 3.0.1
 paths:

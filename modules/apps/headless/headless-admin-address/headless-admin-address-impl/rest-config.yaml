@@ -2,9 +2,9 @@ apiDir: "../headless-admin-address-api/src/main/java"
 apiPackagePath: "com.liferay.headless.admin.address"
 application:
     baseURI: "/headless-admin-address"
-    className: "HeadlessAdminAddressApplication"
+    className: HeadlessAdminAddressApplication
     name: "Liferay.Headless.Admin.Address"
-author: "Drew Brokke"
+author: Drew Brokke
 clientDir: "../headless-admin-address-client/src/main/java"
 compatibilityVersion: 6
 forcePredictableOperationId: true

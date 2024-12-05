@@ -2,9 +2,9 @@ apiDir: "../headless-user-notification-api/src/main/java"
 apiPackagePath: "com.liferay.headless.user.notification"
 application:
     baseURI: "/headless-user-notification"
-    className: "HeadlessUserNotificationApplication"
+    className: HeadlessUserNotificationApplication
     name: "Liferay.Headless.User.Notification"
-author: "Carlos Correa"
+author: Carlos Correa
 clientDir: "../headless-user-notification-client/src/main/java"
 compatibilityVersion: 6
 forcePredictableOperationId: true

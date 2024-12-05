@@ -2,9 +2,9 @@ apiDir: "../batch-planner-rest-api/src/main/java"
 apiPackagePath: "com.liferay.batch.planner.rest"
 application:
     baseURI: "/batch-planner"
-    className: "BatchPlannerRESTApplication"
+    className: BatchPlannerRESTApplication
     name: "Liferay.Batch.Planner.REST"
-author: "Matija Petanjek"
+author: Matija Petanjek
 clientDir: "../batch-planner-rest-client/src/main/java"
 compatibilityVersion: 6
 forcePredictableOperationId: true

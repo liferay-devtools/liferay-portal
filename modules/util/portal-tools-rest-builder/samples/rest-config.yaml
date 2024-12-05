@@ -2,11 +2,11 @@ apiDir: "../sample-api/src/main/java"
 apiPackagePath: "com.example.sample"
 application:
     baseURI: "/sample"
-    className: "SampleApplication"
+    className: SampleApplication
     name: "sample-application"
     security:
         basicAuth: true
         guestAllowed: true
         oAuth2: true
-author: "John Doe"
+author: John Doe
 clientDir: "../sample-client/src/main/java"

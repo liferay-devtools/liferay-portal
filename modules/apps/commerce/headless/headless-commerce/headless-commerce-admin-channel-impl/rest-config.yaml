@@ -2,9 +2,9 @@ apiDir: "../headless-commerce-admin-channel-api/src/main/java"
 apiPackagePath: "com.liferay.headless.commerce.admin.channel"
 application:
     baseURI: "/headless-commerce-admin-channel"
-    className: "HeadlessCommerceAdminChannelApplication"
+    className: HeadlessCommerceAdminChannelApplication
     name: "Liferay.Headless.Commerce.Admin.Channel"
-author: "Andrea Sbarra"
+author: Andrea Sbarra
 clientDir: "../headless-commerce-admin-channel-client/src/main/java"
 compatibilityVersion: 6
 forcePredictableOperationId: false

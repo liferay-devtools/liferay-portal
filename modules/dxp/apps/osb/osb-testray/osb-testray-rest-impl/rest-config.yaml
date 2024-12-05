@@ -2,7 +2,7 @@ apiDir: "../osb-testray-rest-api/src/main/java"
 apiPackagePath: "com.liferay.osb.testray.rest"
 application:
     baseURI: "/osb-testray-rest"
-    className: "OSBTestrayRESTApplication"
+    className: OSBTestrayRESTApplication
     name: "Liferay.OSB.Testray.REST"
 author: "José Abelenda"
 clientDir: "../osb-testray-rest-client/src/main/java"

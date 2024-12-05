@@ -445,11 +445,11 @@ components:
                     readOnly: true
                     type: integer
                 author:
-                    example: "Author"
+                    example: Author
                     readOnly: true
                     type: string
                 carrier:
-                    example: "FedEx"
+                    example: FedEx
                     readOnly: true
                     type: string
                 createDate:
@@ -502,7 +502,7 @@ components:
                     readOnly: true
                     type: integer
                 shippingOptionName:
-                    example: "Standard Delivery"
+                    example: Standard Delivery
                     readOnly: true
                     type: string
                 status:

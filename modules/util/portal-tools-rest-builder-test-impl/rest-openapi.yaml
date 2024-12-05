@@ -181,7 +181,7 @@ paths:
             responses:
                 "200":
                     description:
-                        "OK"
+                        OK
             tags: ["TestEntity"]
     /test-entities:
         get:
@@ -200,7 +200,7 @@ paths:
                                     $ref: "#/components/schemas/TestEntity"
                                 type: array
                     description:
-                        "OK"
+                        OK
             tags: ["TestEntity"]
         post:
             operationId: postTestEntity
@@ -236,7 +236,7 @@ paths:
                                 format: int32
                                 type: integer
                     description:
-                        "OK"
+                        OK
             tags: ["TestEntity"]
     /test-entities/{testEntityId}:
         get:
@@ -258,7 +258,7 @@ paths:
                             schema:
                                 $ref: "#/components/schemas/TestEntity"
                     description:
-                        "OK"
+                        OK
             tags: ["TestEntity"]
         patch:
             operationId: patchTestEntity
@@ -293,7 +293,7 @@ paths:
                             schema:
                                 $ref: "#/components/schemas/TestEntity"
                     description:
-                        "OK"
+                        OK
             tags: ["TestEntity"]
         put:
             operationId: putTestEntity
@@ -328,7 +328,7 @@ paths:
                             schema:
                                 $ref: "#/components/schemas/TestEntity"
                     description:
-                        "OK"
+                        OK
             tags: ["TestEntity"]
     /test-entities/{testEntityId}/test-entity-address:
         get:
@@ -352,5 +352,5 @@ paths:
                             schema:
                                 $ref: "#/components/schemas/TestEntityAddress"
                     description:
-                        "OK"
+                        OK
             tags: ["TestEntityAddress"]

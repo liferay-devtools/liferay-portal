@@ -72,7 +72,7 @@ components:
                     format: int64
                     type: integer
                 indexType:
-                    default: "all"
+                    default: all
                     enum: [all, keyword, none, text]
                     type: string
                 indexable:
@@ -333,7 +333,7 @@ info:
     license:
         name: "Apache 2.0"
         url: "http://www.apache.org/licenses/LICENSE-2.0.html"
-    title: "Data Engine"
+    title: Data Engine
     version: v2.0
 openapi: 3.0.1
 paths:

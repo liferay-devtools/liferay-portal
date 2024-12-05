@@ -2,9 +2,9 @@ apiDir: "../headless-commerce-admin-order-api/src/main/java"
 apiPackagePath: "com.liferay.headless.commerce.admin.order"
 application:
     baseURI: "/headless-commerce-admin-order"
-    className: "HeadlessCommerceAdminOrderApplication"
+    className: HeadlessCommerceAdminOrderApplication
     name: "Liferay.Headless.Commerce.Admin.Order"
-author: "Alessio Antonio Rendina"
+author: Alessio Antonio Rendina
 clientDir: "../headless-commerce-admin-order-client/src/main/java"
 compatibilityVersion: 6
 forcePredictableSchemaPropertyName: false

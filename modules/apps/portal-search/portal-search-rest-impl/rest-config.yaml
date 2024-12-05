@@ -2,9 +2,9 @@ apiDir: "../portal-search-rest-api/src/main/java"
 apiPackagePath: "com.liferay.portal.search.rest"
 application:
     baseURI: "/search"
-    className: "PortalSearchRESTApplication"
+    className: PortalSearchRESTApplication
     name: "Liferay.Portal.Search.REST"
-author: "Petteri Karttunen"
+author: Petteri Karttunen
 clientDir: "../portal-search-rest-client/src/main/java"
 compatibilityVersion: 6
 forcePredictableOperationId: true

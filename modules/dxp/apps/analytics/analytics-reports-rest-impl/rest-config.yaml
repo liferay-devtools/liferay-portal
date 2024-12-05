@@ -2,9 +2,9 @@ apiDir: "../analytics-reports-rest-api/src/main/java"
 apiPackagePath: "com.liferay.analytics.reports.rest"
 application:
     baseURI: "/analytics-reports-rest"
-    className: "AnalyticsReportsRESTApplication"
+    className: AnalyticsReportsRESTApplication
     name: "Liferay.Analytics.Reports.REST"
-author: "Marcos Martins"
+author: Marcos Martins
 clientDir: "../analytics-reports-rest-client/src/main/java"
 compatibilityVersion: 6
 forcePredictableOperationId: true

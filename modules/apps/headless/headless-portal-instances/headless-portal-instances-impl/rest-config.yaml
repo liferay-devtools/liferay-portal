@@ -2,9 +2,9 @@ apiDir: "../headless-portal-instances-api/src/main/java"
 apiPackagePath: "com.liferay.headless.portal.instances"
 application:
     baseURI: "/headless-portal-instances"
-    className: "HeadlessPortalInstancesApplication"
+    className: HeadlessPortalInstancesApplication
     name: "Liferay.Headless.Portal.Instances"
-author: "Alberto Chaparro"
+author: Alberto Chaparro
 clientDir: "../headless-portal-instances-client/src/main/java"
 compatibilityVersion: 6
 forcePredictableOperationId: true

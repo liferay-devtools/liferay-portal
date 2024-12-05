@@ -2,7 +2,7 @@ apiDir: "../headless-admin-site-api/src/main/java"
 apiPackagePath: "com.liferay.headless.admin.site"
 application:
     baseURI: "/headless-admin-site"
-    className: "HeadlessAdminSiteApplication"
+    className: HeadlessAdminSiteApplication
     name: "Liferay.Headless.Admin.Site"
 author: "Rubén Pulido"
 clientDir: "../headless-admin-site-client/src/main/java"

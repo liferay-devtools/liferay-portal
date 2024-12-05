@@ -2,9 +2,9 @@ apiDir: "../headless-admin-workflow-api/src/main/java"
 apiPackagePath: "com.liferay.headless.admin.workflow"
 application:
     baseURI: "/headless-admin-workflow"
-    className: "HeadlessAdminWorkflowApplication"
+    className: HeadlessAdminWorkflowApplication
     name: "Liferay.Headless.Admin.Workflow"
-author: "Javier Gamarra"
+author: Javier Gamarra
 clientDir: "../headless-admin-workflow-client/src/main/java"
 compatibilityVersion: 6
 testDir: "../headless-admin-workflow-test/src/testIntegration/java"

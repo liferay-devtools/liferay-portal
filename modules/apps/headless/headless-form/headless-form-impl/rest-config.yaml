@@ -2,9 +2,9 @@ apiDir: "../headless-form-api/src/main/java"
 apiPackagePath: "com.liferay.headless.form"
 application:
     baseURI: "/headless-form"
-    className: "HeadlessFormApplication"
+    className: HeadlessFormApplication
     name: "Liferay.Headless.Form"
-author: "Javier Gamarra"
+author: Javier Gamarra
 clientDir: "../headless-form-client/src/main/java"
 compatibilityVersion: 6
 forcePredictableOperationId: true

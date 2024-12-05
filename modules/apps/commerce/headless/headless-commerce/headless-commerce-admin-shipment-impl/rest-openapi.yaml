@@ -130,7 +130,7 @@ components:
                     readOnly: true
                     type: object
                 carrier:
-                    example: "FedEx"
+                    example: FedEx
                     type: string
                 createDate:
                     format: date
@@ -183,7 +183,7 @@ components:
                     minimum: 0
                     type: integer
                 shippingOptionName:
-                    example: "Standard Delivery"
+                    example: Standard Delivery
                     readOnly: true
                     type: string
                 status:
@@ -193,10 +193,10 @@ components:
                     example: "123AD-asd"
                     type: string
                 trackingURL:
-                    example: "Standard Delivery"
+                    example: Standard Delivery
                     type: string
                 userName:
-                    example: "John"
+                    example: John
                     readOnly: true
                     type: string
             type: object
@@ -249,7 +249,7 @@ components:
                     example: s
                     type: string
                 userName:
-                    example: "John"
+                    example: John
                     readOnly: true
                     type: string
                 validateInventory:
@@ -326,10 +326,10 @@ components:
                     readOnly: true
                     type: integer
                 label:
-                    example: "black"
+                    example: black
                     type: string
                 label_i18n:
-                    example: "black"
+                    example: black
                     type: string
             type: object
     securitySchemes:
@@ -359,7 +359,7 @@ info:
     license:
         name: "Apache 2.0"
         url: "http://www.apache.org/licenses/LICENSE-2.0.html"
-    title: "Liferay Commerce Admin Admin Shipment API"
+    title: Liferay Commerce Admin Admin Shipment API
     version: "v1.0"
 openapi: "3.0.0"
 paths:
@@ -550,7 +550,7 @@ paths:
                   required: true
                   schema:
                       description:
-                          "The shipment resource Id"
+                          The shipment resource Id
                       example: 30130
                       format: int64
                       minimum: 0

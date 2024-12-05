@@ -2,13 +2,13 @@ apiDir: "../headless-admin-content-api/src/main/java"
 apiPackagePath: "com.liferay.headless.admin.content"
 application:
     baseURI: "/headless-admin-content"
-    className: "HeadlessAdminContentApplication"
+    className: HeadlessAdminContentApplication
     name: "Liferay.Headless.Admin.Content"
-author: "Javier Gamarra"
+author: Javier Gamarra
 changeTrackingEnabled: true
 clientDir: "../headless-admin-content-client/src/main/java"
 compatibilityVersion: 6
 forcePredictableOperationId: true
 generateBatch: false
-graphQLNamespace: "admin"
+graphQLNamespace: admin
 testDir: "../headless-admin-content-test/src/testIntegration/java"

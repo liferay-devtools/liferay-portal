@@ -2,9 +2,9 @@ apiDir: "../analytics-settings-rest-api/src/main/java"
 apiPackagePath: "com.liferay.analytics.settings.rest"
 application:
     baseURI: "/analytics-settings-rest"
-    className: "AnalyticsSettingsRESTApplication"
+    className: AnalyticsSettingsRESTApplication
     name: "Liferay.Analytyics.Settings.REST"
-author: "Riccardo Ferrari"
+author: Riccardo Ferrari
 clientDir: "../analytics-settings-rest-client/src/main/java"
 compatibilityVersion: 6
 forcePredictableOperationId: true

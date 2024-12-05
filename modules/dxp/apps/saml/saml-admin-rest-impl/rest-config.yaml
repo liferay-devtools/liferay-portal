@@ -2,9 +2,9 @@ apiDir: "../saml-admin-rest-api/src/main/java"
 apiPackagePath: "com.liferay.saml.admin.rest"
 application:
     baseURI: "/saml-admin"
-    className: "SamlAdminRESTApplication"
+    className: SamlAdminRESTApplication
     name: "Liferay.Saml.Admin.REST"
-author: "Stian Sigvartsen"
+author: Stian Sigvartsen
 clientDir: "../saml-admin-rest-client/src/main/java"
 compatibilityVersion: 6
 forcePredictableOperationId: true

@@ -2,9 +2,9 @@ apiDir: "../headless-commerce-machine-learning-api/src/main/java"
 apiPackagePath: "com.liferay.headless.commerce.machine.learning"
 application:
     baseURI: "/headless-commerce-machine-learning"
-    className: "HeadlessCommerceMachineLEarningApplication"
+    className: HeadlessCommerceMachineLEarningApplication
     name: "Liferay.Headless.Commerce.Machine.Learning"
-author: "Riccardo Ferrari"
+author: Riccardo Ferrari
 clientDir: "../headless-commerce-machine-learning-client/src/main/java"
 compatibilityVersion: 6
 forcePredictableSchemaPropertyName: true
