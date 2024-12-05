@@ -33,6 +33,12 @@ public class YMLStylingCheck extends BaseFileCheck {
 		content = content.replaceAll(
 			"(\\A|\n)( *)'([^'\"]+)'(:.*)(\\Z|\n)", "$1$2\"$3\"$4$5");
 
+		content = content.replaceAll(
+			"(\\A|\n)(( *)|(.+: ))" +
+				"(?!['\"](?i) *(?:yes|no|true|false|on|off) *['\"])" +
+					"['\"]((?=.*[a-zA-Z])[a-zA-Z\\d ]+)['\"](\\Z|\n)",
+			"$1$2$5$6");
+
 		if (fileName.endsWith("/rest-config.yaml")) {
 			content = content.replaceAll(
 				"(\\A|\n)( *baseURI: ((['\"](?!/))|(?!['\"/])))(.*)",
