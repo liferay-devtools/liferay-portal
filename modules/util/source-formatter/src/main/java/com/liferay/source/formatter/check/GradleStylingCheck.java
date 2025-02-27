@@ -32,6 +32,10 @@ public class GradleStylingCheck extends BaseFileCheck {
 	protected String doProcess(
 		String fileName, String absolutePath, String content) {
 
+		if (!fileName.endsWith(".gradle")) {
+			return content;
+		}
+
 		content = _fixMissingLineBreakAroundCurlyBraces(content);
 		content = _sortFileNames(content);
 		content = _sortMapKeys("transformKeys", content);
