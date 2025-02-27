@@ -26,8 +26,7 @@ public class GradleSourceProcessor extends BaseSourceProcessor {
 	}
 
 	private static final String[] _INCLUDES = {
-		"**/*.gradle", "**/lib/development/dependencies.properties",
-		"**/lib/portal/dependencies.properties"
+		"**/*.gradle", "**/lib/**/dependencies.properties"
 	};
 
 }
