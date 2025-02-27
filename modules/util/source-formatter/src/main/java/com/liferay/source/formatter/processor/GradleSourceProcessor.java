@@ -17,7 +17,13 @@ public class GradleSourceProcessor extends BaseSourceProcessor {
 
 	@Override
 	protected List<String> doGetFileNames() throws IOException {
-		return getFileNames(new String[0], getIncludes());
+		return getFileNames(
+			new String[0],
+			filterIncludes(
+				new String[] {
+					"**/lib/development/dependencies.properties",
+					"**/lib/portal/dependencies.properties"
+				}));
 	}
 
 	@Override
@@ -26,7 +32,7 @@ public class GradleSourceProcessor extends BaseSourceProcessor {
 	}
 
 	private static final String[] _INCLUDES = {
-		"**/*.gradle", "**/lib/**/dependencies.properties"
+		"**/*.gradle", "**/*.properties"
 	};
 
 }
