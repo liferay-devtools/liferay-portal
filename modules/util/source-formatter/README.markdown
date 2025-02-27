@@ -111,7 +111,7 @@ Checks are configured in the following files:
    - [.ftl](src/main/resources/documentation/ftl_source_processor_checks.markdown#checks-for-ftl)
    - [.function, .jar, .lar, .macro, .path, .testcase, .war or .zip](src/main/resources/documentation/poshi_source_processor_checks.markdown#checks-for-function-jar-lar-macro-path-testcase-war-or-zip)
    - [.gitrepo or ci-merge](src/main/resources/documentation/ci_merge_and_git_repo_source_processor_checks.markdown#checks-for-gitrepo-or-cimerge)
-   - [.gradle](src/main/resources/documentation/gradle_source_processor_checks.markdown#checks-for-gradle)
+   - [.gradle or .properties](src/main/resources/documentation/gradle_source_processor_checks.markdown#checks-for-gradle-or-properties)
    - [.gradle, .gradle, .gradle, .gradle, .json, .json, .properties, .properties, .xml or .xml](src/main/resources/documentation/library_source_processor_checks.markdown#checks-for-gradle-gradle-gradle-gradle-json-json-properties-properties-xml-or-xml)
    - [.groovy](src/main/resources/documentation/groovy_source_processor_checks.markdown#checks-for-groovy)
    - [.html or .path](src/main/resources/documentation/html_source_processor_checks.markdown#checks-for-html-or-path)

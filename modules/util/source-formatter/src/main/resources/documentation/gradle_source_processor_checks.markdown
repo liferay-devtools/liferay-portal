@@ -1,4 +1,4 @@
-# Checks for .gradle
+# Checks for .gradle or .properties
 
 Check | Category | Description
 ----- | -------- | -----------

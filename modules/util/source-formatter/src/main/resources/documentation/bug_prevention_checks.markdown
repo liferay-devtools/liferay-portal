@@ -42,21 +42,21 @@ ExceptionPrintStackTraceCheck | .java | Avoid using printStackTrace. |
 FactoryCheck | .java, .jsp, .jspf, .jspx, .tag, .tpl or .vm | Finds cases where `*Factory` should be used when creating new instances of an object. |
 FilterStringWhitespaceCheck | .java | Finds missing and unnecessary whitespace in the value of the filter string in `ServiceTrackerFactory.open` or `WaiterUtil.waitForFilter`. |
 [GenericTypeCheck](check/generic_type_check.markdown#generictypecheck) | .java, .jsp, .jspf, .jspx, .tag, .tpl or .vm | Checks that generics are always specified to provide compile-time checking and removing the risk of `ClassCastException` during runtime. |
-GradleCommerceDependenciesCheck | .gradle | Checks the modules that are outside of Commerce are not allowed to depend on Commerce modules. |
-[GradleDependencyArtifactsCheck](check/gradle_dependency_artifacts_check.markdown#gradledependencyartifactscheck) | .gradle | Checks that value `default` is not used for attribute `version`. |
-GradleDependencyConfigurationCheck | .gradle | Validates the scope of dependencies in build gradle files. |
-GradleDependencyVersionCheck | .gradle | Checks the version for dependencies in gradle build files. |
-GradleExportedPackageDependenciesCheck | .gradle | Validates dependencies in gradle build files. |
-GradleJavaVersionCheck | .gradle | Checks values of properties `sourceCompatibility` and `targetCompatibility` in gradle build files. |
-GradleMissingDependenciesForUpgradeJava21Check | .gradle | Checks missing dependencies for upgrade Java 21 in gradle build files. |
-GradleMissingJarManifestTaskCheck | .gradle | Finds missing `jarManifest` task when using `jarPatched` task in gradle build files. |
-GradlePetraModuleDependenciesCheck | .gradle | Checks that dependencies in `petra` moudule can only contains `petra` dependencies. |
-GradlePropertiesCheck | .gradle | Validates property values in gradle build files. |
-GradleProvidedDependenciesCheck | .gradle | Validates the scope of dependencies in build gradle files. |
-[GradleRequiredDependenciesCheck](check/gradle_required_dependencies_check.markdown#gradlerequireddependenciescheck) | .gradle | Validates the dependencies in `/required-dependencies/required-dependencies/build.gradle`. |
-GradleRestClientDependenciesCheck | .gradle | Validates the project dependencies `.*-rest-client` can only be used for `testIntegrationImplementation`. |
-GradleTestDependencyVersionCheck | .gradle | Checks the version for dependencies in gradle build files. |
-GradleTestUtilDeployDirCheck | .gradle | Checks for incorrect use of `deployDir`. |
+GradleCommerceDependenciesCheck | .gradle or .properties | Checks the modules that are outside of Commerce are not allowed to depend on Commerce modules. |
+[GradleDependencyArtifactsCheck](check/gradle_dependency_artifacts_check.markdown#gradledependencyartifactscheck) | .gradle or .properties | Checks that value `default` is not used for attribute `version`. |
+GradleDependencyConfigurationCheck | .gradle or .properties | Validates the scope of dependencies in build gradle files. |
+GradleDependencyVersionCheck | .gradle or .properties | Checks the version for dependencies in gradle build files. |
+GradleExportedPackageDependenciesCheck | .gradle or .properties | Validates dependencies in gradle build files. |
+GradleJavaVersionCheck | .gradle or .properties | Checks values of properties `sourceCompatibility` and `targetCompatibility` in gradle build files. |
+GradleMissingDependenciesForUpgradeJava21Check | .gradle or .properties | Checks missing dependencies for upgrade Java 21 in gradle build files. |
+GradleMissingJarManifestTaskCheck | .gradle or .properties | Finds missing `jarManifest` task when using `jarPatched` task in gradle build files. |
+GradlePetraModuleDependenciesCheck | .gradle or .properties | Checks that dependencies in `petra` moudule can only contains `petra` dependencies. |
+GradlePropertiesCheck | .gradle or .properties | Validates property values in gradle build files. |
+GradleProvidedDependenciesCheck | .gradle or .properties | Validates the scope of dependencies in build gradle files. |
+[GradleRequiredDependenciesCheck](check/gradle_required_dependencies_check.markdown#gradlerequireddependenciescheck) | .gradle or .properties | Validates the dependencies in `/required-dependencies/required-dependencies/build.gradle`. |
+GradleRestClientDependenciesCheck | .gradle or .properties | Validates the project dependencies `.*-rest-client` can only be used for `testIntegrationImplementation`. |
+GradleTestDependencyVersionCheck | .gradle or .properties | Checks the version for dependencies in gradle build files. |
+GradleTestUtilDeployDirCheck | .gradle or .properties | Checks for incorrect use of `deployDir`. |
 IllegalImportsCheck | .java, .jsp, .jspf, .jspx, .tag, .tpl or .vm | Finds cases of incorrect use of certain classes. |
 IllegalTaglibsCheck | .ftl, .jsp, .jspf, .jspx, .tag, .tpl or .vm | Finds cases of incorrect use of certain deprecated taglibs in modules. |
 [IncorrectFileLocationCheck](check/incorrect_file_location_check.markdown#incorrectfilelocationcheck) | | Checks that `/src/*/java/` only contains `.java` files. |
