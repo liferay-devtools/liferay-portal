@@ -64,6 +64,8 @@ import org.apache.maven.archetype.ArchetypeGenerationResult;
  */
 public class ProjectTemplates {
 
+	//test change
+
 	public static Map<String, String> getTemplates() throws Exception {
 		return getTemplates(Collections.emptySet());
 	}
