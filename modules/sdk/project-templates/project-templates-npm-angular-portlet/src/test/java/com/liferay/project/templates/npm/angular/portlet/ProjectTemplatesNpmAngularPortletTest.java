@@ -126,7 +126,7 @@ public class ProjectTemplatesNpmAngularPortletTest
 		}
 
 		testContains(
-			gradleProjectDir, "package.json", "liferay-npm-bundler\": \"2.31.2",
+			gradleProjectDir, "package.json", "liferay-npm-bundler\": \"2.32.2",
 			"\"main\": \"lib/angular-loader.js\"");
 
 		File mavenWorkspaceDir = buildWorkspace(
