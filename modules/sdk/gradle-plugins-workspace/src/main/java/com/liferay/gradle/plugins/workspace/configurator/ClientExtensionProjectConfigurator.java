@@ -309,6 +309,8 @@ public class ClientExtensionProjectConfigurator
 			project, assembleClientExtensionTaskProvider,
 			createClientExtensionConfigTaskProvider, workspaceExtension);
 
+		_configureJDKJavaOptions(project);
+
 		_configureLiferayRoutes(project, workspaceExtension);
 
 		if (_isLanguageProject(project)) {
@@ -931,6 +933,76 @@ public class ClientExtensionProjectConfigurator
 					taskInputs.files(
 						clientExtensionYamlFile,
 						overrideClientExtensionYamlFile);
+				}
+
+			});
+	}
+
+	private void _configureJDKJavaOptions(Project project) {
+		StringBuilder sb = new StringBuilder();
+
+		sb.append("--add-opens=java.base/java.lang.reflect=ALL-UNNAMED ");
+		sb.append("--add-opens=java.base/java.net=ALL-UNNAMED ");
+		sb.append(
+			"--add-opens=java.base/sun.net.www.protocol.http=ALL-UNNAMED ");
+		sb.append(
+			"--add-opens=java.base/sun.net.www.protocol.https=ALL-UNNAMED ");
+		sb.append("--add-opens=java.base/sun.util.calendar=ALL-UNNAMED ");
+		sb.append("--add-opens=jdk.zipfs/jdk.nio.zipfs=ALL-UNNAMED ");
+
+		Map<String, String> environmentVariables = new HashMap<>();
+
+		environmentVariables.put("JDK_JAVA_OPTIONS", sb.toString());
+
+		Gradle gradle = project.getGradle();
+
+		TaskExecutionGraph taskGraph = gradle.getTaskGraph();
+
+		taskGraph.addTaskExecutionListener(
+			new TaskExecutionListener() {
+
+				@Override
+				public void afterExecute(Task task, TaskState taskState) {
+				}
+
+				@Override
+				public void beforeExecute(Task task) {
+					if (Objects.equals(project, task.getProject()) &&
+						(task instanceof ExecuteNodeTask ||
+						 task instanceof ProcessForkOptions)) {
+
+						if (task instanceof ProcessForkOptions) {
+							ProcessForkOptions processForkOptions =
+								(ProcessForkOptions)task;
+
+							processForkOptions.environment(
+								environmentVariables);
+						}
+						else {
+							ExecuteNodeTask executeNodeTask =
+								(ExecuteNodeTask)task;
+
+							executeNodeTask.environment(environmentVariables);
+						}
+
+						Logger logger = task.getLogger();
+
+						if (logger.isInfoEnabled()) {
+							logger.info(
+								StringUtil.concat(
+									"Injecting JDK_JAVA_OPTIONS environment " +
+										"variable into the process invoked " +
+											"by the task ",
+									task.getPath()));
+
+							for (Map.Entry<String, String> entry :
+									environmentVariables.entrySet()) {
+
+								logger.info(
+									"{}: {}", entry.getKey(), entry.getValue());
+							}
+						}
+					}
 				}
 
 			});
