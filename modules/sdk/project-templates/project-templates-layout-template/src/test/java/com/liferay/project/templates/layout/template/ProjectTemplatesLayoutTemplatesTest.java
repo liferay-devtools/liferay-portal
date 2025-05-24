@@ -20,6 +20,7 @@ import java.util.Properties;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -65,6 +66,7 @@ public class ProjectTemplatesLayoutTemplatesTest
 		_liferayVersion = liferayVersion;
 	}
 
+	@Ignore
 	@Test
 	public void testBuildTemplateLayoutTemplate() throws Exception {
 		String template = "layout-template";

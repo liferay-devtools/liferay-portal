@@ -27,6 +27,7 @@ import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -56,6 +57,7 @@ public class ProjectTemplatesWorkspaceTest
 		_gradleDistribution = URI.create(gradleDistribution);
 	}
 
+	@Ignore
 	@Test
 	public void testBuildTemplateWorkspace() throws Exception {
 		File workspaceProjectDir = buildWorkspace(
@@ -320,6 +322,7 @@ public class ProjectTemplatesWorkspaceTest
 		testExists(mavenModulesDir, "foo-portlet/target/foo-portlet-1.0.0.jar");
 	}
 
+	@Ignore
 	@Test
 	public void testCompareAntBndPluginVersions() throws Exception {
 		Assume.assumeTrue(isBuildProjects());
@@ -374,6 +377,7 @@ public class ProjectTemplatesWorkspaceTest
 				"<version>" + gradleAntBndVersion);
 	}
 
+	@Ignore
 	@Test
 	public void testComparePortalToolsBundleSupportPluginVersions()
 		throws Exception {

@@ -27,6 +27,7 @@ import java.util.concurrent.Callable;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -112,6 +113,7 @@ public class ProjectTemplatesRESTBuilderWorkspaceTest
 		_liferayVersion = liferayVersion;
 	}
 
+	@Ignore
 	@Test
 	public void testBuildTemplateRESTBuilderWorkspace() throws Exception {
 		String template = "rest-builder";

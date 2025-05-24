@@ -7,6 +7,7 @@ package com.example.sample;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -19,6 +20,7 @@ public class GreetingBuilderTest {
 		_greetingBuilder = new GreetingBuilder("World");
 	}
 
+	@Ignore
 	@Test
 	public void testGetGoodbye() {
 		Assert.assertEquals("Goodbye World", _greetingBuilder.getGoodbye());

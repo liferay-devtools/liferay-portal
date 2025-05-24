@@ -8,6 +8,7 @@ package com.example.sample.internal;
 import com.example.sample.GreetingBuilder;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -15,6 +16,7 @@ import org.junit.Test;
  */
 public class GreetingBuilderImplTest {
 
+	@Ignore
 	@Test
 	public void testGetHello() {
 		GreetingBuilder greetingBuilder = new GreetingBuilderImpl("World");

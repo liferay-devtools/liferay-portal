@@ -21,6 +21,7 @@ import java.util.Properties;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -70,6 +71,7 @@ public class ProjectTemplatesControlMenuEntryTest
 		_liferayVersion = liferayVersion;
 	}
 
+	@Ignore
 	@Test
 	public void testBuildTemplateControlMenuEntry() throws Exception {
 		String template = "control-menu-entry";

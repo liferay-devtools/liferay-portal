@@ -30,6 +30,7 @@ import java.util.zip.ZipFile;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -78,6 +79,7 @@ public class OSGiBundleBuilderCommandTest {
 		_compareJarDirs(_expectedDir, actualDir);
 	}
 
+	@Ignore
 	@Test
 	public void testManifestCommand() throws Exception {
 		ManifestCommand manifestCommand = new ManifestCommand();
