@@ -26,6 +26,7 @@ BNDCapabilityCheck | [Styling](styling_checks.md#styling-checks) | .bnd | Sorts 
 [BNDExportsCheck](check/bnd_exports_check.md#bndexportscheck) | [Bug Prevention](bug_prevention_checks.md#bug-prevention-checks) | .bnd | Checks that modules not ending with `-api`, `-client`, `-spi`, `-taglib`, `-test-util` do not export packages. |
 [BNDImportsCheck](check/bnd_imports_check.md#bndimportscheck) | [Styling](styling_checks.md#styling-checks) | .bnd | Sorts class names and checks for use of wildcards in property values for `-conditionalpackage`, `-exportcontents` and `Export-Package`. |
 [BNDIncludeResourceCheck](check/bnd_include_resource_check.md#bndincluderesourcecheck) | [Bug Prevention](bug_prevention_checks.md#bug-prevention-checks) | .bnd | Checks for unnecessary including of `test-classes/integration`. |
+BNDJakartaCheck | [Performance](performance_checks.md#performance-checks) | .bnd | Checks for use of Jakarta. |
 [BNDLiferayEnterpriseAppCheck](check/bnd_liferay_enterprise_app_check.md#bndliferayenterpriseappcheck) | [Bug Prevention](bug_prevention_checks.md#bug-prevention-checks) | .bnd | Checks for correct use of property `Liferay-Enterprise-App`. |
 [BNDLiferayRelengBundleCheck](check/bnd_liferay_releng_bundle_check.md#bndliferayrelengbundlecheck) | [Bug Prevention](bug_prevention_checks.md#bug-prevention-checks) | .bnd | Checks if `.lfrbuild-release-src` file exists for DXP module with `Liferay-Releng-Bundle: true`. |
 [BNDLiferayRelengCategoryCheck](check/bnd_liferay_releng_category_check.md#bndliferayrelengcategorycheck) | [Bug Prevention](bug_prevention_checks.md#bug-prevention-checks) | .bnd | Validates `Liferay-Releng-Category` properties. |
@@ -89,6 +90,7 @@ ExceptionVariableNameCheck | [Naming Conventions](naming_conventions_checks.md#n
 FTLEmptyLinesCheck | [Styling](styling_checks.md#styling-checks) | .ftl | Finds missing and unnecessary empty lines. |
 [FTLIfStatementCheck](check/if_statement_check.md#ifstatementcheck) | [Styling](styling_checks.md#styling-checks) | .ftl | Finds incorrect use of parentheses in statement. |
 FTLImportsCheck | [Styling](styling_checks.md#styling-checks) | .ftl | Sorts and groups imports in `.ftl` files. |
+FTLJakartaCheck | [Performance](performance_checks.md#performance-checks) | .ftl | Checks for use of Jakarta. |
 FTLLiferayVariableOrderCheck | [Styling](styling_checks.md#styling-checks) | .ftl | Sorts assign statement of `liferay_*` variables. |
 FTLStringRelationalOperatorCheck | [Styling](styling_checks.md#styling-checks) | .ftl | Finds cases of `==` or `!=` where `stringUtil.equals`, `validator.isNotNull` or `validator.isNull` can be used instead. |
 FTLStylingCheck | [Styling](styling_checks.md#styling-checks) | .ftl | Applies rules to enforce consistency in code style. |
@@ -127,6 +129,7 @@ GradleTestUtilDeployDirCheck | [Bug Prevention](bug_prevention_checks.md#bug-pre
 [GradleUpgradeReleaseDXPCheck](check/gradle_upgrade_release_dxp_check.md#gradleupgradereleasedxpcheck) | [Upgrade](upgrade_checks.md#upgrade-checks) | .gradle | Remove and replaced dependencies in `build.gradle` that are already in `release.dxp.api` with `released.dxp.api` dependency. |
 GroovyImportsCheck | [Styling](styling_checks.md#styling-checks) | .groovy | Sorts and groups imports in `.groovy` files. |
 HTMLEmptyLinesCheck | [Styling](styling_checks.md#styling-checks) | .html or .path | Finds missing and unnecessary empty lines. |
+HTMLJakartaCheck | [Performance](performance_checks.md#performance-checks) | .html or .path | Checks for use of Jakarta. |
 HTMLWhitespaceCheck | [Styling](styling_checks.md#styling-checks) | .html or .path | Finds missing and unnecessary whitespace in `.html` files. |
 [IfStatementCheck](check/if_statement_check.md#ifstatementcheck) | [Styling](styling_checks.md#styling-checks) | .java, .jsp, .jspf, .jspx, .tag, .tpl, or .vm | Finds empty if-statements and consecutive if-statements with identical bodies. |
 IllegalImportsCheck | [Bug Prevention](bug_prevention_checks.md#bug-prevention-checks) | .java, .jsp, .jspf, .jspx, .tag, .tpl, or .vm | Finds cases of incorrect use of certain classes. |
@@ -139,6 +142,7 @@ InstanceofOrderCheck | [Styling](styling_checks.md#styling-checks) | .java, .jsp
 [ItemBuilderCheck](check/builder_check.md#buildercheck) | [Miscellaneous](miscellaneous_checks.md#miscellaneous-checks) | .java | Checks that `DropdownItemBuilder`, `LabelItemBuilder` or `NavigationItemBuilder` is used when possible. |
 [ItemListBuilderCheck](check/builder_check.md#buildercheck) | [Miscellaneous](miscellaneous_checks.md#miscellaneous-checks) | .java | Checks that `DropdownItemListBuilder`, `LabelItemListBuilder` or `NavigationItemListBuilder` is used when possible. |
 JSCompatibilityCheck | [Bug Prevention](bug_prevention_checks.md#bug-prevention-checks) | | Checks for JavaScript compatibility. |
+JSJakartaCheck | [Performance](performance_checks.md#performance-checks) | .js or .jsx | Checks for use of Jakarta. |
 [JSLodashDependencyCheck](check/js_lodash_dependency_check.md#jslodashdependencycheck) | [Bug Prevention](bug_prevention_checks.md#bug-prevention-checks) | .js or .jsx | Finds incorrect use of `AUI._`. |
 JSONBatchEngineDataFileCheck | [Styling](styling_checks.md#styling-checks) | .ipynb, .json, or .npmbridgerc | Remove elements in `*.batch-engine-data.json` files. |
 [JSONDeprecatedPackagesCheck](check/json_deprecated_packages_check.md#jsondeprecatedpackagescheck) | [Bug Prevention](bug_prevention_checks.md#bug-prevention-checks) | .ipynb, .json, or .npmbridgerc | Finds incorrect use of deprecated packages in `package.json` files. |
@@ -168,6 +172,7 @@ JSPGetStaticResourceURLCheck | [Bug Prevention](bug_prevention_checks.md#bug-pre
 [JSPIncludeCheck](check/jsp_include_check.md#jspincludecheck) | [Bug Prevention](bug_prevention_checks.md#bug-prevention-checks) | .jsp, .jspf, .jspx, .tag, .tpl, or .vm | Validates values of `include` in `.jsp` files. |
 JSPIndentationCheck | [Styling](styling_checks.md#styling-checks) | .jsp, .jspf, .jspx, .tag, .tpl, or .vm | Finds incorrect indentation in `.jsp` files. |
 JSPInlineVariableCheck | [Styling](styling_checks.md#styling-checks) | .jsp, .jspf, .jspx, .tag, .tpl, or .vm | Finds cases where variables can be inlined. |
+JSPJakartaCheck | [Performance](performance_checks.md#performance-checks) | .jsp, .jspf, .jspx, .tag, .tpl, or .vm | Checks for use of Jakarta. |
 JSPJavaParserCheck | [Styling](styling_checks.md#styling-checks) | .jsp, .jspf, .jspx, .tag, .tpl, or .vm | Performs JavaParser on `.java` files. |
 JSPLanguageKeysCheck | [Bug Prevention](bug_prevention_checks.md#bug-prevention-checks) | .jsp, .jspf, .jspx, .tag, .tpl, or .vm | Finds missing language keys in `Language.properties`. |
 JSPLanguageUtilCheck | [Bug Prevention](bug_prevention_checks.md#bug-prevention-checks) | .jsp, .jspf, .jspx, .tag, .tpl, or .vm | Finds incorrect use of `LanguageUtil.get` in `.jsp` files. |
@@ -245,6 +250,7 @@ JavaInterfaceCheck | [Bug Prevention](bug_prevention_checks.md#bug-prevention-ch
 JavaInternalPackageCheck | [Bug Prevention](bug_prevention_checks.md#bug-prevention-checks) | .java | Performs several checks on class in `internal` package. |
 JavaJSImportMapsContributorCheck | [Bug Prevention](bug_prevention_checks.md#bug-prevention-checks) | .java | Performs several checks on `*JSImportMapsContributor` class. |
 JavaJSPDynamicIncludeCheck | [Bug Prevention](bug_prevention_checks.md#bug-prevention-checks) | .java | Performs several checks on `*JSPDynamicInclude` class. |
+JavaJakartaCheck | [Performance](performance_checks.md#performance-checks) | .java | Checks for use of Jakarta. |
 [JavaLocalSensitiveComparisonCheck](check/java_local_sensitive_comparison_check.md#javalocalsensitivecomparisoncheck) | [Bug Prevention](bug_prevention_checks.md#bug-prevention-checks) | .java | Checks that `java.text.Collator` is used when comparing localized values. |
 JavaLocalServiceImplErcUsageCheck | [Productivity](productivity_checks.md#productivity-checks) | .java | Automatically generates and ensures that `externalReferenceCode` is properly used in local `*ServiceImpl` add method. |
 JavaLogClassNameCheck | [Bug Prevention](bug_prevention_checks.md#bug-prevention-checks) | .java | Checks the name of the class that is passed in `LogFactoryUtil.getLog`. |
@@ -398,6 +404,7 @@ PoshiAntCommandParametersOrderCheck | [Styling](styling_checks.md#styling-checks
 PoshiDependenciesFileLocationCheck | [Bug Prevention](bug_prevention_checks.md#bug-prevention-checks) | .function, .jar, .lar, .macro, .path, .testcase, .war, or .zip | Checks that dependencies files are located in the correct directory. |
 PoshiImportsCheck | [Styling](styling_checks.md#styling-checks) | .function, .jar, .lar, .macro, .path, .testcase, .war, or .zip | Sorts and groups imports in Poshi Script files. |
 PoshiIndentationCheck | [Styling](styling_checks.md#styling-checks) | .function, .jar, .lar, .macro, .path, .testcase, .war, or .zip | Finds incorrect indentation in Poshi Script files. |
+PoshiJakartaCheck | [Performance](performance_checks.md#performance-checks) | .function, .jar, .lar, .macro, .path, .testcase, .war, or .zip | Checks for use of Jakarta. |
 [PoshiPauseUsageCheck](check/poshi_pause_usage_check.md#poshipauseusagecheck) | [Performance](performance_checks.md#performance-checks) | .function, .jar, .lar, .macro, .path, .testcase, .war, or .zip | Finds missing comment with JIRA project when using `Pause`. |
 PoshiPropertiesOrderCheck | [Styling](styling_checks.md#styling-checks) | .function, .jar, .lar, .macro, .path, .testcase, .war, or .zip | Sorts the values of properties in `.testcase` file. |
 PoshiPropsUtilCheck | [Bug Prevention](bug_prevention_checks.md#bug-prevention-checks) | .function, .jar, .lar, .macro, .path, .testcase, .war, or .zip | Finds cases where `PropsUtil.get` should be inlined. |
@@ -417,6 +424,7 @@ PropertiesEmptyLinesCheck | [Styling](styling_checks.md#styling-checks) | .eslin
 PropertiesEnvironmentVariablesCheck | [Documentation](documentation_checks.md#documentation-checks) | .eslintignore, .prettierignore, or .properties | Verifies that the environment property in the documentation matches the property name. |
 PropertiesFeatureFlagsCheck | [Bug Prevention](bug_prevention_checks.md#bug-prevention-checks) | .eslintignore, .prettierignore, or .properties | Generate feature flags in `portal.properties` file. |
 PropertiesImportedFilesContentCheck | [Bug Prevention](bug_prevention_checks.md#bug-prevention-checks) | .eslintignore, .prettierignore, or .properties | Performs several checks on `imported-files.properties` file. |
+PropertiesJakartaCheck | [Performance](performance_checks.md#performance-checks) | .eslintignore, .prettierignore, or .properties | Checks for use of Jakarta. |
 PropertiesLanguageContractionsCheck | [Styling](styling_checks.md#styling-checks) | .eslintignore, .prettierignore, or .properties | Finds contractions (such as `can't` or `you're`). |
 [PropertiesLanguageKeysCheck](check/properties_language_keys_check.md#propertieslanguagekeyscheck) | [Bug Prevention](bug_prevention_checks.md#bug-prevention-checks) | .eslintignore, .prettierignore, or .properties | Checks that there is no HTML markup in language keys. |
 PropertiesLanguageKeysContextCheck | [Bug Prevention](bug_prevention_checks.md#bug-prevention-checks) | .eslintignore, .prettierignore, or .properties | Checks if the language keys include a word of context to indicate specific meaning. |
@@ -478,9 +486,11 @@ SubstringCheck | [Performance](performance_checks.md#performance-checks) | .java
 SystemEventCheck | [Bug Prevention](bug_prevention_checks.md#bug-prevention-checks) | .java | Finds missing or redundant usage of @SystemEvent for delete events. |
 TFBlockOrderCheck | [Styling](styling_checks.md#styling-checks) | .tf | Checks the order of blocks in `.tf` file. |
 TLDElementOrderCheck | [Styling](styling_checks.md#styling-checks) | .tld | Checks the order of attributes in `.tld` file. |
+TLDJakartaCheck | [Performance](performance_checks.md#performance-checks) | .tld | Checks for use of Jakarta. |
 TLDStylingCheck | [Styling](styling_checks.md#styling-checks) | .tld | Applies rules to enforce consistency in code style. |
 TLDTypeCheck | [Bug Prevention](bug_prevention_checks.md#bug-prevention-checks) | .tld | Ensures the fully qualified name is used for types in `.tld` file. |
 TSConfigFileCheck | [Bug Prevention](bug_prevention_checks.md#bug-prevention-checks) | .ts or .tsx | Performs several checks on `ts.config` file. |
+TSJakartaCheck | [Performance](performance_checks.md#performance-checks) | .ts or .tsx | Checks for use of Jakarta. |
 TSSpecFileLocationCheck | [Bug Prevention](bug_prevention_checks.md#bug-prevention-checks) | .ts or .tsx | Checks that `*.spec.ts` file should be inside a folder that contains a `config.ts`. |
 TXTEmptyLinesCheck | [Styling](styling_checks.md#styling-checks) | .txt | Finds missing and unnecessary empty lines. |
 TXTStylingCheck | [Styling](styling_checks.md#styling-checks) | .txt | Applies rules to enforce consistency in code style. |
@@ -581,6 +591,7 @@ XMLImportsCheck | [Styling](styling_checks.md#styling-checks) | .action, .functi
 XMLIndentationCheck | [Styling](styling_checks.md#styling-checks) | .action, .function, .jelly, .jrxml, .macro, .pom, .project, .properties, .svg, .testcase, .tld, .toggle, .tpl, .wsdl, .xml, or .xsd | Finds incorrect indentation in `.xml` files. |
 XMLInstanceWrappersFileCheck | [Styling](styling_checks.md#styling-checks) | .action, .function, .jelly, .jrxml, .macro, .pom, .project, .properties, .svg, .testcase, .toggle, .tpl, .wsdl, .xml, or .xsd | Checks the order of instance-wrappers in `instance_wrappers.xml` file. |
 XMLIvyFileCheck | [Styling](styling_checks.md#styling-checks) | .action, .function, .jelly, .jrxml, .macro, .pom, .project, .properties, .svg, .testcase, .toggle, .tpl, .wsdl, .xml, or .xsd | Checks the order of dependencies in `ivy.xml` file. |
+XMLJakartaCheck | [Performance](performance_checks.md#performance-checks) | .action, .function, .jelly, .jrxml, .macro, .pom, .project, .properties, .svg, .testcase, .toggle, .tpl, .wsdl, .xml, or .xsd | Checks for use of Jakarta. |
 XMLLog4jFileCheck | [Styling](styling_checks.md#styling-checks) | .action, .function, .jelly, .jrxml, .macro, .pom, .project, .properties, .svg, .testcase, .toggle, .tpl, .wsdl, .xml, or .xsd | Checks the order of categories in `*-log4j.xml` file. |
 XMLLog4jLoggersCheck | [Miscellaneous](miscellaneous_checks.md#miscellaneous-checks) | .action, .function, .jelly, .jrxml, .macro, .pom, .project, .properties, .svg, .testcase, .toggle, .tpl, .wsdl, .xml, or .xsd | Checks the loggers defined in `*-log4j.xml` file. |
 XMLLookAndFeelCompatibilityVersionCheck | [Bug Prevention](bug_prevention_checks.md#bug-prevention-checks) | .action, .function, .jelly, .jrxml, .macro, .pom, .project, .properties, .svg, .testcase, .toggle, .tpl, .wsdl, .xml, or .xsd | Finds missing attribute `version` in `compatibility` element in `*--look-and-feel.xml` file. |
