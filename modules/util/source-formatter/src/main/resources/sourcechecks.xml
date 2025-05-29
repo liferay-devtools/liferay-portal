@@ -58,6 +58,7 @@
 		<check name="BNDJakartaCheck">
 			<category name="Performance" />
 			<description name="Checks for use of Jakarta." />
+			<property name="enabled" value="false" />
 		</check>
 		<check name="BNDLineBreaksCheck">
 			<category name="Styling" />
@@ -250,6 +251,7 @@
 		<check name="FTLJakartaCheck">
 			<category name="Performance" />
 			<description name="Checks for use of Jakarta." />
+			<property name="enabled" value="false" />
 		</check>
 		<check name="FTLLiferayVariableOrderCheck">
 			<category name="Styling" />
@@ -407,6 +409,7 @@
 		<check name="HTMLJakartaCheck">
 			<category name="Performance" />
 			<description name="Checks for use of Jakarta." />
+			<property name="enabled" value="false" />
 		</check>
 		<check name="HTMLWhitespaceCheck">
 			<category name="Styling" />
@@ -565,6 +568,7 @@
 		<check name="JavaJakartaCheck">
 			<category name="Performance" />
 			<description name="Checks for use of Jakarta." />
+			<property name="enabled" value="false" />
 		</check>
 		<check name="JavaLocalSensitiveComparisonCheck">
 			<category name="Bug Prevention" />
@@ -1191,6 +1195,7 @@
 		<check name="JSPJakartaCheck">
 			<category name="Performance" />
 			<description name="Checks for use of Jakarta." />
+			<property name="enabled" value="false" />
 		</check>
 		<check name="JSPJavaParserCheck">
 			<category name="Styling" />
@@ -1371,6 +1376,7 @@
 		<check name="JSJakartaCheck">
 			<category name="Performance" />
 			<description name="Checks for use of Jakarta." />
+			<property name="enabled" value="false" />
 		</check>
 		<check name="JSLodashDependencyCheck">
 			<category name="Bug Prevention" />
@@ -1500,6 +1506,7 @@
 		<check name="PoshiJakartaCheck">
 			<category name="Performance" />
 			<description name="Checks for use of Jakarta." />
+			<property name="enabled" value="false" />
 		</check>
 		<check name="PoshiPauseUsageCheck">
 			<category name="Performance" />
@@ -1576,6 +1583,7 @@
 		<check name="PropertiesJakartaCheck">
 			<category name="Performance" />
 			<description name="Checks for use of Jakarta." />
+			<property name="enabled" value="false" />
 		</check>
 		<check name="PropertiesLanguageContractionsCheck">
 			<category name="Styling" />
@@ -1745,6 +1753,7 @@
 		<check name="TLDJakartaCheck">
 			<category name="Performance" />
 			<description name="Checks for use of Jakarta." />
+			<property name="enabled" value="false" />
 		</check>
 		<check name="TLDStylingCheck">
 			<category name="Styling" />
@@ -1767,6 +1776,7 @@
 		<check name="TSJakartaCheck">
 			<category name="Performance" />
 			<description name="Checks for use of Jakarta." />
+			<property name="enabled" value="false" />
 		</check>
 		<check name="WhitespaceCheck">
 			<category name="Styling" />
@@ -2188,6 +2198,7 @@
 		<check name="XMLJakartaCheck">
 			<category name="Performance" />
 			<description name="Checks for use of Jakarta." />
+			<property name="enabled" value="false" />
 		</check>
 		<check name="XMLServiceReferenceCheck">
 			<category name="Bug Prevention" />
