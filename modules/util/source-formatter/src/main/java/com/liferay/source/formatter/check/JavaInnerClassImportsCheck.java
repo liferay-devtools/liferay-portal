@@ -169,11 +169,7 @@ public class JavaInnerClassImportsCheck extends BaseFileCheck {
 			return false;
 		}
 
-		if (!fullyQualifiedName.equals(outerClassFullyQualifiedName)) {
-			return false;
-		}
-
-		return true;
+		return fullyQualifiedName.equals(outerClassFullyQualifiedName);
 	}
 
 	private String _removeInnerClassImport(

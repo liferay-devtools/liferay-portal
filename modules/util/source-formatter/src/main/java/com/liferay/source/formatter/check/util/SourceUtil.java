@@ -281,11 +281,7 @@ public class SourceUtil {
 				Arrays.sort(chars1);
 				Arrays.sort(chars2);
 
-				if (!Arrays.equals(chars1, chars2)) {
-					return false;
-				}
-
-				return true;
+				return Arrays.equals(chars1, chars2);
 			}
 		}
 	}
