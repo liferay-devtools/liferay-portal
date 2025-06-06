@@ -55,19 +55,21 @@ public class IfStatementCheck extends BaseFileCheck {
 				String newContent = _combineStatementsWithSameBodies(
 					content, ifStatement1, ifStatement2);
 
-				if (!content.equals(newContent)) {
-					if (getSourceProcessor() instanceof JSPSourceProcessor) {
-						addMessage(
-							fileName,
-							"Merge consecutive if-statements when executing " +
-								"identical code",
-							getLineNumber(content, matcher.start()));
-
-						continue;
-					}
-
-					return newContent;
+				if (content.equals(newContent)) {
+					continue;
 				}
+
+				if (getSourceProcessor() instanceof JSPSourceProcessor) {
+					addMessage(
+						fileName,
+						"Merge consecutive if-statements when executing " +
+							"identical code",
+						getLineNumber(content, matcher.start()));
+
+					continue;
+				}
+
+				return newContent;
 			}
 			else if (followingCode.startsWith("return false;") ||
 					 followingCode.startsWith("return true;")) {
