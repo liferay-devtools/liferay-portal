@@ -156,20 +156,20 @@ public class JavaInnerClassImportsCheck extends BaseFileCheck {
 		String fullyQualifiedName = _getFullyQualifiedName(
 			outerClassName, null, imports);
 
-		if (fullyQualifiedName == null) {
-			if (outerClassFullyQualifiedName.equals(
-					"java.lang." + outerClassName) ||
-				outerClassFullyQualifiedName.equals(
-					packageName + "." + outerClassName) ||
-				!content.matches("(?s).*[^.\\w]" + outerClassName + "\\W.*")) {
-
-				return true;
-			}
-
-			return false;
+		if (fullyQualifiedName != null) {
+			return fullyQualifiedName.equals(outerClassFullyQualifiedName);
 		}
 
-		return fullyQualifiedName.equals(outerClassFullyQualifiedName);
+		if (outerClassFullyQualifiedName.equals(
+				"java.lang." + outerClassName) ||
+			outerClassFullyQualifiedName.equals(
+				packageName + "." + outerClassName) ||
+			!content.matches("(?s).*[^.\\w]" + outerClassName + "\\W.*")) {
+
+			return true;
+		}
+
+		return false;
 	}
 
 	private String _removeInnerClassImport(
