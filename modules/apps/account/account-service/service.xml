@@ -20,13 +20,13 @@
 		<!-- Other fields -->
 
 		<column name="defaultBillingAddressId" type="long" />
-		<column name="defaultCPaymentMethodKey" type="String" />
 		<column name="defaultShippingAddressId" type="long" />
+		<column name="logoId" type="long" />
 		<column name="parentAccountEntryId" type="long" />
+		<column name="defaultCPaymentMethodKey" type="String" />
 		<column name="description" type="String" />
 		<column name="domains" type="String" />
 		<column name="emailAddress" type="String" />
-		<column name="logoId" type="long" />
 		<column name="name" type="String" />
 		<column name="restrictMembership" type="boolean" />
 		<column name="taxExemptionCode" type="String" />
