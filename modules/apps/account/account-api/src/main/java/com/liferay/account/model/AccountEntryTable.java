@@ -47,17 +47,19 @@ public class AccountEntryTable extends BaseTable<AccountEntryTable> {
 		createColumn(
 			"defaultBillingAddressId", Long.class, Types.BIGINT,
 			Column.FLAG_DEFAULT);
-	public final Column<AccountEntryTable, String> defaultCPaymentMethodKey =
-		createColumn(
-			"defaultCPaymentMethodKey", String.class, Types.VARCHAR,
-			Column.FLAG_DEFAULT);
 	public final Column<AccountEntryTable, Long> defaultShippingAddressId =
 		createColumn(
 			"defaultShippingAddressId", Long.class, Types.BIGINT,
 			Column.FLAG_DEFAULT);
+	public final Column<AccountEntryTable, Long> logoId = createColumn(
+		"logoId", Long.class, Types.BIGINT, Column.FLAG_DEFAULT);
 	public final Column<AccountEntryTable, Long> parentAccountEntryId =
 		createColumn(
 			"parentAccountEntryId", Long.class, Types.BIGINT,
+			Column.FLAG_DEFAULT);
+	public final Column<AccountEntryTable, String> defaultCPaymentMethodKey =
+		createColumn(
+			"defaultCPaymentMethodKey", String.class, Types.VARCHAR,
 			Column.FLAG_DEFAULT);
 	public final Column<AccountEntryTable, String> description = createColumn(
 		"description", String.class, Types.VARCHAR, Column.FLAG_DEFAULT);
@@ -65,8 +67,6 @@ public class AccountEntryTable extends BaseTable<AccountEntryTable> {
 		"domains", String.class, Types.VARCHAR, Column.FLAG_DEFAULT);
 	public final Column<AccountEntryTable, String> emailAddress = createColumn(
 		"emailAddress", String.class, Types.VARCHAR, Column.FLAG_DEFAULT);
-	public final Column<AccountEntryTable, Long> logoId = createColumn(
-		"logoId", Long.class, Types.BIGINT, Column.FLAG_DEFAULT);
 	public final Column<AccountEntryTable, String> name = createColumn(
 		"name", String.class, Types.VARCHAR, Column.FLAG_DEFAULT);
 	public final Column<AccountEntryTable, Boolean> restrictMembership =

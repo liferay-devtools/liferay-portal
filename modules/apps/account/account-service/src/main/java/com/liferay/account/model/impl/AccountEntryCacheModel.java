@@ -90,20 +90,20 @@ public class AccountEntryCacheModel
 		sb.append(modifiedDate);
 		sb.append(", defaultBillingAddressId=");
 		sb.append(defaultBillingAddressId);
-		sb.append(", defaultCPaymentMethodKey=");
-		sb.append(defaultCPaymentMethodKey);
 		sb.append(", defaultShippingAddressId=");
 		sb.append(defaultShippingAddressId);
+		sb.append(", logoId=");
+		sb.append(logoId);
 		sb.append(", parentAccountEntryId=");
 		sb.append(parentAccountEntryId);
+		sb.append(", defaultCPaymentMethodKey=");
+		sb.append(defaultCPaymentMethodKey);
 		sb.append(", description=");
 		sb.append(description);
 		sb.append(", domains=");
 		sb.append(domains);
 		sb.append(", emailAddress=");
 		sb.append(emailAddress);
-		sb.append(", logoId=");
-		sb.append(logoId);
 		sb.append(", name=");
 		sb.append(name);
 		sb.append(", restrictMembership=");
@@ -173,6 +173,9 @@ public class AccountEntryCacheModel
 		}
 
 		accountEntryImpl.setDefaultBillingAddressId(defaultBillingAddressId);
+		accountEntryImpl.setDefaultShippingAddressId(defaultShippingAddressId);
+		accountEntryImpl.setLogoId(logoId);
+		accountEntryImpl.setParentAccountEntryId(parentAccountEntryId);
 
 		if (defaultCPaymentMethodKey == null) {
 			accountEntryImpl.setDefaultCPaymentMethodKey("");
@@ -181,9 +184,6 @@ public class AccountEntryCacheModel
 			accountEntryImpl.setDefaultCPaymentMethodKey(
 				defaultCPaymentMethodKey);
 		}
-
-		accountEntryImpl.setDefaultShippingAddressId(defaultShippingAddressId);
-		accountEntryImpl.setParentAccountEntryId(parentAccountEntryId);
 
 		if (description == null) {
 			accountEntryImpl.setDescription("");
@@ -205,8 +205,6 @@ public class AccountEntryCacheModel
 		else {
 			accountEntryImpl.setEmailAddress(emailAddress);
 		}
-
-		accountEntryImpl.setLogoId(logoId);
 
 		if (name == null) {
 			accountEntryImpl.setName("");
@@ -276,16 +274,16 @@ public class AccountEntryCacheModel
 		modifiedDate = objectInput.readLong();
 
 		defaultBillingAddressId = objectInput.readLong();
-		defaultCPaymentMethodKey = objectInput.readUTF();
 
 		defaultShippingAddressId = objectInput.readLong();
 
+		logoId = objectInput.readLong();
+
 		parentAccountEntryId = objectInput.readLong();
+		defaultCPaymentMethodKey = objectInput.readUTF();
 		description = objectInput.readUTF();
 		domains = objectInput.readUTF();
 		emailAddress = objectInput.readUTF();
-
-		logoId = objectInput.readLong();
 		name = objectInput.readUTF();
 
 		restrictMembership = objectInput.readBoolean();
@@ -336,16 +334,18 @@ public class AccountEntryCacheModel
 
 		objectOutput.writeLong(defaultBillingAddressId);
 
+		objectOutput.writeLong(defaultShippingAddressId);
+
+		objectOutput.writeLong(logoId);
+
+		objectOutput.writeLong(parentAccountEntryId);
+
 		if (defaultCPaymentMethodKey == null) {
 			objectOutput.writeUTF("");
 		}
 		else {
 			objectOutput.writeUTF(defaultCPaymentMethodKey);
 		}
-
-		objectOutput.writeLong(defaultShippingAddressId);
-
-		objectOutput.writeLong(parentAccountEntryId);
 
 		if (description == null) {
 			objectOutput.writeUTF("");
@@ -367,8 +367,6 @@ public class AccountEntryCacheModel
 		else {
 			objectOutput.writeUTF(emailAddress);
 		}
-
-		objectOutput.writeLong(logoId);
 
 		if (name == null) {
 			objectOutput.writeUTF("");
@@ -424,13 +422,13 @@ public class AccountEntryCacheModel
 	public long createDate;
 	public long modifiedDate;
 	public long defaultBillingAddressId;
-	public String defaultCPaymentMethodKey;
 	public long defaultShippingAddressId;
+	public long logoId;
 	public long parentAccountEntryId;
+	public String defaultCPaymentMethodKey;
 	public String description;
 	public String domains;
 	public String emailAddress;
-	public long logoId;
 	public String name;
 	public boolean restrictMembership;
 	public String taxExemptionCode;

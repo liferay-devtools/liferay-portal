@@ -71,11 +71,11 @@ public class AccountEntryModelImpl
 		{"userId", Types.BIGINT}, {"userName", Types.VARCHAR},
 		{"createDate", Types.TIMESTAMP}, {"modifiedDate", Types.TIMESTAMP},
 		{"defaultBillingAddressId", Types.BIGINT},
+		{"defaultShippingAddressId", Types.BIGINT}, {"logoId", Types.BIGINT},
+		{"parentAccountEntryId", Types.BIGINT},
 		{"defaultCPaymentMethodKey", Types.VARCHAR},
-		{"defaultShippingAddressId", Types.BIGINT},
-		{"parentAccountEntryId", Types.BIGINT}, {"description", Types.VARCHAR},
-		{"domains", Types.VARCHAR}, {"emailAddress", Types.VARCHAR},
-		{"logoId", Types.BIGINT}, {"name", Types.VARCHAR},
+		{"description", Types.VARCHAR}, {"domains", Types.VARCHAR},
+		{"emailAddress", Types.VARCHAR}, {"name", Types.VARCHAR},
 		{"restrictMembership", Types.BOOLEAN},
 		{"taxExemptionCode", Types.VARCHAR}, {"taxIdNumber", Types.VARCHAR},
 		{"type_", Types.VARCHAR}, {"status", Types.INTEGER},
@@ -97,13 +97,13 @@ public class AccountEntryModelImpl
 		TABLE_COLUMNS_MAP.put("createDate", Types.TIMESTAMP);
 		TABLE_COLUMNS_MAP.put("modifiedDate", Types.TIMESTAMP);
 		TABLE_COLUMNS_MAP.put("defaultBillingAddressId", Types.BIGINT);
-		TABLE_COLUMNS_MAP.put("defaultCPaymentMethodKey", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("defaultShippingAddressId", Types.BIGINT);
+		TABLE_COLUMNS_MAP.put("logoId", Types.BIGINT);
 		TABLE_COLUMNS_MAP.put("parentAccountEntryId", Types.BIGINT);
+		TABLE_COLUMNS_MAP.put("defaultCPaymentMethodKey", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("description", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("domains", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("emailAddress", Types.VARCHAR);
-		TABLE_COLUMNS_MAP.put("logoId", Types.BIGINT);
 		TABLE_COLUMNS_MAP.put("name", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("restrictMembership", Types.BOOLEAN);
 		TABLE_COLUMNS_MAP.put("taxExemptionCode", Types.VARCHAR);
@@ -116,7 +116,7 @@ public class AccountEntryModelImpl
 	}
 
 	public static final String TABLE_SQL_CREATE =
-		"create table AccountEntry (mvccVersion LONG default 0 not null,uuid_ VARCHAR(75) null,externalReferenceCode VARCHAR(75) null,accountEntryId LONG not null primary key,companyId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,defaultBillingAddressId LONG,defaultCPaymentMethodKey VARCHAR(75) null,defaultShippingAddressId LONG,parentAccountEntryId LONG,description STRING null,domains STRING null,emailAddress VARCHAR(254) null,logoId LONG,name VARCHAR(250) null,restrictMembership BOOLEAN,taxExemptionCode VARCHAR(75) null,taxIdNumber VARCHAR(75) null,type_ VARCHAR(75) null,status INTEGER,statusByUserId LONG,statusByUserName VARCHAR(75) null,statusDate DATE null)";
+		"create table AccountEntry (mvccVersion LONG default 0 not null,uuid_ VARCHAR(75) null,externalReferenceCode VARCHAR(75) null,accountEntryId LONG not null primary key,companyId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,defaultBillingAddressId LONG,defaultShippingAddressId LONG,logoId LONG,parentAccountEntryId LONG,defaultCPaymentMethodKey VARCHAR(75) null,description STRING null,domains STRING null,emailAddress VARCHAR(254) null,name VARCHAR(250) null,restrictMembership BOOLEAN,taxExemptionCode VARCHAR(75) null,taxIdNumber VARCHAR(75) null,type_ VARCHAR(75) null,status INTEGER,statusByUserId LONG,statusByUserName VARCHAR(75) null,statusDate DATE null)";
 
 	public static final String TABLE_SQL_DROP = "drop table AccountEntry";
 
@@ -306,19 +306,19 @@ public class AccountEntryModelImpl
 				"defaultBillingAddressId",
 				AccountEntry::getDefaultBillingAddressId);
 			attributeGetterFunctions.put(
-				"defaultCPaymentMethodKey",
-				AccountEntry::getDefaultCPaymentMethodKey);
-			attributeGetterFunctions.put(
 				"defaultShippingAddressId",
 				AccountEntry::getDefaultShippingAddressId);
+			attributeGetterFunctions.put("logoId", AccountEntry::getLogoId);
 			attributeGetterFunctions.put(
 				"parentAccountEntryId", AccountEntry::getParentAccountEntryId);
+			attributeGetterFunctions.put(
+				"defaultCPaymentMethodKey",
+				AccountEntry::getDefaultCPaymentMethodKey);
 			attributeGetterFunctions.put(
 				"description", AccountEntry::getDescription);
 			attributeGetterFunctions.put("domains", AccountEntry::getDomains);
 			attributeGetterFunctions.put(
 				"emailAddress", AccountEntry::getEmailAddress);
-			attributeGetterFunctions.put("logoId", AccountEntry::getLogoId);
 			attributeGetterFunctions.put("name", AccountEntry::getName);
 			attributeGetterFunctions.put(
 				"restrictMembership", AccountEntry::getRestrictMembership);
@@ -385,17 +385,20 @@ public class AccountEntryModelImpl
 				(BiConsumer<AccountEntry, Long>)
 					AccountEntry::setDefaultBillingAddressId);
 			attributeSetterBiConsumers.put(
-				"defaultCPaymentMethodKey",
-				(BiConsumer<AccountEntry, String>)
-					AccountEntry::setDefaultCPaymentMethodKey);
-			attributeSetterBiConsumers.put(
 				"defaultShippingAddressId",
 				(BiConsumer<AccountEntry, Long>)
 					AccountEntry::setDefaultShippingAddressId);
 			attributeSetterBiConsumers.put(
+				"logoId",
+				(BiConsumer<AccountEntry, Long>)AccountEntry::setLogoId);
+			attributeSetterBiConsumers.put(
 				"parentAccountEntryId",
 				(BiConsumer<AccountEntry, Long>)
 					AccountEntry::setParentAccountEntryId);
+			attributeSetterBiConsumers.put(
+				"defaultCPaymentMethodKey",
+				(BiConsumer<AccountEntry, String>)
+					AccountEntry::setDefaultCPaymentMethodKey);
 			attributeSetterBiConsumers.put(
 				"description",
 				(BiConsumer<AccountEntry, String>)AccountEntry::setDescription);
@@ -406,9 +409,6 @@ public class AccountEntryModelImpl
 				"emailAddress",
 				(BiConsumer<AccountEntry, String>)
 					AccountEntry::setEmailAddress);
-			attributeSetterBiConsumers.put(
-				"logoId",
-				(BiConsumer<AccountEntry, Long>)AccountEntry::setLogoId);
 			attributeSetterBiConsumers.put(
 				"name",
 				(BiConsumer<AccountEntry, String>)AccountEntry::setName);
@@ -673,6 +673,51 @@ public class AccountEntryModelImpl
 
 	@JSON
 	@Override
+	public long getDefaultShippingAddressId() {
+		return _defaultShippingAddressId;
+	}
+
+	@Override
+	public void setDefaultShippingAddressId(long defaultShippingAddressId) {
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
+		}
+
+		_defaultShippingAddressId = defaultShippingAddressId;
+	}
+
+	@JSON
+	@Override
+	public long getLogoId() {
+		return _logoId;
+	}
+
+	@Override
+	public void setLogoId(long logoId) {
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
+		}
+
+		_logoId = logoId;
+	}
+
+	@JSON
+	@Override
+	public long getParentAccountEntryId() {
+		return _parentAccountEntryId;
+	}
+
+	@Override
+	public void setParentAccountEntryId(long parentAccountEntryId) {
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
+		}
+
+		_parentAccountEntryId = parentAccountEntryId;
+	}
+
+	@JSON
+	@Override
 	public String getDefaultCPaymentMethodKey() {
 		if (_defaultCPaymentMethodKey == null) {
 			return "";
@@ -689,36 +734,6 @@ public class AccountEntryModelImpl
 		}
 
 		_defaultCPaymentMethodKey = defaultCPaymentMethodKey;
-	}
-
-	@JSON
-	@Override
-	public long getDefaultShippingAddressId() {
-		return _defaultShippingAddressId;
-	}
-
-	@Override
-	public void setDefaultShippingAddressId(long defaultShippingAddressId) {
-		if (_columnOriginalValues == Collections.EMPTY_MAP) {
-			_setColumnOriginalValues();
-		}
-
-		_defaultShippingAddressId = defaultShippingAddressId;
-	}
-
-	@JSON
-	@Override
-	public long getParentAccountEntryId() {
-		return _parentAccountEntryId;
-	}
-
-	@Override
-	public void setParentAccountEntryId(long parentAccountEntryId) {
-		if (_columnOriginalValues == Collections.EMPTY_MAP) {
-			_setColumnOriginalValues();
-		}
-
-		_parentAccountEntryId = parentAccountEntryId;
 	}
 
 	@JSON
@@ -779,21 +794,6 @@ public class AccountEntryModelImpl
 		}
 
 		_emailAddress = emailAddress;
-	}
-
-	@JSON
-	@Override
-	public long getLogoId() {
-		return _logoId;
-	}
-
-	@Override
-	public void setLogoId(long logoId) {
-		if (_columnOriginalValues == Collections.EMPTY_MAP) {
-			_setColumnOriginalValues();
-		}
-
-		_logoId = logoId;
 	}
 
 	@JSON
@@ -1150,15 +1150,15 @@ public class AccountEntryModelImpl
 		accountEntryImpl.setModifiedDate(getModifiedDate());
 		accountEntryImpl.setDefaultBillingAddressId(
 			getDefaultBillingAddressId());
-		accountEntryImpl.setDefaultCPaymentMethodKey(
-			getDefaultCPaymentMethodKey());
 		accountEntryImpl.setDefaultShippingAddressId(
 			getDefaultShippingAddressId());
+		accountEntryImpl.setLogoId(getLogoId());
 		accountEntryImpl.setParentAccountEntryId(getParentAccountEntryId());
+		accountEntryImpl.setDefaultCPaymentMethodKey(
+			getDefaultCPaymentMethodKey());
 		accountEntryImpl.setDescription(getDescription());
 		accountEntryImpl.setDomains(getDomains());
 		accountEntryImpl.setEmailAddress(getEmailAddress());
-		accountEntryImpl.setLogoId(getLogoId());
 		accountEntryImpl.setName(getName());
 		accountEntryImpl.setRestrictMembership(isRestrictMembership());
 		accountEntryImpl.setTaxExemptionCode(getTaxExemptionCode());
@@ -1196,19 +1196,19 @@ public class AccountEntryModelImpl
 			this.<Date>getColumnOriginalValue("modifiedDate"));
 		accountEntryImpl.setDefaultBillingAddressId(
 			this.<Long>getColumnOriginalValue("defaultBillingAddressId"));
-		accountEntryImpl.setDefaultCPaymentMethodKey(
-			this.<String>getColumnOriginalValue("defaultCPaymentMethodKey"));
 		accountEntryImpl.setDefaultShippingAddressId(
 			this.<Long>getColumnOriginalValue("defaultShippingAddressId"));
+		accountEntryImpl.setLogoId(this.<Long>getColumnOriginalValue("logoId"));
 		accountEntryImpl.setParentAccountEntryId(
 			this.<Long>getColumnOriginalValue("parentAccountEntryId"));
+		accountEntryImpl.setDefaultCPaymentMethodKey(
+			this.<String>getColumnOriginalValue("defaultCPaymentMethodKey"));
 		accountEntryImpl.setDescription(
 			this.<String>getColumnOriginalValue("description"));
 		accountEntryImpl.setDomains(
 			this.<String>getColumnOriginalValue("domains"));
 		accountEntryImpl.setEmailAddress(
 			this.<String>getColumnOriginalValue("emailAddress"));
-		accountEntryImpl.setLogoId(this.<Long>getColumnOriginalValue("logoId"));
 		accountEntryImpl.setName(this.<String>getColumnOriginalValue("name"));
 		accountEntryImpl.setRestrictMembership(
 			this.<Boolean>getColumnOriginalValue("restrictMembership"));
@@ -1358,6 +1358,13 @@ public class AccountEntryModelImpl
 		accountEntryCacheModel.defaultBillingAddressId =
 			getDefaultBillingAddressId();
 
+		accountEntryCacheModel.defaultShippingAddressId =
+			getDefaultShippingAddressId();
+
+		accountEntryCacheModel.logoId = getLogoId();
+
+		accountEntryCacheModel.parentAccountEntryId = getParentAccountEntryId();
+
 		accountEntryCacheModel.defaultCPaymentMethodKey =
 			getDefaultCPaymentMethodKey();
 
@@ -1369,11 +1376,6 @@ public class AccountEntryModelImpl
 
 			accountEntryCacheModel.defaultCPaymentMethodKey = null;
 		}
-
-		accountEntryCacheModel.defaultShippingAddressId =
-			getDefaultShippingAddressId();
-
-		accountEntryCacheModel.parentAccountEntryId = getParentAccountEntryId();
 
 		accountEntryCacheModel.description = getDescription();
 
@@ -1398,8 +1400,6 @@ public class AccountEntryModelImpl
 		if ((emailAddress != null) && (emailAddress.length() == 0)) {
 			accountEntryCacheModel.emailAddress = null;
 		}
-
-		accountEntryCacheModel.logoId = getLogoId();
 
 		accountEntryCacheModel.name = getName();
 
@@ -1528,13 +1528,13 @@ public class AccountEntryModelImpl
 	private Date _modifiedDate;
 	private boolean _setModifiedDate;
 	private long _defaultBillingAddressId;
-	private String _defaultCPaymentMethodKey;
 	private long _defaultShippingAddressId;
+	private long _logoId;
 	private long _parentAccountEntryId;
+	private String _defaultCPaymentMethodKey;
 	private String _description;
 	private String _domains;
 	private String _emailAddress;
-	private long _logoId;
 	private String _name;
 	private boolean _restrictMembership;
 	private String _taxExemptionCode;
@@ -1588,15 +1588,15 @@ public class AccountEntryModelImpl
 		_columnOriginalValues.put(
 			"defaultBillingAddressId", _defaultBillingAddressId);
 		_columnOriginalValues.put(
-			"defaultCPaymentMethodKey", _defaultCPaymentMethodKey);
-		_columnOriginalValues.put(
 			"defaultShippingAddressId", _defaultShippingAddressId);
+		_columnOriginalValues.put("logoId", _logoId);
 		_columnOriginalValues.put(
 			"parentAccountEntryId", _parentAccountEntryId);
+		_columnOriginalValues.put(
+			"defaultCPaymentMethodKey", _defaultCPaymentMethodKey);
 		_columnOriginalValues.put("description", _description);
 		_columnOriginalValues.put("domains", _domains);
 		_columnOriginalValues.put("emailAddress", _emailAddress);
-		_columnOriginalValues.put("logoId", _logoId);
 		_columnOriginalValues.put("name", _name);
 		_columnOriginalValues.put("restrictMembership", _restrictMembership);
 		_columnOriginalValues.put("taxExemptionCode", _taxExemptionCode);
@@ -1650,19 +1650,19 @@ public class AccountEntryModelImpl
 
 		columnBitmasks.put("defaultBillingAddressId", 512L);
 
-		columnBitmasks.put("defaultCPaymentMethodKey", 1024L);
+		columnBitmasks.put("defaultShippingAddressId", 1024L);
 
-		columnBitmasks.put("defaultShippingAddressId", 2048L);
+		columnBitmasks.put("logoId", 2048L);
 
 		columnBitmasks.put("parentAccountEntryId", 4096L);
 
-		columnBitmasks.put("description", 8192L);
+		columnBitmasks.put("defaultCPaymentMethodKey", 8192L);
 
-		columnBitmasks.put("domains", 16384L);
+		columnBitmasks.put("description", 16384L);
 
-		columnBitmasks.put("emailAddress", 32768L);
+		columnBitmasks.put("domains", 32768L);
 
-		columnBitmasks.put("logoId", 65536L);
+		columnBitmasks.put("emailAddress", 65536L);
 
 		columnBitmasks.put("name", 131072L);
 

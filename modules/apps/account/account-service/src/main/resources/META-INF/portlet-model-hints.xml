@@ -12,9 +12,10 @@
 		<field name="createDate" type="Date" />
 		<field name="modifiedDate" type="Date" />
 		<field name="defaultBillingAddressId" type="long" />
-		<field name="defaultCPaymentMethodKey" type="String" />
 		<field name="defaultShippingAddressId" type="long" />
+		<field name="logoId" type="long" />
 		<field name="parentAccountEntryId" type="long" />
+		<field name="defaultCPaymentMethodKey" type="String" />
 		<field name="description" type="String">
 			<hint-collection name="TEXTAREA" />
 		</field>
@@ -25,7 +26,6 @@
 			<hint-collection name="EMAIL-ADDRESS" />
 			<validator name="email" />
 		</field>
-		<field name="logoId" type="long" />
 		<field name="name" type="String">
 			<hint name="max-length">250</hint>
 			<validator name="required" />

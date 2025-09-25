@@ -45,14 +45,14 @@ public class AccountEntryWrapper
 		attributes.put("modifiedDate", getModifiedDate());
 		attributes.put("defaultBillingAddressId", getDefaultBillingAddressId());
 		attributes.put(
-			"defaultCPaymentMethodKey", getDefaultCPaymentMethodKey());
-		attributes.put(
 			"defaultShippingAddressId", getDefaultShippingAddressId());
+		attributes.put("logoId", getLogoId());
 		attributes.put("parentAccountEntryId", getParentAccountEntryId());
+		attributes.put(
+			"defaultCPaymentMethodKey", getDefaultCPaymentMethodKey());
 		attributes.put("description", getDescription());
 		attributes.put("domains", getDomains());
 		attributes.put("emailAddress", getEmailAddress());
-		attributes.put("logoId", getLogoId());
 		attributes.put("name", getName());
 		attributes.put("restrictMembership", isRestrictMembership());
 		attributes.put("taxExemptionCode", getTaxExemptionCode());
@@ -130,13 +130,6 @@ public class AccountEntryWrapper
 			setDefaultBillingAddressId(defaultBillingAddressId);
 		}
 
-		String defaultCPaymentMethodKey = (String)attributes.get(
-			"defaultCPaymentMethodKey");
-
-		if (defaultCPaymentMethodKey != null) {
-			setDefaultCPaymentMethodKey(defaultCPaymentMethodKey);
-		}
-
 		Long defaultShippingAddressId = (Long)attributes.get(
 			"defaultShippingAddressId");
 
@@ -144,11 +137,24 @@ public class AccountEntryWrapper
 			setDefaultShippingAddressId(defaultShippingAddressId);
 		}
 
+		Long logoId = (Long)attributes.get("logoId");
+
+		if (logoId != null) {
+			setLogoId(logoId);
+		}
+
 		Long parentAccountEntryId = (Long)attributes.get(
 			"parentAccountEntryId");
 
 		if (parentAccountEntryId != null) {
 			setParentAccountEntryId(parentAccountEntryId);
+		}
+
+		String defaultCPaymentMethodKey = (String)attributes.get(
+			"defaultCPaymentMethodKey");
+
+		if (defaultCPaymentMethodKey != null) {
+			setDefaultCPaymentMethodKey(defaultCPaymentMethodKey);
 		}
 
 		String description = (String)attributes.get("description");
@@ -167,12 +173,6 @@ public class AccountEntryWrapper
 
 		if (emailAddress != null) {
 			setEmailAddress(emailAddress);
-		}
-
-		Long logoId = (Long)attributes.get("logoId");
-
-		if (logoId != null) {
-			setLogoId(logoId);
 		}
 
 		String name = (String)attributes.get("name");

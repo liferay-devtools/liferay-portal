@@ -134,20 +134,20 @@ public class AccountEntryPersistenceTest {
 
 		newAccountEntry.setDefaultBillingAddressId(RandomTestUtil.nextLong());
 
-		newAccountEntry.setDefaultCPaymentMethodKey(
-			RandomTestUtil.randomString());
-
 		newAccountEntry.setDefaultShippingAddressId(RandomTestUtil.nextLong());
 
+		newAccountEntry.setLogoId(RandomTestUtil.nextLong());
+
 		newAccountEntry.setParentAccountEntryId(RandomTestUtil.nextLong());
+
+		newAccountEntry.setDefaultCPaymentMethodKey(
+			RandomTestUtil.randomString());
 
 		newAccountEntry.setDescription(RandomTestUtil.randomString());
 
 		newAccountEntry.setDomains(RandomTestUtil.randomString());
 
 		newAccountEntry.setEmailAddress(RandomTestUtil.randomString());
-
-		newAccountEntry.setLogoId(RandomTestUtil.nextLong());
 
 		newAccountEntry.setName(RandomTestUtil.randomString());
 
@@ -200,14 +200,16 @@ public class AccountEntryPersistenceTest {
 			existingAccountEntry.getDefaultBillingAddressId(),
 			newAccountEntry.getDefaultBillingAddressId());
 		Assert.assertEquals(
-			existingAccountEntry.getDefaultCPaymentMethodKey(),
-			newAccountEntry.getDefaultCPaymentMethodKey());
-		Assert.assertEquals(
 			existingAccountEntry.getDefaultShippingAddressId(),
 			newAccountEntry.getDefaultShippingAddressId());
 		Assert.assertEquals(
+			existingAccountEntry.getLogoId(), newAccountEntry.getLogoId());
+		Assert.assertEquals(
 			existingAccountEntry.getParentAccountEntryId(),
 			newAccountEntry.getParentAccountEntryId());
+		Assert.assertEquals(
+			existingAccountEntry.getDefaultCPaymentMethodKey(),
+			newAccountEntry.getDefaultCPaymentMethodKey());
 		Assert.assertEquals(
 			existingAccountEntry.getDescription(),
 			newAccountEntry.getDescription());
@@ -216,8 +218,6 @@ public class AccountEntryPersistenceTest {
 		Assert.assertEquals(
 			existingAccountEntry.getEmailAddress(),
 			newAccountEntry.getEmailAddress());
-		Assert.assertEquals(
-			existingAccountEntry.getLogoId(), newAccountEntry.getLogoId());
 		Assert.assertEquals(
 			existingAccountEntry.getName(), newAccountEntry.getName());
 		Assert.assertEquals(
@@ -344,12 +344,12 @@ public class AccountEntryPersistenceTest {
 			"externalReferenceCode", true, "accountEntryId", true, "companyId",
 			true, "userId", true, "userName", true, "createDate", true,
 			"modifiedDate", true, "defaultBillingAddressId", true,
-			"defaultCPaymentMethodKey", true, "defaultShippingAddressId", true,
-			"parentAccountEntryId", true, "description", true, "domains", true,
-			"emailAddress", true, "logoId", true, "name", true,
-			"restrictMembership", true, "taxExemptionCode", true, "taxIdNumber",
-			true, "type", true, "status", true, "statusByUserId", true,
-			"statusByUserName", true, "statusDate", true);
+			"defaultShippingAddressId", true, "logoId", true,
+			"parentAccountEntryId", true, "defaultCPaymentMethodKey", true,
+			"description", true, "domains", true, "emailAddress", true, "name",
+			true, "restrictMembership", true, "taxExemptionCode", true,
+			"taxIdNumber", true, "type", true, "status", true, "statusByUserId",
+			true, "statusByUserName", true, "statusDate", true);
 	}
 
 	@Test
@@ -651,19 +651,19 @@ public class AccountEntryPersistenceTest {
 
 		accountEntry.setDefaultBillingAddressId(RandomTestUtil.nextLong());
 
-		accountEntry.setDefaultCPaymentMethodKey(RandomTestUtil.randomString());
-
 		accountEntry.setDefaultShippingAddressId(RandomTestUtil.nextLong());
 
+		accountEntry.setLogoId(RandomTestUtil.nextLong());
+
 		accountEntry.setParentAccountEntryId(RandomTestUtil.nextLong());
+
+		accountEntry.setDefaultCPaymentMethodKey(RandomTestUtil.randomString());
 
 		accountEntry.setDescription(RandomTestUtil.randomString());
 
 		accountEntry.setDomains(RandomTestUtil.randomString());
 
 		accountEntry.setEmailAddress(RandomTestUtil.randomString());
-
-		accountEntry.setLogoId(RandomTestUtil.nextLong());
 
 		accountEntry.setName(RandomTestUtil.randomString());
 
