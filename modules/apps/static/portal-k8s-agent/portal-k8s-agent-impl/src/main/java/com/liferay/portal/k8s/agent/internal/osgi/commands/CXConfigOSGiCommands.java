@@ -13,8 +13,10 @@ import com.liferay.portal.kernel.util.PropsValues;
 
 import java.io.IOException;
 
+import java.util.Collections;
 import java.util.Dictionary;
-import java.util.Enumeration;
+import java.util.List;
+import java.util.Objects;
 
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.service.cm.Configuration;
@@ -27,33 +29,88 @@ import org.osgi.service.component.annotations.Reference;
  */
 @Component(
 	property = {
-		"osgi.command.function=listConfigurations", "osgi.command.scope=cx"
+		"osgi.command.function=list", "osgi.command.function=reload",
+		"osgi.command.function=show", "osgi.command.scope=cxconfig"
 	},
 	service = OSGiCommands.class
 )
-public class CxOSGiCommands implements OSGiCommands {
+public class CXConfigOSGiCommands implements OSGiCommands {
 
-	public void listConfigurations(String... filters)
+	public void list(String... filters)
 		throws InvalidSyntaxException, IOException, PortalException {
 
 		Configuration[] cxConfigurations = _getConfigurations(filters);
 
 		if ((cxConfigurations != null) && (cxConfigurations.length > 0)) {
-			for (Configuration cxConfiguration : cxConfigurations) {
-				System.out.println(_printConfiguration(cxConfiguration));
-			}
+			_printConfigurations(cxConfigurations);
 		}
 		else {
 			System.out.println("No configurations found.");
 		}
 	}
 
+	public void reload(String pid)
+		throws InvalidSyntaxException, IOException, PortalException {
+
+		Configuration[] cxConfigurations = _getConfigurations(
+			"(|(.cx.config.key=*)(.k8s.config.key=*))");
+
+		Configuration matchingCxConfiguration = null;
+
+		if ((cxConfigurations != null) && (cxConfigurations.length > 0)) {
+			for (Configuration cxConfiguration : cxConfigurations) {
+				if (Objects.equals(cxConfiguration.getPid(), pid)) {
+					matchingCxConfiguration = cxConfiguration;
+				}
+			}
+		}
+		else {
+			System.out.println("No configuration found.");
+		}
+
+		if (matchingCxConfiguration != null) {
+			Dictionary<String, Object> properties =
+				matchingCxConfiguration.getProperties();
+
+			String factoryPid = matchingCxConfiguration.getFactoryPid();
+
+			matchingCxConfiguration.delete();
+
+			Configuration reloadedCxConfiguration =
+				_configurationAdmin.getFactoryConfiguration(
+					factoryPid, pid.split("~")[1], "?");
+
+			reloadedCxConfiguration.update(properties);
+
+			System.out.println(
+				"Reloaded configuration for " +
+					reloadedCxConfiguration.getPid());
+		}
+	}
+
+	public void show(String pid)
+		throws InvalidSyntaxException, IOException, PortalException {
+
+		Configuration[] cxConfigurations = _getConfigurations(
+			"(|(.cx.config.key=*)(.k8s.config.key=*))");
+
+		if ((cxConfigurations != null) && (cxConfigurations.length > 0)) {
+			for (Configuration cxConfiguration : cxConfigurations) {
+				if (Objects.equals(cxConfiguration.getPid(), pid)) {
+					System.out.println(_printConfiguration(cxConfiguration));
+				}
+			}
+		}
+		else {
+			System.out.println("No configuration found.");
+		}
+	}
+
 	private String _formatProperties(Dictionary<String, Object> properties) {
 		if (!properties.isEmpty()) {
-			java.util.List<String> sortedKeys = java.util.Collections.list(
-				properties.keys());
+			List<String> sortedKeys = Collections.list(properties.keys());
 
-			java.util.Collections.sort(sortedKeys);
+			Collections.sort(sortedKeys);
 
 			StringBundler sb = new StringBundler();
 
@@ -89,9 +146,7 @@ public class CxOSGiCommands implements OSGiCommands {
 	private Configuration[] _getConfigurations(String... filters)
 		throws InvalidSyntaxException, IOException, PortalException {
 
-		String deploymentFilter =
-			"(|(.k8s.config.key=*)" +
-				"(.persistenceManager.storagePolicy=ephemeral))";
+		String deploymentFilter = "(|(.cx.config.key=*)(.k8s.config.key=*))";
 
 		if (filters.length > 0) {
 			StringBundler otherFiltersSB = new StringBundler();
@@ -110,10 +165,8 @@ public class CxOSGiCommands implements OSGiCommands {
 								deploymentFilter = "(.k8s.config.key=*)";
 								deploymentFilterIsSet = true;
 							}
-							else if (value.equals("direct")) {
-								deploymentFilter =
-									"(.persistenceManager.storagePolicy" +
-										"=ephemeral)";
+							else if (value.equals("bundle")) {
+								deploymentFilter = "(.cx.config.key=*)";
 								deploymentFilterIsSet = true;
 							}
 						}
@@ -135,18 +188,18 @@ public class CxOSGiCommands implements OSGiCommands {
 							")"
 						);
 					}
-					else if (key.equals("cxType")) {
+					else if (key.equals("type")) {
 						otherFiltersSB.append(
-							"(service.factoryPid="
+							"(type="
 						).append(
 							value
 						).append(
 							")"
 						);
 					}
-					else if (key.equals("projectName")) {
+					else if (key.equals("name")) {
 						otherFiltersSB.append(
-							"(projectName="
+							"(name="
 						).append(
 							value
 						).append(
@@ -158,8 +211,6 @@ public class CxOSGiCommands implements OSGiCommands {
 
 			String finalFilter = String.format(
 				"(&%s%s)", deploymentFilter, otherFiltersSB);
-
-			System.out.println("Filter: " + finalFilter);
 
 			return _configurationAdmin.listConfigurations(finalFilter);
 		}
@@ -185,10 +236,53 @@ public class CxOSGiCommands implements OSGiCommands {
 		).append(
 			cxConfiguration.getFactoryPid()
 		).append(
+			StringPool.NEW_LINE
+		).append(
+			"Bundle location: "
+		).append(
+			cxConfiguration.getBundleLocation()
+		).append(
+			StringPool.NEW_LINE
+		).append(
 			_formatProperties(cxConfiguration.getProperties())
 		);
 
 		return sb.toString();
+	}
+
+	private void _printConfigurations(Configuration[] configurations) {
+		int idWidth = 150;
+		int nameWidth = 40;
+		int typeWidth = 20;
+		int webIdWidth = 15;
+
+		String format = StringBundler.concat(
+			"| %-", idWidth, "s | %-", nameWidth, "s | %-", typeWidth, "s | %-",
+			webIdWidth, "s |%n");
+
+		System.out.printf(format, "pid", "name", "type", "webId");
+
+		int totalWidth =
+			idWidth + nameWidth + typeWidth + webIdWidth + (4 * 3) + 2;
+
+		System.out.println("-".repeat(totalWidth));
+
+		for (Configuration configuration : configurations) {
+			System.out.printf(
+				format, configuration.getPid(),
+				configuration.getProperties(
+				).get(
+					"name"
+				),
+				configuration.getProperties(
+				).get(
+					"type"
+				),
+				configuration.getProperties(
+				).get(
+					"dxp.lxc.liferay.com.virtualInstanceId"
+				));
+		}
 	}
 
 	@Reference
