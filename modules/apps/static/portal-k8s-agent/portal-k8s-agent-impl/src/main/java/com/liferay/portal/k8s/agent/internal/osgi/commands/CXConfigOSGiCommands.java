@@ -6,8 +6,11 @@
 package com.liferay.portal.k8s.agent.internal.osgi.commands;
 
 import com.liferay.osgi.util.osgi.commands.OSGiCommands;
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
+import com.liferay.portal.configuration.persistence.InMemoryOnlyConfigurationThreadLocal;
+import com.liferay.portal.k8s.agent.internal.util.ConfigurationUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.util.PropsValues;
 
@@ -49,57 +52,43 @@ public class CXConfigOSGiCommands implements OSGiCommands {
 		}
 	}
 
-	public void reload(String pid)
-		throws InvalidSyntaxException, IOException, PortalException {
+	public void reload(String pid) throws InvalidSyntaxException, IOException {
+		Configuration cxConfiguration = _getConfiguration(pid);
 
-		Configuration[] cxConfigurations = _getConfigurations(
-			"(|(.cx.config.key=*)(.k8s.config.key=*))");
-
-		Configuration matchingCxConfiguration = null;
-
-		if ((cxConfigurations != null) && (cxConfigurations.length > 0)) {
-			for (Configuration cxConfiguration : cxConfigurations) {
-				if (Objects.equals(cxConfiguration.getPid(), pid)) {
-					matchingCxConfiguration = cxConfiguration;
-				}
-			}
-		}
-		else {
-			System.out.println("No configuration found.");
-		}
-
-		if (matchingCxConfiguration != null) {
-			Dictionary<String, Object> properties =
-				matchingCxConfiguration.getProperties();
-
-			String factoryPid = matchingCxConfiguration.getFactoryPid();
-
-			matchingCxConfiguration.delete();
-
-			Configuration reloadedCxConfiguration =
-				_configurationAdmin.getFactoryConfiguration(
-					factoryPid, pid.split("~")[1], "?");
-
-			reloadedCxConfiguration.update(properties);
+		if (cxConfiguration != null) {
+			Configuration reloadedCxConfiguration = _reloadConfiguration(
+				cxConfiguration);
 
 			System.out.println(
 				"Reloaded configuration for " +
 					reloadedCxConfiguration.getPid());
 		}
+		else {
+			System.out.println("No configuration found.");
+		}
 	}
 
-	public void show(String pid)
-		throws InvalidSyntaxException, IOException, PortalException {
+	public void show(String[] args) throws InvalidSyntaxException, IOException {
+		String pid = null;
 
-		Configuration[] cxConfigurations = _getConfigurations(
-			"(|(.cx.config.key=*)(.k8s.config.key=*))");
+		if (args.length == 0) {
+			System.out.println("No PID provided.");
 
-		if ((cxConfigurations != null) && (cxConfigurations.length > 0)) {
-			for (Configuration cxConfiguration : cxConfigurations) {
-				if (Objects.equals(cxConfiguration.getPid(), pid)) {
-					System.out.println(_printConfiguration(cxConfiguration));
-				}
-			}
+			return;
+		}
+		else if (args.length == 1) {
+			pid = args[0];
+		}
+		else {
+			System.out.println("Too many arguments.");
+
+			return;
+		}
+
+		Configuration configuration = _getConfiguration(pid);
+
+		if (configuration != null) {
+			System.out.println(_printConfiguration(configuration));
 		}
 		else {
 			System.out.println("No configuration found.");
@@ -143,8 +132,24 @@ public class CXConfigOSGiCommands implements OSGiCommands {
 		return "";
 	}
 
+	private Configuration _getConfiguration(String pid)
+		throws InvalidSyntaxException, IOException {
+
+		Configuration[] cxConfigurations = _getConfigurations();
+
+		if (cxConfigurations != null) {
+			for (Configuration cxConfiguration : cxConfigurations) {
+				if (Objects.equals(cxConfiguration.getPid(), pid)) {
+					return cxConfiguration;
+				}
+			}
+		}
+
+		return null;
+	}
+
 	private Configuration[] _getConfigurations(String... filters)
-		throws InvalidSyntaxException, IOException, PortalException {
+		throws InvalidSyntaxException, IOException {
 
 		String deploymentFilter = "(|(.cx.config.key=*)(.k8s.config.key=*))";
 
@@ -206,6 +211,12 @@ public class CXConfigOSGiCommands implements OSGiCommands {
 							")"
 						);
 					}
+					else {
+						return new Configuration[0];
+					}
+				}
+				else {
+					return new Configuration[0];
 				}
 			}
 
@@ -218,12 +229,36 @@ public class CXConfigOSGiCommands implements OSGiCommands {
 		return _configurationAdmin.listConfigurations(deploymentFilter);
 	}
 
+	private String _getConfigurationTableRow(Configuration configuration) {
+		int idWidth = 150;
+		int nameWidth = 40;
+		int typeWidth = 20;
+		int webIdWidth = 15;
+
+		String format = StringBundler.concat(
+			"| %-", idWidth, "s | %-", nameWidth, "s | %-", typeWidth, "s | %-",
+			webIdWidth, "s |%n");
+
+		return String.format(
+			format, configuration.getPid(),
+			configuration.getProperties(
+			).get(
+				"name"
+			),
+			configuration.getProperties(
+			).get(
+				"type"
+			),
+			configuration.getProperties(
+			).get(
+				"dxp.lxc.liferay.com.virtualInstanceId"
+			));
+	}
+
 	private String _printConfiguration(Configuration cxConfiguration) {
 		StringBundler sb = new StringBundler(1);
 
 		sb.append(
-			"================================================================"
-		).append(
 			StringPool.NEW_LINE
 		).append(
 			"PID: "
@@ -268,20 +303,29 @@ public class CXConfigOSGiCommands implements OSGiCommands {
 		System.out.println("-".repeat(totalWidth));
 
 		for (Configuration configuration : configurations) {
-			System.out.printf(
-				format, configuration.getPid(),
-				configuration.getProperties(
-				).get(
-					"name"
-				),
-				configuration.getProperties(
-				).get(
-					"type"
-				),
-				configuration.getProperties(
-				).get(
-					"dxp.lxc.liferay.com.virtualInstanceId"
-				));
+			System.out.println(_getConfigurationTableRow(configuration));
+		}
+	}
+
+	private Configuration _reloadConfiguration(Configuration configuration)
+		throws IOException {
+
+		Dictionary<String, Object> originalProperties =
+			configuration.getProperties();
+
+		String originalPid = configuration.getPid();
+
+		configuration.delete();
+
+		try(SafeCloseable safeCloseable = InMemoryOnlyConfigurationThreadLocal.setInMemoryOnlyWithSafeCloseable(true)) {
+			Configuration reloadedCxConfiguration = ConfigurationUtil.getConfiguration(_configurationAdmin,originalPid);
+
+			reloadedCxConfiguration.update(originalProperties);
+
+			return reloadedCxConfiguration;
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
 		}
 	}
 
