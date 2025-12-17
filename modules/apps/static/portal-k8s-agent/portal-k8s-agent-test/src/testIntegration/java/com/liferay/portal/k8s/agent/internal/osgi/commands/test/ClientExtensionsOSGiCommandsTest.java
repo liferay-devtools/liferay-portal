@@ -11,8 +11,6 @@ import com.liferay.client.extension.type.configuration.CETConfiguration;
 import com.liferay.osgi.util.osgi.commands.OSGiCommands;
 import com.liferay.petra.function.UnsafeRunnable;
 import com.liferay.petra.string.StringBundler;
-import com.liferay.petra.string.StringPool;
-import com.liferay.petra.string.StringUtil;
 import com.liferay.portal.configuration.test.util.ConfigurationTestUtil;
 import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.test.ReflectionTestUtil;
@@ -29,7 +27,6 @@ import java.io.PrintStream;
 import java.lang.reflect.Method;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Dictionary;
 import java.util.HashSet;
 import java.util.List;
@@ -58,7 +55,7 @@ import org.osgi.service.cm.ConfigurationListener;
  * @author Anna Zombori-Suszter
  */
 @RunWith(Arquillian.class)
-public class CXConfigOSGiCommandsTest {
+public class ClientExtensionsOSGiCommandsTest {
 
 	@ClassRule
 	@Rule
@@ -67,7 +64,8 @@ public class CXConfigOSGiCommandsTest {
 
 	@BeforeClass
 	public static void setUpClass() throws Exception {
-		Bundle bundle = FrameworkUtil.getBundle(CXConfigOSGiCommandsTest.class);
+		Bundle bundle = FrameworkUtil.getBundle(
+			ClientExtensionsOSGiCommandsTest.class);
 
 		_bundleContext = bundle.getBundleContext();
 
@@ -90,7 +88,7 @@ public class CXConfigOSGiCommandsTest {
 				).put(
 					"dxp.lxc.liferay.com.virtualInstanceId", "default"
 				).put(
-					"name", _CONFIGURATION_NAME_1
+					"name", "Liferay Sample CX 1"
 				).put(
 					"projectName", "liferay-sample-cx-1"
 				).put(
@@ -110,7 +108,7 @@ public class CXConfigOSGiCommandsTest {
 				).put(
 					"dxp.lxc.liferay.com.virtualInstanceId", "default"
 				).put(
-					"name", _CONFIGURATION_NAME_2
+					"name", "Liferay Sample CX 2"
 				).put(
 					"projectName", "liferay-sample-cx-2"
 				).put(
@@ -131,7 +129,7 @@ public class CXConfigOSGiCommandsTest {
 				).put(
 					"dxp.lxc.liferay.com.virtualInstanceId", _companyWebId
 				).put(
-					"name", _CONFIGURATION_NAME_3
+					"name", "Liferay Sample CX 3"
 				).put(
 					"projectName", "liferay-sample-cx-3"
 				).put(
@@ -160,77 +158,58 @@ public class CXConfigOSGiCommandsTest {
 	}
 
 	@Test
-	public void testGetConfigurationInvalidPid() {
-		String pid = "non-existing-pid";
+	public void testGetConfigurationNonexistentPid() {
+		String pid = "non-existent-pid";
 
 		Assert.assertNull(_getConfiguration(pid));
 	}
 
 	@Test
 	public void testGetConfigurations() throws Exception {
-		List<String> failures = new ArrayList<>();
-
 		_testGetConfigurations(
 			List.of(),
 			List.of(
-				_CONFIGURATION_NAME_1, _CONFIGURATION_NAME_2,
-				_CONFIGURATION_NAME_3),
-			failures);
+				"Liferay Sample CX 1", "Liferay Sample CX 2",
+				"Liferay Sample CX 3"));
 		_testGetConfigurations(
-			List.of("deploymentType=bundle"), List.of(_CONFIGURATION_NAME_1),
-			failures);
+			List.of("deploymentType=bundle"), List.of("Liferay Sample CX 1"));
 		_testGetConfigurations(
 			List.of("deploymentType=agent"),
-			List.of(_CONFIGURATION_NAME_2, _CONFIGURATION_NAME_3), failures);
+			List.of("Liferay Sample CX 2", "Liferay Sample CX 3"));
 		_testGetConfigurations(
 			List.of("webId=default"),
-			List.of(_CONFIGURATION_NAME_1, _CONFIGURATION_NAME_2), failures);
+			List.of("Liferay Sample CX 1", "Liferay Sample CX 2"));
 		_testGetConfigurations(
 			List.of("webId=liferay.com"),
-			List.of(_CONFIGURATION_NAME_1, _CONFIGURATION_NAME_2), failures);
+			List.of("Liferay Sample CX 1", "Liferay Sample CX 2"));
 		_testGetConfigurations(
-			List.of("webId=" + _companyWebId), List.of(_CONFIGURATION_NAME_3),
-			failures);
+			List.of("webId=" + _companyWebId), List.of("Liferay Sample CX 3"));
 		_testGetConfigurations(
 			List.of("type=customElement"),
-			List.of(_CONFIGURATION_NAME_1, _CONFIGURATION_NAME_2), failures);
+			List.of("Liferay Sample CX 1", "Liferay Sample CX 2"));
 		_testGetConfigurations(
-			List.of("type=instanceSettings"), List.of(_CONFIGURATION_NAME_3),
-			failures);
+			List.of("type=instanceSettings"), List.of("Liferay Sample CX 3"));
 		_testGetConfigurations(
 			List.of("deploymentType=bundle", "type=customElement"),
-			List.of(_CONFIGURATION_NAME_1), failures);
+			List.of("Liferay Sample CX 1"));
 		_testGetConfigurations(
 			List.of(
 				"deploymentType=agent", "webId=" + _companyWebId,
 				"type=instanceSettings"),
-			List.of(_CONFIGURATION_NAME_3), failures);
+			List.of("Liferay Sample CX 3"));
 
+		_testGetConfigurations(List.of("name=Non Existent Name"), List.of());
 		_testGetConfigurations(
-			List.of("name=Non Existing Name"), List.of(), failures);
-		_testGetConfigurations(
-			List.of("deploymentType=prod", "name=Non Existing Name"), List.of(),
-			failures);
-		_testGetConfigurations(
-			List.of("nonExistentFilter=foo"), List.of(), failures);
-		_testGetConfigurations(List.of("foo"), List.of(), failures);
-		_testGetConfigurations(List.of("foo", "bar"), List.of(), failures);
-
-		_assertNoFailures(failures);
+			List.of("deploymentType=prod", "name=Non Existent Name"),
+			List.of());
+		_testGetConfigurations(List.of("nonExistentFilter=foo"), List.of());
+		_testGetConfigurations(List.of("foo"), List.of());
+		_testGetConfigurations(List.of("foo", "bar"), List.of());
 	}
 
 	@Test
 	public void testList() throws Exception {
-		PrintStream printStream = System.out;
-
-		ByteArrayOutputStream byteArrayOutputStream =
-			new ByteArrayOutputStream();
-
-		System.setOut(new PrintStream(byteArrayOutputStream));
-
-		_list("deploymentType=bundle");
-
-		String output = byteArrayOutputStream.toString();
+		String output = _captureStout(() -> _list("deploymentType=bundle"));
 
 		String[] lines = output.split(System.lineSeparator());
 
@@ -245,36 +224,30 @@ public class CXConfigOSGiCommandsTest {
 		String dataRow = lines[2];
 
 		String expectedDataPattern = StringBundler.concat(
-			"\\| ", _configurationPids.get(0), "\\s*\\| ",
-			_CONFIGURATION_NAME_1, "\\s*\\| customElement \\s*\\| ",
+			"\\| ", _configurationPids.get(0),
+			"\\s*\\| Liferay Sample CX 1\\s*\\| customElement \\s*\\| ",
 			"default\\s*\\|");
 
-		System.setOut(printStream);
-
 		Assert.assertTrue(
-			"Row did not match pattern: \n" + dataRow,
+			"Row does not match pattern: \n" + dataRow,
 			dataRow.matches(expectedDataPattern));
 	}
 
 	@Test
 	public void testReload() throws Exception {
-		List<String> failures = new ArrayList<>();
-
 		String basePid = CETConfiguration.class.getName();
 
 		_testReload(
 			List.of(basePid + "~liferay-sample-cx-1/liferay.com"),
 			StringBundler.concat(
-				"Reloaded configuration for ", basePid,
-				"~liferay-sample-cx-1/liferay.com"),
-			failures);
+				"Reloaded configuration for PID ", basePid,
+				"~liferay-sample-cx-1/liferay.com"));
 
 		_testReload(
-			List.of("non-existing-pid"), "No configuration found.", failures);
-		_testReload(List.of("pid-1", "pid-2"), "Too many arguments.", failures);
-		_testReload(List.of(), "No PID provided.", failures);
-
-		_assertNoFailures(failures);
+			List.of("non-existent-pid"),
+			"Could not find configuration for PID non-existent-pid");
+		_testReload(List.of("pid-1", "pid-2"), "Too many arguments");
+		_testReload(List.of(), "No PID was provided");
 	}
 
 	@Test
@@ -316,31 +289,22 @@ public class CXConfigOSGiCommandsTest {
 
 	@Test
 	public void testShow() throws Exception {
-		List<String> failures = new ArrayList<>();
-
 		_testShow(
 			List.of(
 				CETConfiguration.class.getName() +
 					"~liferay-sample-cx-1/liferay.com"),
-			"projectName: liferay-sample-cx-1", failures);
+			"projectName: liferay-sample-cx-1");
 		_testShow(
-			List.of("non-existing-pid"), "No configuration found.", failures);
-		_testShow(List.of("pid-1", "pid-2"), "Too many arguments.", failures);
-		_testShow(List.of(), "No PID provided.", failures);
-
-		_assertNoFailures(failures);
-	}
-
-	private void _assertNoFailures(List<String> failures) {
-		Assert.assertTrue(
-			"Failures:\n" + StringUtil.merge(failures, StringPool.NEW_LINE),
-			failures.isEmpty());
+			List.of("non-existent-pid"),
+			"Could not find configuration for PID non-existent-pid");
+		_testShow(List.of("pid-1", "pid-2"), "Too many arguments");
+		_testShow(List.of(), "No PID was provided");
 	}
 
 	private String _captureStout(UnsafeRunnable<Exception> unsafeRunnable)
 		throws Exception {
 
-		PrintStream originalPrintStream = System.out;
+		PrintStream systemOutPrintStream = System.out;
 
 		try {
 			ByteArrayOutputStream byteArrayOutputStream =
@@ -353,7 +317,7 @@ public class CXConfigOSGiCommandsTest {
 			return byteArrayOutputStream.toString();
 		}
 		finally {
-			System.setOut(originalPrintStream);
+			System.setOut(systemOutPrintStream);
 		}
 	}
 
@@ -363,10 +327,10 @@ public class CXConfigOSGiCommandsTest {
 			pid);
 	}
 
-	private Configuration[] _getConfigurations(String[] filter) {
+	private Configuration[] _getConfigurations(String[] filters) {
 		return ReflectionTestUtil.invoke(
 			_osgiCommands, "_getConfigurations",
-			new Class<?>[] {String[].class}, (Object)filter);
+			new Class<?>[] {String[].class}, (Object)filters);
 	}
 
 	private void _list(String... filters) throws Exception {
@@ -377,12 +341,12 @@ public class CXConfigOSGiCommandsTest {
 		method.invoke(_osgiCommands, (Object)filters);
 	}
 
-	private void _reload(String... args) throws Exception {
+	private void _reload(String... arguments) throws Exception {
 		Class<?> clazz = _osgiCommands.getClass();
 
 		Method method = clazz.getMethod("reload", String[].class);
 
-		method.invoke(_osgiCommands, (Object)args);
+		method.invoke(_osgiCommands, (Object)arguments);
 	}
 
 	private void _reloadConfiguration(Configuration configuration) {
@@ -391,25 +355,24 @@ public class CXConfigOSGiCommandsTest {
 			new Class<?>[] {Configuration.class}, configuration);
 	}
 
-	private void _show(String... args) throws Exception {
+	private void _show(String... arguments) throws Exception {
 		Class<?> clazz = _osgiCommands.getClass();
 
 		Method method = clazz.getMethod("show", String[].class);
 
-		method.invoke(_osgiCommands, (Object)args);
+		method.invoke(_osgiCommands, (Object)arguments);
 	}
 
 	private void _testGetConfigurations(
-		List<String> filters, List<String> expectedConfigurationNames,
-		List<String> failures) {
+		List<String> filtersList, List<String> expectedConfigurationNames) {
 
-		String[] filtersArray = filters.toArray(new String[0]);
+		String[] filters = filtersList.toArray(new String[0]);
 
 		Set<String> expectedConfigurationNamesSet = new HashSet<>(
 			expectedConfigurationNames);
 
 		Configuration[] configurations = _getConfigurations(
-			ArrayUtil.append(filtersArray, "test.only=true"));
+			ArrayUtil.append(filters, "test.only=true"));
 
 		Set<String> namesFound = new HashSet<>();
 
@@ -422,54 +385,34 @@ public class CXConfigOSGiCommandsTest {
 			}
 		}
 
-		if (!Objects.equals(expectedConfigurationNamesSet, namesFound)) {
-			failures.add(
-				StringBundler.concat(
-					"FAILURE: ", Arrays.toString(filtersArray),
-					"\nexpected output: ", expectedConfigurationNames,
-					"\nactual output: ", namesFound, StringPool.NEW_LINE));
-		}
+		Assert.assertEquals(expectedConfigurationNamesSet, namesFound);
 	}
 
-	private void _testReload(
-			List<String> inputParams, String expectedOutput,
-			List<String> failures)
+	private void _testReload(List<String> argumentsList, String expectedOutput)
 		throws Exception {
 
-		String[] inputParamsArray = inputParams.toArray(new String[0]);
+		String[] arguments = argumentsList.toArray(new String[0]);
 
-		String output = _captureStout(() -> _reload(inputParamsArray));
+		String output = _captureStout(() -> _reload(arguments));
 
-		if (!output.contains(expectedOutput)) {
-			failures.add("FAILURE: " + Arrays.toString(inputParamsArray));
-		}
+		Assert.assertTrue(output.contains(expectedOutput));
 	}
 
-	private void _testShow(
-			List<String> inputParams, String expectedOutput,
-			List<String> failures)
+	private void _testShow(List<String> argumentsList, String expectedOutput)
 		throws Exception {
 
-		String[] inputParamsArray = inputParams.toArray(new String[0]);
+		String[] arguments = argumentsList.toArray(new String[0]);
 
-		String output = _captureStout(() -> _show(inputParamsArray));
+		String output = _captureStout(() -> _show(arguments));
 
-		if (!output.contains(expectedOutput)) {
-			failures.add("FAILURE: " + Arrays.toString(inputParamsArray));
-		}
+		Assert.assertTrue(output.contains(expectedOutput));
 	}
-
-	private static final String _CONFIGURATION_NAME_1 = "Liferay Sample CX 1";
-
-	private static final String _CONFIGURATION_NAME_2 = "Liferay Sample CX 2";
-
-	private static final String _CONFIGURATION_NAME_3 = "Liferay Sample CX 3";
 
 	private static BundleContext _bundleContext;
 	private static String _companyWebId;
 	private static List<String> _configurationPids;
 
-	@Inject(filter = "osgi.command.scope=cxconfig")
+	@Inject(filter = "osgi.command.scope=clientextensions")
 	private OSGiCommands _osgiCommands;
 
 }

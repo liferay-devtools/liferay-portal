@@ -20,6 +20,7 @@ import com.liferay.portal.kernel.util.PropsValues;
 import java.io.IOException;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Dictionary;
 import java.util.List;
@@ -38,79 +39,82 @@ import org.osgi.service.component.annotations.Reference;
 @Component(
 	property = {
 		"osgi.command.function=list", "osgi.command.function=reload",
-		"osgi.command.function=show", "osgi.command.scope=cxconfig"
+		"osgi.command.function=show", "osgi.command.scope=clientextensions"
 	},
 	service = OSGiCommands.class
 )
-public class CXConfigOSGiCommands implements OSGiCommands {
+public class ClientExtensionsOSGiCommands implements OSGiCommands {
 
 	public void list(String... filters)
 		throws InvalidSyntaxException, IOException, PortalException {
 
-		Configuration[] cxConfigurations = _getConfigurations(filters);
+		Configuration[] configurations = _getConfigurations(filters);
 
-		if (ArrayUtil.isEmpty(cxConfigurations)) {
-			System.out.println("No configurations found.");
+		if (ArrayUtil.isEmpty(configurations)) {
+			System.out.println(
+				"Could not find configuration for filters " +
+					Arrays.toString(filters));
 
 			return;
 		}
 
-		_printConfigurations(cxConfigurations);
+		_printConfigurations(configurations);
 	}
 
-	public void reload(String... args)
+	public void reload(String... arguments)
 		throws InvalidSyntaxException, IOException {
 
-		if (ArrayUtil.isEmpty(args)) {
-			System.out.println("No PID provided.");
+		if (ArrayUtil.isEmpty(arguments)) {
+			System.out.println("No PID was provided");
 
 			return;
 		}
 
-		if (args.length > 1) {
-			System.out.println("Too many arguments.");
+		if (arguments.length > 1) {
+			System.out.println("Too many arguments");
 
 			return;
 		}
 
-		String pid = args[0];
-
-		Configuration cxConfiguration = _getConfiguration(pid);
-
-		if (cxConfiguration == null) {
-			System.out.println("No configuration found.");
-
-			return;
-		}
-
-		Configuration reloadedCxConfiguration = _reloadConfiguration(
-			cxConfiguration);
-
-		System.out.println(
-			"Reloaded configuration for " + reloadedCxConfiguration.getPid());
-	}
-
-	public void show(String... args)
-		throws InvalidSyntaxException, IOException {
-
-		if (ArrayUtil.isEmpty(args)) {
-			System.out.println("No PID provided.");
-
-			return;
-		}
-
-		if (args.length > 1) {
-			System.out.println("Too many arguments.");
-
-			return;
-		}
-
-		String pid = args[0];
+		String pid = arguments[0];
 
 		Configuration configuration = _getConfiguration(pid);
 
 		if (configuration == null) {
-			System.out.println("No configuration found.");
+			System.out.println("Could not find configuration for PID " + pid);
+
+			return;
+		}
+
+		Configuration reloadedClientExtensionConfiguration =
+			_reloadConfiguration(configuration);
+
+		System.out.println(
+			"Reloaded configuration for PID " +
+				reloadedClientExtensionConfiguration.getPid());
+	}
+
+	public void show(String... arguments)
+		throws InvalidSyntaxException, IOException {
+
+		if (ArrayUtil.isEmpty(arguments)) {
+			System.out.println("No PID was provided");
+
+			return;
+		}
+
+		if (arguments.length > 1) {
+			System.out.println("Too many arguments");
+
+			return;
+		}
+
+		String pid = arguments[0];
+
+		Configuration configuration = _getConfiguration(pid);
+
+		if (configuration == null) {
+			System.out.println("Could not find configuration for PID " + pid);
 
 			return;
 		}
@@ -157,49 +161,62 @@ public class CXConfigOSGiCommands implements OSGiCommands {
 		return StringUtil.merge(lines, StringPool.NEW_LINE);
 	}
 
+	private String _getClientExtensionConfigurationTableRow(
+		Configuration configuration, String formatString) {
+
+		Dictionary<String, Object> properties = configuration.getProperties();
+
+		return String.format(
+			formatString, configuration.getPid(), properties.get("name"),
+			properties.get("type"),
+			properties.get("dxp.lxc.liferay.com.virtualInstanceId"));
+	}
+
 	private Configuration _getConfiguration(String pid)
 		throws InvalidSyntaxException, IOException {
 
-		Configuration[] cxConfigurations = _getConfigurations(
+		Configuration[] configuration = _getConfigurations(
 			"service.pid=" + pid);
 
-		if (ArrayUtil.isEmpty(cxConfigurations)) {
+		if (ArrayUtil.isEmpty(configuration)) {
 			return null;
 		}
 
-		return cxConfigurations[0];
+		return configuration[0];
 	}
 
 	private Configuration[] _getConfigurations(String... filters)
 		throws InvalidSyntaxException, IOException {
 
-		String deploymentFilter = "(|(.cx.config.key=*)(.k8s.config.key=*))";
+		String deploymentFilterString =
+			"(|(.cx.config.key=*)(.k8s.config.key=*))";
 
-		if (filters.length <= 0) {
-			return _configurationAdmin.listConfigurations(deploymentFilter);
+		if (filters.length == 0) {
+			return _configurationAdmin.listConfigurations(
+				deploymentFilterString);
 		}
 
-		StringBundler otherFiltersSB = new StringBundler();
+		StringBundler sb = new StringBundler();
 
-		for (String filter : filters) {
-			String[] splitFilter = filter.split("=", 2);
+		for (String filterString : filters) {
+			String[] parts = filterString.split("=", 2);
 
-			if (splitFilter.length != 2) {
-				System.out.println("Invalid filter: " + filter);
+			if (parts.length != 2) {
+				System.out.println("Invalid filter: " + filterString);
 
 				return null;
 			}
 
-			String key = splitFilter[0];
-			String value = splitFilter[1];
+			String key = parts[0];
+			String value = parts[1];
 
 			if (key.equals("deploymentType")) {
 				if (value.equals("agent")) {
-					deploymentFilter = "(.k8s.config.key=*)";
+					deploymentFilterString = "(.k8s.config.key=*)";
 				}
 
 				if (value.equals("bundle")) {
-					deploymentFilter = "(.cx.config.key=*)";
+					deploymentFilterString = "(.cx.config.key=*)";
 				}
 
 				continue;
@@ -213,30 +230,23 @@ public class CXConfigOSGiCommands implements OSGiCommands {
 				}
 			}
 
-			otherFiltersSB.append(String.format("(%s=%s)", key, value));
+			sb.append("(");
+			sb.append(key);
+			sb.append("=");
+			sb.append(value);
+			sb.append(")");
 		}
 
 		return _configurationAdmin.listConfigurations(
-			String.format("(&%s%s)", deploymentFilter, otherFiltersSB));
+			StringBundler.concat("(&", deploymentFilterString, sb, ")"));
 	}
 
-	private String _getConfigurationTableRow(
-		Configuration configuration, String format) {
-
-		Dictionary<String, Object> properties = configuration.getProperties();
-
-		return String.format(
-			format, configuration.getPid(), properties.get("name"),
-			properties.get("type"),
-			properties.get("dxp.lxc.liferay.com.virtualInstanceId"));
-	}
-
-	private String _printConfiguration(Configuration cxConfiguration) {
-		return String.format(
-			"\nPID: %s\nFactoryPID: %s\n Bundle location: %s\n%s",
-			cxConfiguration.getPid(), cxConfiguration.getFactoryPid(),
-			cxConfiguration.getBundleLocation(),
-			_formatProperties(cxConfiguration.getProperties()));
+	private String _printConfiguration(Configuration configuration) {
+		return StringBundler.concat(
+			"\nPID: ", configuration.getPid(), "\nFactoryPID: ",
+			configuration.getFactoryPid(), "\nBundle location: ",
+			configuration.getBundleLocation(), "\n",
+			_formatProperties(configuration.getProperties()));
 	}
 
 	private void _printConfigurations(Configuration[] configurations) {
@@ -245,11 +255,11 @@ public class CXConfigOSGiCommands implements OSGiCommands {
 		int typeWidth = 20;
 		int webIdWidth = 15;
 
-		String format = StringBundler.concat(
+		String formatString = StringBundler.concat(
 			"| %-", idWidth, "s | %-", nameWidth, "s | %-", typeWidth, "s | %-",
 			webIdWidth, "s |%n");
 
-		System.out.printf(format, "pid", "name", "type", "webId");
+		System.out.printf(formatString, "pid", "name", "type", "webId");
 
 		int totalWidth =
 			idWidth + nameWidth + typeWidth + webIdWidth + (4 * 3) + 2;
@@ -258,7 +268,8 @@ public class CXConfigOSGiCommands implements OSGiCommands {
 
 		for (Configuration configuration : configurations) {
 			System.out.println(
-				_getConfigurationTableRow(configuration, format));
+				_getClientExtensionConfigurationTableRow(
+					configuration, formatString));
 		}
 	}
 
@@ -276,13 +287,13 @@ public class CXConfigOSGiCommands implements OSGiCommands {
 				InMemoryOnlyConfigurationThreadLocal.
 					setInMemoryOnlyWithSafeCloseable(true)) {
 
-			Configuration reloadedCxConfiguration =
+			Configuration reloadedConfiguration =
 				ConfigurationUtil.getConfiguration(
 					_configurationAdmin, originalPid);
 
-			reloadedCxConfiguration.update(originalProperties);
+			reloadedConfiguration.update(originalProperties);
 
-			return reloadedCxConfiguration;
+			return reloadedConfiguration;
 		}
 		catch (Exception exception) {
 			throw new RuntimeException(exception);
