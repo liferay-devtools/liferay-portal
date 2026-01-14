@@ -39,6 +39,15 @@ public class FormatSourceTask extends JavaExec {
 		mainClass.set("com.liferay.source.formatter.SourceFormatter");
 	}
 
+	public void addSourceFormatterProperty(String sourceFormattterProperty) {
+		List<String> sourceFormatterProperties = getSourceFormatterProperties();
+
+		sourceFormatterProperties.add(sourceFormattterProperty);
+
+		_sourceFormatterArgs.setSourceFormatterProperties(
+			sourceFormatterProperties);
+	}
+
 	@Override
 	public void exec() {
 		setArgs(_getCompleteArgs());
@@ -111,6 +120,12 @@ public class FormatSourceTask extends JavaExec {
 	@Input
 	public int getProcessorThreadCount() {
 		return _sourceFormatterArgs.getProcessorThreadCount();
+	}
+
+	@Input
+	@Optional
+	public List<String> getSourceFormatterProperties() {
+		return _sourceFormatterArgs.getSourceFormatterProperties();
 	}
 
 	@Input
@@ -261,6 +276,13 @@ public class FormatSourceTask extends JavaExec {
 		_sourceFormatterArgs.setShowDebugInformation(showDebugInformation);
 	}
 
+	public void setSourceFormatterProperties(
+		List<String> sourceFormatterProperties) {
+
+		_sourceFormatterArgs.setSourceFormatterProperties(
+			sourceFormatterProperties);
+	}
+
 	public void setValidateCommitMessages(boolean validateCommitMessages) {
 		_sourceFormatterArgs.setValidateCommitMessages(validateCommitMessages);
 	}
@@ -288,6 +310,8 @@ public class FormatSourceTask extends JavaExec {
 		args.add(
 			"source.file.extensions=" +
 				CollectionUtils.join(",", getFileExtensions()));
+		args.add(
+			"source.formatter.properties=" + getSourceFormatterProperties());
 		args.add("source.print.errors=" + isPrintErrors());
 		args.add("validate.commit.messages=" + isValidateCommitMessages());
 
