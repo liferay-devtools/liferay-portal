@@ -5,8 +5,6 @@
 
 package com.liferay.source.formatter.checkstyle.check;
 
-import com.liferay.portal.kernel.util.StringUtil;
-
 import com.puppycrawl.tools.checkstyle.api.DetailAST;
 import com.puppycrawl.tools.checkstyle.api.TokenTypes;
 
@@ -36,44 +34,32 @@ public class BatchableUpdateCheck extends BaseCheck {
 				return;
 			}
 
-			List<DetailAST> methodCallDetailASTs = getAllChildTokens(
-				slistDetailAST, true, TokenTypes.METHOD_CALL);
+			List<DetailAST> methodCallDetailASTs = getMethodCalls(
+				detailAST, null, "executeUpdate");
 
-			for (DetailAST methodCallDetailAST : methodCallDetailASTs) {
-				DetailAST dotDetailAST = methodCallDetailAST.findFirstToken(
-					TokenTypes.DOT);
+			DetailAST methodCallDetailAST = methodCallDetailASTs.get(0);
 
-				if (dotDetailAST == null) {
-					continue;
-				}
+			String variableName = getName(
+				methodCallDetailAST.findFirstToken(TokenTypes.DOT));
 
-				List<String> names = getNames(dotDetailAST, false);
+			DetailAST variableDefinitionDetailAST =
+				getVariableDefinitionDetailAST(
+					methodCallDetailAST, variableName, false);
 
-				if ((names.size() != 2) ||
-					!StringUtil.equals(names.get(1), "executeUpdate")) {
+			if ((variableDefinitionDetailAST == null) ||
+				(variableDefinitionDetailAST.getLineNo() >=
+					childDetailAST.getLineNo())) {
 
-					continue;
-				}
+				continue;
+			}
 
-				DetailAST variableDefinitionDetailAST =
-					getVariableDefinitionDetailAST(
-						methodCallDetailAST, names.get(0), false);
+			String variableTypeName = getVariableTypeName(
+				variableDefinitionDetailAST, variableName, false);
 
-				if ((variableDefinitionDetailAST == null) ||
-					(variableDefinitionDetailAST.getLineNo() >=
-						childDetailAST.getLineNo())) {
+			if (variableTypeName.equals("PreparedStatement")) {
+				log(methodCallDetailAST, _MSG_USE_ADD_BATCH);
 
-					continue;
-				}
-
-				String variableTypeName = getVariableTypeName(
-					variableDefinitionDetailAST, names.get(0), false);
-
-				if (variableTypeName.equals("PreparedStatement")) {
-					log(methodCallDetailAST, _MSG_USE_ADD_BATCH);
-
-					break;
-				}
+				break;
 			}
 		}
 	}
