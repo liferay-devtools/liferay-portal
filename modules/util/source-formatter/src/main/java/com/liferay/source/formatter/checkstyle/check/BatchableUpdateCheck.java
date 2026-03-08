@@ -19,58 +19,62 @@ public class BatchableUpdateCheck extends BaseCheck {
 
 	@Override
 	public int[] getDefaultTokens() {
-		return new int[] {
-			TokenTypes.LITERAL_DO, TokenTypes.LITERAL_FOR,
-			TokenTypes.LITERAL_WHILE
-		};
+		return new int[] {TokenTypes.METHOD_DEF};
 	}
 
 	@Override
 	protected void doVisitToken(DetailAST detailAST) {
-		DetailAST slistDetailAST = detailAST.findFirstToken(TokenTypes.SLIST);
+		List<DetailAST> childDetailASTs = getAllChildTokens(
+			detailAST, true, TokenTypes.LITERAL_DO, TokenTypes.LITERAL_FOR,
+			TokenTypes.LITERAL_WHILE);
 
-		if (slistDetailAST == null) {
-			return;
-		}
+		for (DetailAST childDetailAST : childDetailASTs) {
+			DetailAST slistDetailAST = childDetailAST.findFirstToken(
+				TokenTypes.SLIST);
 
-		List<DetailAST> methodCallDetailASTs = getAllChildTokens(
-			slistDetailAST, true, TokenTypes.METHOD_CALL);
-
-		for (DetailAST methodCallDetailAST : methodCallDetailASTs) {
-			DetailAST dotDetailAST = methodCallDetailAST.findFirstToken(
-				TokenTypes.DOT);
-
-			if (dotDetailAST == null) {
-				continue;
+			if (slistDetailAST == null) {
+				return;
 			}
 
-			List<String> names = getNames(dotDetailAST, false);
+			List<DetailAST> methodCallDetailASTs = getAllChildTokens(
+				slistDetailAST, true, TokenTypes.METHOD_CALL);
 
-			if ((names.size() != 2) ||
-				!StringUtil.equals(names.get(1), "executeUpdate")) {
+			for (DetailAST methodCallDetailAST : methodCallDetailASTs) {
+				DetailAST dotDetailAST = methodCallDetailAST.findFirstToken(
+					TokenTypes.DOT);
 
-				continue;
+				if (dotDetailAST == null) {
+					continue;
+				}
+
+				List<String> names = getNames(dotDetailAST, false);
+
+				if ((names.size() != 2) ||
+					!StringUtil.equals(names.get(1), "executeUpdate")) {
+
+					continue;
+				}
+
+				DetailAST variableDefinitionDetailAST =
+					getVariableDefinitionDetailAST(
+						methodCallDetailAST, names.get(0), false);
+
+				if ((variableDefinitionDetailAST == null) ||
+					(variableDefinitionDetailAST.getLineNo() >=
+						childDetailAST.getLineNo())) {
+
+					continue;
+				}
+
+				String variableTypeName = getVariableTypeName(
+					variableDefinitionDetailAST, names.get(0), false);
+
+				if (variableTypeName.equals("PreparedStatement")) {
+					log(methodCallDetailAST, _MSG_USE_ADD_BATCH);
+
+					break;
+				}
 			}
-
-			DetailAST variableDefinitionDetailAST =
-				getVariableDefinitionDetailAST(
-					methodCallDetailAST, names.get(0), false);
-
-			if ((variableDefinitionDetailAST == null) ||
-				(variableDefinitionDetailAST.getLineNo() >=
-					detailAST.getLineNo())) {
-
-				continue;
-			}
-
-			String variableTypeName = getVariableTypeName(
-				variableDefinitionDetailAST, names.get(0), false);
-
-			if (!variableTypeName.equals("PreparedStatement")) {
-				continue;
-			}
-
-			log(methodCallDetailAST, _MSG_USE_ADD_BATCH);
 		}
 	}
 
