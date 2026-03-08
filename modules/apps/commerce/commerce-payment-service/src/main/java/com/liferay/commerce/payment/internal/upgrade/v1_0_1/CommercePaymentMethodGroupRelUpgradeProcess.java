@@ -34,7 +34,6 @@ public class CommercePaymentMethodGroupRelUpgradeProcess
 	@Override
 	protected void doUpgrade() throws Exception {
 		try (Statement s = connection.createStatement();
-
 			ResultSet resultSet = s.executeQuery(
 				"select CPaymentMethodGroupRelId, groupId from " +
 					"CommercePaymentMethodGroupRel");

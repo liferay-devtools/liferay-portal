@@ -34,7 +34,6 @@ public class CommerceNotificationTemplateGroupIdUpgradeProcess
 	@Override
 	protected void doUpgrade() throws Exception {
 		try (Statement s = connection.createStatement();
-
 			ResultSet resultSet = s.executeQuery(
 				"select commerceNotificationTemplateId, groupId from " +
 					"CommerceNotificationTemplate");

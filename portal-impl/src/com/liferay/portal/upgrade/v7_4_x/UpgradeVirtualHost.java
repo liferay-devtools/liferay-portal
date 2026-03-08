@@ -24,7 +24,6 @@ public class UpgradeVirtualHost extends UpgradeProcess {
 		try (PreparedStatement preparedStatement1 = connection.prepareStatement(
 				"select ctCollectionId, virtualHostId, hostname from " +
 					"VirtualHost where hostname != LOWER(hostname)");
-
 			PreparedStatement preparedStatement2 = connection.prepareStatement(
 				"update VirtualHost set hostname = ? where ctCollectionId = " +
 					"? and virtualHostId = ?")) {

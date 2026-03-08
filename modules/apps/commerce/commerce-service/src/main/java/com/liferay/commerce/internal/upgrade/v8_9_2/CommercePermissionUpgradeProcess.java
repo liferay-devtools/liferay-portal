@@ -41,12 +41,11 @@ public class CommercePermissionUpgradeProcess extends UpgradeProcess {
 
 	private void _deleteGuestPermission() throws Exception {
 		try (PreparedStatement preparedStatement = connection.prepareStatement(
-			StringBundler.concat(
-				"select companyId, resourcePermissionId, roleId from ",
-				"ResourcePermission where name = 'com.liferay.commerce.order' ",
-				"and primKey = 'com.liferay.commerce.order' and scope = 4"));
-
-			 ResultSet resultSet = preparedStatement.executeQuery()) {
+				StringBundler.concat(
+					"select companyId, resourcePermissionId, roleId from ",
+					"ResourcePermission where name = 'com.liferay.commerce.order' ",
+					"and primKey = 'com.liferay.commerce.order' and scope = 4"));
+			ResultSet resultSet = preparedStatement.executeQuery()) {
 
 			while (resultSet.next()) {
 				Role role = _roleLocalService.fetchRole(
@@ -70,12 +69,11 @@ public class CommercePermissionUpgradeProcess extends UpgradeProcess {
 
 	private void _updateSalesAgentPermission() throws Exception {
 		try (PreparedStatement preparedStatement = connection.prepareStatement(
-			StringBundler.concat(
-				"select companyId, resourcePermissionId, roleId from ",
-				"ResourcePermission where name = 'com.liferay.commerce.order' ",
-				"and primKey = 'com.liferay.commerce.order' and scope = 1"));
-
-			 ResultSet resultSet = preparedStatement.executeQuery()) {
+				StringBundler.concat(
+					"select companyId, resourcePermissionId, roleId from ",
+					"ResourcePermission where name = 'com.liferay.commerce.order' ",
+					"and primKey = 'com.liferay.commerce.order' and scope = 1"));
+			ResultSet resultSet = preparedStatement.executeQuery()) {
 
 			while (resultSet.next()) {
 				Role role = _roleLocalService.fetchRole(
