@@ -37,7 +37,18 @@ public class BatchableUpdateCheck extends BaseCheck {
 			List<DetailAST> methodCallDetailASTs = getMethodCalls(
 				detailAST, null, "executeUpdate");
 
+			if (methodCallDetailASTs.isEmpty()) {
+				continue;
+			}
+
 			DetailAST methodCallDetailAST = methodCallDetailASTs.get(0);
+
+			DetailAST dotDetailAST = methodCallDetailAST.findFirstToken(
+				TokenTypes.DOT);
+
+			if (dotDetailAST == null) {
+				continue;
+			}
 
 			String variableName = getName(
 				methodCallDetailAST.findFirstToken(TokenTypes.DOT));
