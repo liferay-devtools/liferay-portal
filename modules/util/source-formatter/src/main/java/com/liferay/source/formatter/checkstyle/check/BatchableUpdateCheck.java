@@ -37,6 +37,10 @@ public class BatchableUpdateCheck extends BaseCheck {
 			List<DetailAST> methodCallDetailASTs = getMethodCalls(
 				detailAST, null, "executeUpdate");
 
+			if (methodCallDetailASTs.isEmpty()) {
+				continue;
+			}
+
 			DetailAST methodCallDetailAST = methodCallDetailASTs.get(0);
 
 			String variableName = getName(
@@ -56,13 +60,47 @@ public class BatchableUpdateCheck extends BaseCheck {
 			String variableTypeName = getVariableTypeName(
 				variableDefinitionDetailAST, variableName, false);
 
-			if (variableTypeName.equals("PreparedStatement")) {
-				log(methodCallDetailAST, _MSG_USE_ADD_BATCH);
-
-				break;
+			if (!variableTypeName.equals("PreparedStatement")) {
+				continue;
 			}
+
+			log(methodCallDetailAST, _MSG_USE_ADD_BATCH);
+		}
+
+		childDetailASTs = getAllChildTokens(
+			detailAST, true, TokenTypes.RESOURCE, TokenTypes.VARIABLE_DEF);
+
+		for (DetailAST childDetailAST : childDetailASTs) {
+			String typeName = getTypeName(childDetailAST, false);
+
+			if (!typeName.endsWith("PreparedStatement")) {
+				continue;
+			}
+
+			String variableName = getName(childDetailAST);
+
+			List<DetailAST> methodCallDetailASTs = getMethodCalls(
+				detailAST, variableName, "addBatch");
+
+			if (methodCallDetailASTs.isEmpty()) {
+				continue;
+			}
+
+			methodCallDetailASTs = getMethodCalls(
+				detailAST, variableName, "executeBatch");
+
+			if (!methodCallDetailASTs.isEmpty()) {
+				continue;
+			}
+
+			log(
+				childDetailAST, _MSG_MISSING_EXECUTE_BATCH_CALL, variableName,
+				variableName);
 		}
 	}
+
+	private static final String _MSG_MISSING_EXECUTE_BATCH_CALL =
+		"execute.batch.call.missing";
 
 	private static final String _MSG_USE_ADD_BATCH = "add.batch.use";
 
