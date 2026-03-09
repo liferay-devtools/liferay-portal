@@ -5,8 +5,6 @@
 
 package com.liferay.source.formatter.checkstyle.check;
 
-import com.liferay.portal.kernel.util.StringUtil;
-
 import com.puppycrawl.tools.checkstyle.api.DetailAST;
 import com.puppycrawl.tools.checkstyle.api.TokenTypes;
 
@@ -19,52 +17,44 @@ public class BatchableUpdateCheck extends BaseCheck {
 
 	@Override
 	public int[] getDefaultTokens() {
-		return new int[] {
-			TokenTypes.LITERAL_DO, TokenTypes.LITERAL_FOR,
-			TokenTypes.LITERAL_WHILE
-		};
+		return new int[] {TokenTypes.METHOD_DEF};
 	}
 
 	@Override
 	protected void doVisitToken(DetailAST detailAST) {
-		DetailAST slistDetailAST = detailAST.findFirstToken(TokenTypes.SLIST);
+		List<DetailAST> childDetailASTs = getAllChildTokens(
+			detailAST, true, TokenTypes.LITERAL_DO, TokenTypes.LITERAL_FOR,
+			TokenTypes.LITERAL_WHILE);
 
-		if (slistDetailAST == null) {
-			return;
-		}
+		for (DetailAST childDetailAST : childDetailASTs) {
+			DetailAST slistDetailAST = childDetailAST.findFirstToken(
+				TokenTypes.SLIST);
 
-		List<DetailAST> methodCallDetailASTs = getAllChildTokens(
-			slistDetailAST, true, TokenTypes.METHOD_CALL);
-
-		for (DetailAST methodCallDetailAST : methodCallDetailASTs) {
-			DetailAST dotDetailAST = methodCallDetailAST.findFirstToken(
-				TokenTypes.DOT);
-
-			if (dotDetailAST == null) {
+			if (slistDetailAST == null) {
 				continue;
 			}
 
-			List<String> names = getNames(dotDetailAST, false);
+			List<DetailAST> methodCallDetailASTs = getMethodCalls(
+				detailAST, null, "executeUpdate");
 
-			if ((names.size() != 2) ||
-				!StringUtil.equals(names.get(1), "executeUpdate")) {
+			DetailAST methodCallDetailAST = methodCallDetailASTs.get(0);
 
-				continue;
-			}
+			String variableName = getName(
+				methodCallDetailAST.findFirstToken(TokenTypes.DOT));
 
 			DetailAST variableDefinitionDetailAST =
 				getVariableDefinitionDetailAST(
-					methodCallDetailAST, names.get(0), false);
+					methodCallDetailAST, variableName, false);
 
 			if ((variableDefinitionDetailAST == null) ||
 				(variableDefinitionDetailAST.getLineNo() >=
-					detailAST.getLineNo())) {
+					childDetailAST.getLineNo())) {
 
 				continue;
 			}
 
 			String variableTypeName = getVariableTypeName(
-				variableDefinitionDetailAST, names.get(0), false);
+				variableDefinitionDetailAST, variableName, false);
 
 			if (!variableTypeName.equals("PreparedStatement")) {
 				continue;
