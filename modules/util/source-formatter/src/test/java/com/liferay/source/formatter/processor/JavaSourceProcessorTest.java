@@ -733,6 +733,15 @@ public class JavaSourceProcessorTest extends BaseSourceProcessorTestCase {
 	}
 
 	@Test
+	public void testMissingExecuteBatchCall() throws Exception {
+		test(
+			"MissingExecuteBatchCall.testjava",
+			"Unexecuted batch: \"preparedStatement2.addBatch()\" called " +
+				"without \"preparedStatement2.executeBatch()\"",
+			20);
+	}
+
+	@Test
 	public void testMissingParameterizedSQLStatement() throws Exception {
 		test(
 			SourceProcessorTestParameters.create(
