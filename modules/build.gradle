@@ -581,53 +581,34 @@ gradle.beforeProject {
 
 		pluginManager.withPlugin("com.liferay.jasper.jspc") {
 			if (!project.name.endsWith("-demo")) {
-				compileJSP {
-					configurations.compileOnly.allDependencies.withType(ProjectDependency) {
-						mustRunAfter "${it.dependencyProject.path}:deploy"
+				Closure<Void> configureJSPTaskClosure = {
+					jspTask ->
+
+					project.configurations.compileOnly.allDependencies.withType(ProjectDependency) {
+						jspTask.mustRunAfter "${it.dependencyProject.path}:deploy"
 
 						if (it.dependencyProject.tasks.findByName("deployDependencies")) {
-							mustRunAfter "${it.dependencyProject.path}:deployDependencies"
+							jspTask.mustRunAfter "${it.dependencyProject.path}:deployDependencies"
 						}
 					}
 
 					if (!implicitDependencyProjects.contains(project)) {
 						implicitDependencyProjects.forEach {
-							mustRunAfter "${it.path}:deploy"
+							jspTask.mustRunAfter "${it.path}:deploy"
 
 							if (it.tasks.findByName("deployDependencies")) {
-								mustRunAfter "${it.path}:deployDependencies"
+								jspTask.mustRunAfter "${it.path}:deployDependencies"
 							}
 
 							if (it.name.equals("portal-osgi-web-jasper-plugins-taglib")) {
-								mustRunAfter "${it.path}:deployAppServerPortalFile"
+								jspTask.mustRunAfter "${it.path}:deployAppServerPortalFile"
 							}
 						}
 					}
 				}
 
-				generateJSPJava {
-					configurations.compileOnly.allDependencies.withType(ProjectDependency) {
-						mustRunAfter "${it.dependencyProject.path}:deploy"
-
-						if (it.dependencyProject.tasks.findByName("deployDependencies")) {
-							mustRunAfter "${it.dependencyProject.path}:deployDependencies"
-						}
-					}
-
-					if (!implicitDependencyProjects.contains(project)) {
-						implicitDependencyProjects.forEach {
-							mustRunAfter "${it.path}:deploy"
-
-							if (it.tasks.findByName("deployDependencies")) {
-								mustRunAfter "${it.path}:deployDependencies"
-							}
-
-							if (it.name.equals("portal-osgi-web-jasper-plugins-taglib")) {
-								mustRunAfter "${it.path}:deployAppServerPortalFile"
-							}
-						}
-					}
-				}
+				configure(compileJSP, configureJSPTaskClosure)
+				configure(generateJSPJava, configureJSPTaskClosure)
 			}
 		}
 
