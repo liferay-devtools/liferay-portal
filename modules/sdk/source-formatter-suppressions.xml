@@ -40,9 +40,6 @@
 		<suppress checks="JavaLongLinesCheck" files="gradle-plugins-defaults/src/main/java/com/liferay/gradle/plugins/defaults/internal/LiferayRelengPlugin\.java" />
 		<suppress checks="JavaModuleJavaxPortletInitParamTemplatePathCheck" files="gradle-plugins-target-platform/src/gradleTest/.*" />
 		<suppress checks="JavaModuleJavaxPortletInitParamTemplatePathCheck" files="gradle-plugins-workspace/src/gradleTest/.*" />
-		<suppress checks="JavaPackagePathCheck" files=".*/foo-api/.*" />
-		<suppress checks="JavaPackagePathCheck" files=".*/gradleTest/.*" />
-		<suppress checks="JavaPackagePathCheck" files="project-templates/project-templates-api/src/test/java.*" />
 		<suppress checks="JavaStaticMethodCheck" files="gradle-plugins-node/src/main/java/com/liferay/gradle/plugins/node/task/NpmInstallTask\.java" />
 		<suppress checks="JavaTermOrderCheck" files="gradle-plugins-source-formatter/src/gradleTest/smoke/src/main/java/com/liferay/sample/GreetingBuilder\.java" />
 		<suppress checks="JavaTestMethodAnnotationsCheck" files="project-templates/project-templates/src/test/java/com/liferay/project/templates/BaseProjectTemplatesTestCase\.java" />
