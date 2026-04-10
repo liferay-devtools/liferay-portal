@@ -260,7 +260,7 @@ public class DBPartitionTest extends BaseDBPartitionTestCase {
 					CompanyThreadLocal.setCompanyIdWithSafeCloseable(
 						companyId)) {
 
-				int rowCount = -1;
+				long rowCount = -1;
 
 				try (PreparedStatement preparedStatement =
 						connection.prepareStatement(
