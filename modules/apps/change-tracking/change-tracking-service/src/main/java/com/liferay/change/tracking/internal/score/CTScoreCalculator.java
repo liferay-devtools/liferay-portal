@@ -61,7 +61,7 @@ public class CTScoreCalculator {
 			score++;
 		}
 
-		long countMultiplier = _countTable(modelClassNameId) / _COUNT_DIVISOR;
+		int countMultiplier = _countTable(modelClassNameId) / _COUNT_DIVISOR;
 
 		if (countMultiplier == 0) {
 			countMultiplier = 1;
