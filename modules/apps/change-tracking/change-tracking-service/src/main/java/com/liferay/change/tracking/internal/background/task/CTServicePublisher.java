@@ -141,7 +141,7 @@ public class CTServicePublisher<T extends CTModel<T>> {
 
 			try (ResultSet resultSet = preparedStatement.executeQuery()) {
 				if (resultSet.next()) {
-					return resultSet.getInt("count");
+					return resultSet.getLong("count");
 				}
 			}
 		}

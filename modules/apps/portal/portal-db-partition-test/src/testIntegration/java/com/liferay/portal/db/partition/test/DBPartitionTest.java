@@ -269,7 +269,7 @@ public class DBPartitionTest extends BaseDBPartitionTestCase {
 					ResultSet resultSet = preparedStatement.executeQuery()) {
 
 					if (resultSet.next()) {
-						rowCount = resultSet.getInt("count");
+						rowCount = resultSet.getLong("count");
 					}
 				}
 
