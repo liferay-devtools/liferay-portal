@@ -61,7 +61,7 @@ public class CTScoreCalculator {
 			score++;
 		}
 
-		int countMultiplier = _countTable(modelClassNameId) / _COUNT_DIVISOR;
+		long countMultiplier = _countTable(modelClassNameId) / _COUNT_DIVISOR;
 
 		if (countMultiplier == 0) {
 			countMultiplier = 1;
@@ -93,7 +93,7 @@ public class CTScoreCalculator {
 		_portalCache.removeAll();
 	}
 
-	private int _countTable(long modelClassNameId) {
+	private long _countTable(long modelClassNameId) {
 		CTService<?> ctService = _ctServiceRegistry.getCTService(
 			modelClassNameId);
 
