@@ -65,38 +65,54 @@ You are a page-builder for Liferay. You receive a **natural-language instruction
 
 ```json
 {
-"type": "ContentPage",
-"externalReferenceCode": "<PAGE_ERC>",
-"name_i18n": {"en-US": "..."},
-"friendlyUrlPath_i18n": {"en-US": "/..."},
-"pageSettings": {"type": "ContentPageSettings"},
-"pageSpecifications": [
-	{
-	  "type": "ContentPageSpecification",
-	  "externalReferenceCode": "<PAGE_ERC>",
-	  "status": "Approved",
-	  "draftContentPageSpecificationExternalReferenceCode": "<PAGE_ERC>-draft",
-	  "pageExperiences": [{
-		"externalReferenceCode": "<PAGE_ERC>-default",
-		"key": "DEFAULT",
-		"name_i18n": {"en-US": "Default"},
-		"priority": 0,
-		"pageElements": [ /* the visible tree */ ]
-	  }]
+	"externalReferenceCode": "<PAGE_ERC>",
+	"friendlyUrlPath_i18n": {
+		"en-US": "/..."
 	},
-	{
-	  "type": "ContentPageSpecification",
-	  "externalReferenceCode": "<PAGE_ERC>-draft",
-	  "status": "Draft",
-	  "pageExperiences": [{
-		"externalReferenceCode": "<PAGE_ERC>-draft-default",
-		"key": "DEFAULT",
-		"name_i18n": {"en-US": "Default"},
-		"priority": 0,
-		"pageElements": []
-	  }]
-	}
-]
+	"name_i18n": {
+		"en-US": "..."
+	},
+	"pageSettings": {
+		"type": "ContentPageSettings"
+	},
+	"pageSpecifications": [
+		{
+			"draftContentPageSpecificationExternalReferenceCode": "<PAGE_ERC>-draft",
+			"externalReferenceCode": "<PAGE_ERC>",
+			"pageExperiences": [
+				{
+					"externalReferenceCode": "<PAGE_ERC>-default",
+					"key": "DEFAULT",
+					"name_i18n": {
+						"en-US": "Default"
+					},
+					"pageElements": [
+					],
+					"priority": 0
+				}
+			],
+			"status": "Approved",
+			"type": "ContentPageSpecification"
+		},
+		{
+			"externalReferenceCode": "<PAGE_ERC>-draft",
+			"pageExperiences": [
+				{
+					"externalReferenceCode": "<PAGE_ERC>-draft-default",
+					"key": "DEFAULT",
+					"name_i18n": {
+						"en-US": "Default"
+					},
+					"pageElements": [
+					],
+					"priority": 0
+				}
+			],
+			"status": "Draft",
+			"type": "ContentPageSpecification"
+		}
+	],
+	"type": "ContentPage"
 }
 ```
 
@@ -180,30 +196,38 @@ BasicFragment skeleton:
 Text (for `editable-type="text"` — used by heading):
 ```json
 {
-"id": "element-text",
-"fragmentEditableElementValue": {
-	"type": "Text",
-	"fragmentLinkTextValue": {
-	  "textFragmentValue": {
-		"type": "Inline",
-		"fragmentInlineValue": {"value_i18n": {"en-US": "..."}}
-	  }
-	}
-}
+	"fragmentEditableElementValue": {
+		"fragmentLinkTextValue": {
+			"textFragmentValue": {
+				"fragmentInlineValue": {
+					"value_i18n": {
+						"en-US": "..."
+					}
+				},
+				"type": "Inline"
+			}
+		},
+		"type": "Text"
+	},
+	"id": "element-text"
 }
 ```
 
 RichText (for `editable-type="rich-text"` — used by paragraph, card title/content):
 ```json
 {
-"id": "<editable-id>",
-"fragmentEditableElementValue": {
-	"type": "RichText",
-	"htmlFragmentValue": {
-	  "type": "Inline",
-	  "fragmentInlineValue": {"value_i18n": {"en-US": "..."}}
-	}
-}
+	"fragmentEditableElementValue": {
+		"htmlFragmentValue": {
+			"fragmentInlineValue": {
+				"value_i18n": {
+					"en-US": "..."
+				}
+			},
+			"type": "Inline"
+		},
+		"type": "RichText"
+	},
+	"id": "<editable-id>"
 }
 ```
 
@@ -229,82 +253,131 @@ current_page: null
 Output (POST):
 ```json
 {
-"type": "ContentPage",
-"externalReferenceCode": "my-landing",
-"name_i18n": {"en-US": "My Landing"},
-"friendlyUrlPath_i18n": {"en-US": "/my-landing"},
-"pageSettings": {"type": "ContentPageSettings"},
-"pageSpecifications": [
-	{
-	  "type": "ContentPageSpecification",
-	  "externalReferenceCode": "my-landing",
-	  "status": "Approved",
-	  "draftContentPageSpecificationExternalReferenceCode": "my-landing-draft",
-	  "pageExperiences": [{
-		"externalReferenceCode": "my-landing-default",
-		"key": "DEFAULT",
-		"name_i18n": {"en-US": "Default"},
-		"priority": 0,
-		"pageElements": [
-		  {
-			"externalReferenceCode": "banner",
-			"position": 0,
-			"pageElementDefinition": {
-			  "type": "Container",
-			  "indexed": true,
-			  "layout": {"align": "Center", "justify": "Center", "contentDisplay": "Block", "widthType": "Fluid"},
-			  "fragmentViewports": [{
-				"id": "Desktop",
-				"fragmentViewportStyle": {
-				  "backgroundColor": "primaryColor",
-				  "paddingTop": "9", "paddingBottom": "9", "paddingLeft": "5", "paddingRight": "5",
-				  "marginBottom": "5",
-				  "textAlign": "center", "textColor": "whiteColor"
-				}
-			  }]
-			},
-			"pageElements": [
-			  {
-				"externalReferenceCode": "banner-heading",
-				"parentExternalReferenceCode": "banner",
-				"position": 0,
-				"pageElementDefinition": {
-				  "type": "BasicFragment",
-				  "fragmentInstance": {
-					"fragmentInstanceExternalReferenceCode": "banner-heading-inst",
-					"fragmentReference": {"fragmentReferenceType": "DefaultFragmentReference", "defaultFragmentKey": "BASIC_COMPONENT-heading"},
-					"fragmentViewports": [{"id": "Desktop", "fragmentViewportStyle": {"fontSize": "h1FontSize", "fontWeight": "fontWeightBold", "textAlign": "center", "textColor": "whiteColor"}}],
-					"fragmentEditableElements": [{
-					  "id": "element-text",
-					  "fragmentEditableElementValue": {
-						"type": "Text",
-						"fragmentLinkTextValue": {
-						  "textFragmentValue": {"type": "Inline", "fragmentInlineValue": {"value_i18n": {"en-US": "Hello World"}}}
-						}
-					  }
-					}]
-				  }
-				},
-				"pageElements": []
-			  }
-			]
-		  }
-		]
-	  }]
+	"externalReferenceCode": "my-landing",
+	"friendlyUrlPath_i18n": {
+		"en-US": "/my-landing"
 	},
-	{
-	  "type": "ContentPageSpecification",
-	  "externalReferenceCode": "my-landing-draft",
-	  "status": "Draft",
-	  "pageExperiences": [{
-		"externalReferenceCode": "my-landing-draft-default",
-		"key": "DEFAULT",
-		"name_i18n": {"en-US": "Default"},
-		"priority": 0,
-		"pageElements": []
-	  }]
-	}
-]
+	"name_i18n": {
+		"en-US": "My Landing"
+	},
+	"pageSettings": {
+		"type": "ContentPageSettings"
+	},
+	"pageSpecifications": [
+		{
+			"draftContentPageSpecificationExternalReferenceCode": "my-landing-draft",
+			"externalReferenceCode": "my-landing",
+			"pageExperiences": [
+				{
+					"externalReferenceCode": "my-landing-default",
+					"key": "DEFAULT",
+					"name_i18n": {
+						"en-US": "Default"
+					},
+					"pageElements": [
+						{
+							"externalReferenceCode": "banner",
+							"pageElementDefinition": {
+								"fragmentViewports": [
+									{
+										"fragmentViewportStyle": {
+											"backgroundColor": "primaryColor",
+											"marginBottom": "5",
+											"paddingBottom": "9",
+											"paddingLeft": "5",
+											"paddingRight": "5",
+											"paddingTop": "9",
+											"textAlign": "center",
+											"textColor": "whiteColor"
+										},
+										"id": "Desktop"
+									}
+								],
+								"indexed": true,
+								"layout": {
+									"align": "Center",
+									"contentDisplay": "Block",
+									"justify": "Center",
+									"widthType": "Fluid"
+								},
+								"type": "Container"
+							},
+							"pageElements": [
+								{
+									"externalReferenceCode": "banner-heading",
+									"pageElementDefinition": {
+										"fragmentInstance": {
+											"fragmentEditableElements": [
+												{
+													"fragmentEditableElementValue": {
+														"fragmentLinkTextValue": {
+															"textFragmentValue": {
+																"fragmentInlineValue": {
+																	"value_i18n": {
+																		"en-US": "Hello World"
+																	}
+																},
+																"type": "Inline"
+															}
+														},
+														"type": "Text"
+													},
+													"id": "element-text"
+												}
+											],
+											"fragmentInstanceExternalReferenceCode": "banner-heading-inst",
+											"fragmentReference": {
+												"defaultFragmentKey": "BASIC_COMPONENT-heading",
+												"fragmentReferenceType": "DefaultFragmentReference"
+											},
+											"fragmentViewports": [
+												{
+													"fragmentViewportStyle": {
+														"fontSize": "h1FontSize",
+														"fontWeight": "fontWeightBold",
+														"textAlign": "center",
+														"textColor": "whiteColor"
+													},
+													"id": "Desktop"
+												}
+											]
+										},
+										"type": "BasicFragment"
+									},
+									"pageElements": [
+									],
+									"parentExternalReferenceCode": "banner",
+									"position": 0
+								}
+							],
+							"position": 0
+						}
+					],
+					"priority": 0
+				}
+			],
+			"status": "Approved",
+			"type": "ContentPageSpecification"
+		},
+		{
+			"externalReferenceCode": "my-landing-draft",
+			"pageExperiences": [
+				{
+					"externalReferenceCode": "my-landing-draft-default",
+					"key": "DEFAULT",
+					"name_i18n": {
+						"en-US": "Default"
+					},
+					"pageElements": [
+					],
+					"priority": 0
+				}
+			],
+			"status": "Draft",
+			"type": "ContentPageSpecification"
+		}
+	],
+	"type": "ContentPage"
 }
 ```
 
