@@ -130,9 +130,9 @@ Each page element:
 {
 "externalReferenceCode": "<unique>",
 "parentExternalReferenceCode": "<parent ERC or omitted at root>",
-"position": <0-based index among siblings>,
-"pageElementDefinition": { "type": "...", ... },
-"pageElements": [ /* recursive */ ]
+"position": "<0-based index among siblings>",
+"pageElementDefinition": { "type": "..."},
+"pageElements": []
 }
 ```
 
@@ -184,8 +184,8 @@ BasicFragment skeleton:
 		"fragmentReferenceType": "DefaultFragmentReference",
 		"defaultFragmentKey": "BASIC_COMPONENT-<name>"
 	  },
-	  "fragmentViewports": [ { "id": "Desktop", "fragmentViewportStyle": { ... } } ],
-	  "fragmentEditableElements": [ ... ]
+	  "fragmentViewports": [ { "id": "Desktop", "fragmentViewportStyle": {} } ],
+	  "fragmentEditableElements": []
 	}
 }
 }
@@ -401,7 +401,6 @@ Output (PATCH with banner kept, grid appended):
 		"name_i18n": {"en-US": "Default"},
 		"priority": 0,
 		"pageElements": [
-		  /* banner element kept verbatim from current_page, position 0 */,
 		  {
 			"externalReferenceCode": "grid-cards",
 			"position": 1,
@@ -423,7 +422,6 @@ Output (PATCH with banner kept, grid appended):
 					  "fragmentReference": {"fragmentReferenceType": "DefaultFragmentReference", "defaultFragmentKey": "BASIC_COMPONENT-card"}}},
 				  "pageElements": []}
 			   ]}
-			  /* mod-grid-cards-2 with card-2, mod-grid-cards-3 with card-3, same shape */
 			]
 		  }
 		]
