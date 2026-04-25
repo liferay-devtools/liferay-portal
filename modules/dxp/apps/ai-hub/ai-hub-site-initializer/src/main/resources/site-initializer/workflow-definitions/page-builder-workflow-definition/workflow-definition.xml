@@ -128,11 +128,14 @@ Hard rules (each triggers an `UnsupportedOperationException` if broken):
 Each page element:
 ```json
 {
-"externalReferenceCode": "<unique>",
-"parentExternalReferenceCode": "<parent ERC or omitted at root>",
-"position": "<0-based index among siblings>",
-"pageElementDefinition": { "type": "..."},
-"pageElements": []
+	"externalReferenceCode": "<unique>",
+	"pageElementDefinition": {
+		"type": "..."
+	},
+	"pageElements": [
+	],
+	"parentExternalReferenceCode": "<parent ERC or omitted at root>",
+	"position": "<0-based index among siblings>"
 }
 ```
 
@@ -176,18 +179,25 @@ Set `fragmentInstance.fragmentReference.defaultFragmentKey` to one of:
 BasicFragment skeleton:
 ```json
 {
-"pageElementDefinition": {
-	"type": "BasicFragment",
-	"fragmentInstance": {
-	  "fragmentInstanceExternalReferenceCode": "<unique>",
-	  "fragmentReference": {
-		"fragmentReferenceType": "DefaultFragmentReference",
-		"defaultFragmentKey": "BASIC_COMPONENT-<name>"
-	  },
-	  "fragmentViewports": [ { "id": "Desktop", "fragmentViewportStyle": {} } ],
-	  "fragmentEditableElements": []
+	"pageElementDefinition": {
+		"fragmentInstance": {
+			"fragmentEditableElements": [
+			],
+			"fragmentInstanceExternalReferenceCode": "<unique>",
+			"fragmentReference": {
+				"defaultFragmentKey": "BASIC_COMPONENT-<name>",
+				"fragmentReferenceType": "DefaultFragmentReference"
+			},
+			"fragmentViewports": [
+				{
+					"fragmentViewportStyle": {
+					},
+					"id": "Desktop"
+				}
+			]
+		},
+		"type": "BasicFragment"
 	}
-}
 }
 ```
 
@@ -387,48 +397,99 @@ current_page: the page above (banner only)
 Output (PATCH with banner kept, grid appended):
 ```json
 {
-"type": "ContentPage",
-"externalReferenceCode": "my-landing",
-"pageSpecifications": [
-	{
-	  "type": "ContentPageSpecification",
-	  "externalReferenceCode": "my-landing",
-	  "status": "Approved",
-	  "draftContentPageSpecificationExternalReferenceCode": "my-landing-draft",
-	  "pageExperiences": [{
-		"externalReferenceCode": "my-landing-default",
-		"key": "DEFAULT",
-		"name_i18n": {"en-US": "Default"},
-		"priority": 0,
-		"pageElements": [
-		  {
-			"externalReferenceCode": "grid-cards",
-			"position": 1,
-			"pageElementDefinition": {
-			  "type": "Grid", "gutters": true, "indexed": true, "numberOfModules": 3, "reverseOrder": false,
-			  "gridViewports": [
-				{"id": "Desktop", "gridViewportDefinition": {"modulesPerRow": 3, "verticalAlignment": "Top"}},
-				{"id": "Tablet", "gridViewportDefinition": {"modulesPerRow": 2, "verticalAlignment": "Top"}},
-				{"id": "PortraitMobile", "gridViewportDefinition": {"modulesPerRow": 1, "verticalAlignment": "Top"}}
-			  ]
-			},
-			"pageElements": [
-			  {"externalReferenceCode": "mod-grid-cards-1", "parentExternalReferenceCode": "grid-cards", "position": 0,
-			   "pageElementDefinition": {"type": "Module", "moduleViewports": [{"id": "Desktop", "moduleViewportDefinition": {"size": 4}}]},
-			   "pageElements": [
-				 {"externalReferenceCode": "card-1", "parentExternalReferenceCode": "mod-grid-cards-1", "position": 0,
-				  "pageElementDefinition": {"type": "BasicFragment",
-					"fragmentInstance": {"fragmentInstanceExternalReferenceCode": "card-1-inst",
-					  "fragmentReference": {"fragmentReferenceType": "DefaultFragmentReference", "defaultFragmentKey": "BASIC_COMPONENT-card"}}},
-				  "pageElements": []}
-			   ]}
-			]
-		  }
-		]
-	  }]
-	}
-	/* unchanged draft spec */
-]
+	"externalReferenceCode": "my-landing",
+	"pageSpecifications": [
+		{
+			"draftContentPageSpecificationExternalReferenceCode": "my-landing-draft",
+			"externalReferenceCode": "my-landing",
+			"pageExperiences": [
+				{
+					"externalReferenceCode": "my-landing-default",
+					"key": "DEFAULT",
+					"name_i18n": {
+						"en-US": "Default"
+					},
+					"pageElements": [
+						{
+							"externalReferenceCode": "grid-cards",
+							"pageElementDefinition": {
+								"gridViewports": [
+									{
+										"gridViewportDefinition": {
+											"modulesPerRow": 3,
+											"verticalAlignment": "Top"
+										},
+										"id": "Desktop"
+									},
+									{
+										"gridViewportDefinition": {
+											"modulesPerRow": 2,
+											"verticalAlignment": "Top"
+										},
+										"id": "Tablet"
+									},
+									{
+										"gridViewportDefinition": {
+											"modulesPerRow": 1,
+											"verticalAlignment": "Top"
+										},
+										"id": "PortraitMobile"
+									}
+								],
+								"gutters": true,
+								"indexed": true,
+								"numberOfModules": 3,
+								"reverseOrder": false,
+								"type": "Grid"
+							},
+							"pageElements": [
+								{
+									"externalReferenceCode": "mod-grid-cards-1",
+									"pageElementDefinition": {
+										"moduleViewports": [
+											{
+												"id": "Desktop",
+												"moduleViewportDefinition": {
+													"size": 4
+												}
+											}
+										],
+										"type": "Module"
+									},
+									"pageElements": [
+										{
+											"externalReferenceCode": "card-1",
+											"pageElementDefinition": {
+												"fragmentInstance": {
+													"fragmentInstanceExternalReferenceCode": "card-1-inst",
+													"fragmentReference": {
+														"defaultFragmentKey": "BASIC_COMPONENT-card",
+														"fragmentReferenceType": "DefaultFragmentReference"
+													}
+												},
+												"type": "BasicFragment"
+											},
+											"pageElements": [
+											],
+											"parentExternalReferenceCode": "mod-grid-cards-1",
+											"position": 0
+										}
+									],
+									"parentExternalReferenceCode": "grid-cards",
+									"position": 0
+								}
+							],
+							"position": 1
+						}
+					],
+					"priority": 0
+				}
+			],
+			"status": "Approved",
+			"type": "ContentPageSpecification"
+		}
+	],
+	"type": "ContentPage"
 }
 ```
 
