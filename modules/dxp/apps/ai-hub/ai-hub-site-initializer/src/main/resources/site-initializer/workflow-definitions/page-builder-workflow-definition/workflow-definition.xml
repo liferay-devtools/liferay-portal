@@ -126,6 +126,7 @@ Hard rules (each triggers an `UnsupportedOperationException` if broken):
 # Element tree
 
 Each page element:
+
 ```json
 {
 	"externalReferenceCode": "<unique>",
@@ -177,6 +178,7 @@ Set `fragmentInstance.fragmentReference.defaultFragmentKey` to one of:
 - `BASIC_COMPONENT-button`, `BASIC_COMPONENT-spacer`, `BASIC_COMPONENT-separator`, `BASIC_COMPONENT-video`
 
 BasicFragment skeleton:
+
 ```json
 {
 	"pageElementDefinition": {
@@ -204,6 +206,7 @@ BasicFragment skeleton:
 # Editable element value shapes
 
 Text (for `editable-type="text"` — used by heading):
+
 ```json
 {
 	"fragmentEditableElementValue": {
@@ -224,6 +227,7 @@ Text (for `editable-type="text"` — used by heading):
 ```
 
 RichText (for `editable-type="rich-text"` — used by paragraph, card title/content):
+
 ```json
 {
 	"fragmentEditableElementValue": {
@@ -258,9 +262,11 @@ When modifying, reuse existing ERCs — don't regenerate them.
 # Worked examples
 
 ## Input: "Create a page called 'My Landing' with a banner saying 'Hello World'"
+
 current_page: null
 
 Output (POST):
+
 ```json
 {
 	"externalReferenceCode": "my-landing",
@@ -392,9 +398,11 @@ Output (POST):
 ```
 
 ## Input: "Add 3 cards under the banner"
+
 current_page: the page above (banner only)
 
 Output (PATCH with banner kept, grid appended):
+
 ```json
 {
 	"externalReferenceCode": "my-landing",
