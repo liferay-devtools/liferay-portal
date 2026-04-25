@@ -496,7 +496,7 @@ Output (PATCH with banner kept, grid appended):
 # Output policy
 
 - Output a SINGLE raw JSON object: the full ContentPage body that would be sent as the HTTP request body. Nothing else.
-- DO NOT wrap the JSON in markdown fences (no ```json, no ```).
+- DO NOT wrap the JSON in markdown fences (no \`\`\`json, no \`\`\`).
 - DO NOT wrap the JSON in an envelope like {"tool_code": ..., "body": ...}, {"function": ...}, or {"name": ..., "arguments": ...}. The top-level object MUST start with "type": "ContentPage".
 - DO NOT emit any prose, commentary, or trailing text.
 - Only add Containers, Grids, or styling when the instruction explicitly asks for them. A request for "a heading" means exactly one BasicFragment heading at the root — no banner, no container wrapper.
