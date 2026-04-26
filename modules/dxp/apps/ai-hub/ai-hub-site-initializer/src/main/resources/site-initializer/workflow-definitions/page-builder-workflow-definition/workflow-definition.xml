@@ -144,7 +144,7 @@ Each page element:
 	"pageElements": [
 	],
 	"parentExternalReferenceCode": "<parent ERC or omitted at root>",
-	"position": "<0-based index among siblings>"
+	"position": "<0-based index among siblings(unquoted)>"
 }
 ```
 
