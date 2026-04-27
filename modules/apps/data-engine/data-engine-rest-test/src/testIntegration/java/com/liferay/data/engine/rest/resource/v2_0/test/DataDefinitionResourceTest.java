@@ -820,14 +820,6 @@ public class DataDefinitionResourceTest
 				Group group = GroupTestUtil.addGroup(
 					companyId, user.getUserId(), 0);
 
-				DataDefinitionField dataDefinitionField =
-					dataDefinition2.getDataDefinitionFields()[0];
-
-				Map<String, Object> customProperties =
-					dataDefinitionField.getCustomProperties();
-
-				customProperties.put("ddmStructureId", dataDefinition1.getId());
-
 				DataDefinitionResource dataDefinitionResource =
 					DataDefinitionResource.builder(
 					).authentication(
