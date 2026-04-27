@@ -816,12 +816,12 @@ public class DataDefinitionResourceTest
 					CompanyThreadLocal.setCompanyIdWithSafeCloseable(
 						companyId)) {
 
+				Company company = CompanyLocalServiceUtil.getCompany(companyId);
+
 				User user = UserTestUtil.getAdminUser(companyId);
 
 				Group group = GroupTestUtil.addGroup(
 					companyId, user.getUserId(), 0);
-
-				Company company = CompanyLocalServiceUtil.getCompany(companyId);
 
 				DataDefinitionResource dataDefinitionResource =
 					DataDefinitionResource.builder(
