@@ -6,6 +6,8 @@
 package com.liferay.client.extension.internal.upgrade.v3_5_2;
 
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
 
 import org.osgi.framework.Constants;
@@ -29,16 +31,26 @@ public class CETConfigurationUpgradeProcess extends UpgradeProcess {
 			StringBundler.concat(
 				"(&(", Constants.SERVICE_PID,
 				"=com.liferay.client.extension.type.configuration.",
-				"CETConfiguration~*)(!(.client.extension.config.bundle.id=*)))"));
+				"CETConfiguration~*)",
+				"(!(.client.extension.config.bundle.id=*)))"));
 
 		if (configurations == null) {
 			return;
 		}
 
 		for (Configuration configuration : configurations) {
+			if (_log.isInfoEnabled()) {
+				_log.info(
+					"Deleting orphaned CET configuration " +
+						configuration.getPid());
+			}
+
 			configuration.delete();
 		}
 	}
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		CETConfigurationUpgradeProcess.class);
 
 	private final ConfigurationAdmin _configurationAdmin;
 
