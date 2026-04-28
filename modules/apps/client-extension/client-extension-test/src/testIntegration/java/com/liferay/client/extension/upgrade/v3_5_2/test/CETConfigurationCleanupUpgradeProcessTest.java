@@ -7,13 +7,19 @@ package com.liferay.client.extension.upgrade.v3_5_2.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.dao.db.DB;
+import com.liferay.portal.kernel.dao.db.DBManagerUtil;
+import com.liferay.portal.kernel.dao.jdbc.DataAccess;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
 import com.liferay.portal.kernel.upgrade.UpgradeStep;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.upgrade.registry.UpgradeStepRegistrator;
 
-import java.util.Hashtable;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
 import java.util.Objects;
 
 import org.junit.After;
@@ -22,10 +28,6 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import org.osgi.framework.Constants;
-import org.osgi.service.cm.Configuration;
-import org.osgi.service.cm.ConfigurationAdmin;
 
 /**
  * @author Anthony Chu
@@ -40,38 +42,22 @@ public class CETConfigurationCleanupUpgradeProcessTest {
 
 	@After
 	public void tearDown() throws Exception {
-		_deleteConfiguration(_STALE_CET_PID_1);
-		_deleteConfiguration(_STALE_CET_PID_2);
-		_deleteConfiguration(_TRACKER_CET_PID);
-		_deleteConfiguration(_UNRELATED_PID);
+		DB db = DBManagerUtil.getDB();
+
+		db.runSQL(
+			StringBundler.concat(
+				"delete from Configuration_ where configurationId in ('",
+				_STALE_CET_PID_1, "', '", _STALE_CET_PID_2, "', '",
+				_TRACKER_CET_PID, "', '", _UNRELATED_PID, "')"));
 	}
 
 	@Test
 	public void testUpgrade() throws Exception {
-		_createConfiguration(_STALE_CET_PID_1, new Hashtable<>());
-		_createConfiguration(_STALE_CET_PID_2, new Hashtable<>());
-
-		Hashtable<String, Object> trackerProperties = new Hashtable<>();
-
-		trackerProperties.put(_BUNDLE_ID_PROPERTY_KEY, 1L);
-
-		_createConfiguration(_TRACKER_CET_PID, trackerProperties);
-
-		_createConfiguration(_UNRELATED_PID, new Hashtable<>());
-
-		Configuration[] cetConfigurationsBeforeUpgrade =
-			_configurationAdmin.listConfigurations(
-				StringBundler.concat(
-					"(", Constants.SERVICE_PID, "=",
-					_CET_CONFIGURATION_PID_PREFIX, "*)"));
-
-		Assert.assertNotNull(
-			"CET configurations must exist before upgrade",
-			cetConfigurationsBeforeUpgrade);
-		Assert.assertEquals(
-			"Two stale and one tracker-installed CET configuration must " +
-				"exist before upgrade",
-			3, cetConfigurationsBeforeUpgrade.length);
+		_insertConfiguration(_STALE_CET_PID_1, "");
+		_insertConfiguration(_STALE_CET_PID_2, "");
+		_insertConfiguration(
+			_TRACKER_CET_PID, ".client.extension.config.bundle.id=L\"1\"\n");
+		_insertConfiguration(_UNRELATED_PID, "");
 
 		UpgradeProcess upgradeProcess = _getUpgradeProcess();
 
@@ -81,48 +67,32 @@ public class CETConfigurationCleanupUpgradeProcessTest {
 
 		upgradeProcess.upgrade();
 
-		Configuration[] cetConfigurationsAfterUpgrade =
-			_configurationAdmin.listConfigurations(
-				StringBundler.concat(
-					"(", Constants.SERVICE_PID, "=",
-					_CET_CONFIGURATION_PID_PREFIX, "*)"));
-
-		Assert.assertNotNull(
+		Assert.assertFalse(
+			"Stale CET configuration must be deleted",
+			_configurationExists(_STALE_CET_PID_1));
+		Assert.assertFalse(
+			"Stale CET configuration must be deleted",
+			_configurationExists(_STALE_CET_PID_2));
+		Assert.assertTrue(
 			"Tracker-installed CET configuration must survive upgrade",
-			cetConfigurationsAfterUpgrade);
-		Assert.assertEquals(
-			"Only the tracker-installed CET configuration should remain", 1,
-			cetConfigurationsAfterUpgrade.length);
-		Assert.assertEquals(
-			_TRACKER_CET_PID, cetConfigurationsAfterUpgrade[0].getPid());
-
-		Assert.assertNotNull(
-			"Unrelated configuration should survive",
-			_configurationAdmin.listConfigurations(
-				StringBundler.concat(
-					"(", Constants.SERVICE_PID, "=", _UNRELATED_PID, ")")));
+			_configurationExists(_TRACKER_CET_PID));
+		Assert.assertTrue(
+			"Unrelated configuration must survive upgrade",
+			_configurationExists(_UNRELATED_PID));
 	}
 
-	private void _createConfiguration(
-			String pid, Hashtable<String, Object> properties)
-		throws Exception {
+	private boolean _configurationExists(String pid) throws Exception {
+		try (Connection connection = DataAccess.getConnection();
 
-		Configuration configuration = _configurationAdmin.getConfiguration(
-			pid, "?");
+			PreparedStatement preparedStatement = connection.prepareStatement(
+				"select configurationId from Configuration_ where " +
+					"configurationId = ?")) {
 
-		configuration.update(properties);
-	}
+			preparedStatement.setString(1, pid);
 
-	private void _deleteConfiguration(String pid) throws Exception {
-		Configuration[] configurations = _configurationAdmin.listConfigurations(
-			StringBundler.concat("(", Constants.SERVICE_PID, "=", pid, ")"));
-
-		if (configurations == null) {
-			return;
-		}
-
-		for (Configuration configuration : configurations) {
-			configuration.delete();
+			try (ResultSet resultSet = preparedStatement.executeQuery()) {
+				return resultSet.next();
+			}
 		}
 	}
 
@@ -154,8 +124,21 @@ public class CETConfigurationCleanupUpgradeProcessTest {
 		return upgradeProcesses[0];
 	}
 
-	private static final String _BUNDLE_ID_PROPERTY_KEY =
-		".client.extension.config.bundle.id";
+	private void _insertConfiguration(String pid, String dictionary)
+		throws Exception {
+
+		try (Connection connection = DataAccess.getConnection();
+
+			PreparedStatement preparedStatement = connection.prepareStatement(
+				"insert into Configuration_ (configurationId, dictionary) " +
+					"values(?, ?)")) {
+
+			preparedStatement.setString(1, pid);
+			preparedStatement.setString(2, dictionary);
+
+			preparedStatement.execute();
+		}
+	}
 
 	private static final String _CET_CONFIGURATION_PID_PREFIX =
 		"com.liferay.client.extension.type.configuration.CETConfiguration~";
@@ -175,9 +158,6 @@ public class CETConfigurationCleanupUpgradeProcessTest {
 
 	private static final String _UNRELATED_PID =
 		"com.liferay.client.extension.upgrade.test.unrelated";
-
-	@Inject
-	private ConfigurationAdmin _configurationAdmin;
 
 	@Inject(
 		filter = "component.name=com.liferay.client.extension.internal.upgrade.registry.ClientExtensionUpgradeStepRegistrator"

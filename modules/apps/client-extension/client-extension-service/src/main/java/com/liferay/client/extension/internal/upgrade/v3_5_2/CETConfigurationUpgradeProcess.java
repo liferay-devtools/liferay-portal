@@ -6,52 +6,59 @@
 package com.liferay.client.extension.internal.upgrade.v3_5_2;
 
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.dao.jdbc.AutoBatchPreparedStatementUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
 
-import org.osgi.framework.Constants;
-import org.osgi.service.cm.Configuration;
-import org.osgi.service.cm.ConfigurationAdmin;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
 
 /**
  * @author Anthony Chu
  */
 public class CETConfigurationUpgradeProcess extends UpgradeProcess {
 
-	public CETConfigurationUpgradeProcess(
-		ConfigurationAdmin configurationAdmin) {
-
-		_configurationAdmin = configurationAdmin;
-	}
-
 	@Override
 	protected void doUpgrade() throws Exception {
-		Configuration[] configurations = _configurationAdmin.listConfigurations(
-			StringBundler.concat(
-				"(&(", Constants.SERVICE_PID,
-				"=com.liferay.client.extension.type.configuration.",
-				"CETConfiguration~*)",
-				"(!(.client.extension.config.bundle.id=*)))"));
-
-		if (configurations == null) {
+		if (!hasTable("Configuration_")) {
 			return;
 		}
 
-		for (Configuration configuration : configurations) {
-			if (_log.isInfoEnabled()) {
-				_log.info(
-					"Deleting orphaned CET configuration " +
-						configuration.getPid());
+		try (Statement statement = connection.createStatement();
+
+			ResultSet resultSet = statement.executeQuery(
+				StringBundler.concat(
+					"select configurationId from Configuration_ where ",
+					"configurationId like 'com.liferay.client.extension.type.",
+					"configuration.CETConfiguration~%' and dictionary not ",
+					"like '%.client.extension.config.bundle.id=%'"));
+
+			PreparedStatement preparedStatement =
+				AutoBatchPreparedStatementUtil.autoBatch(
+					connection,
+					"delete from Configuration_ where configurationId = ?")) {
+
+			while (resultSet.next()) {
+				String configurationId = resultSet.getString("configurationId");
+
+				if (_log.isInfoEnabled()) {
+					_log.info(
+						"Deleting persisted CET configuration " +
+							configurationId);
+				}
+
+				preparedStatement.setString(1, configurationId);
+
+				preparedStatement.addBatch();
 			}
 
-			configuration.delete();
+			preparedStatement.executeBatch();
 		}
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		CETConfigurationUpgradeProcess.class);
-
-	private final ConfigurationAdmin _configurationAdmin;
 
 }

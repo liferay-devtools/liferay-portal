@@ -16,7 +16,6 @@ import com.liferay.portal.kernel.upgrade.UpgradeProcessFactory;
 import com.liferay.portal.upgrade.registry.UpgradeStepRegistrator;
 import com.liferay.portal.upgrade.release.ReleaseRenamingUpgradeStep;
 
-import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -114,12 +113,8 @@ public class ClientExtensionUpgradeStepRegistrator
 		registry.register("3.5.0", "3.5.1", new DummyUpgradeProcess());
 
 		registry.register(
-			"3.5.1", "3.5.2",
-			new CETConfigurationUpgradeProcess(_configurationAdmin));
+			"3.5.1", "3.5.2", new CETConfigurationUpgradeProcess());
 	}
-
-	@Reference
-	private ConfigurationAdmin _configurationAdmin;
 
 	@Reference
 	private ReleaseLocalService _releaseLocalService;
