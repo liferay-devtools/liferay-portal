@@ -8,6 +8,7 @@ package com.liferay.client.extension.upgrade.v3_5_2.test;
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
+import com.liferay.portal.kernel.upgrade.UpgradeStep;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.upgrade.registry.UpgradeStepRegistrator;
@@ -115,7 +116,7 @@ public class CETConfigurationCleanupUpgradeProcessTest {
 					return;
 				}
 
-				for (Object upgradeStep : upgradeSteps) {
+				for (UpgradeStep upgradeStep : upgradeSteps) {
 					Class<?> upgradeStepClass = upgradeStep.getClass();
 
 					if (Objects.equals(
