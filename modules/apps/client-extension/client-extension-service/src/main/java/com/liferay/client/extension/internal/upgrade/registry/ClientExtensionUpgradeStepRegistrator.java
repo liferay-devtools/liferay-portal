@@ -7,6 +7,7 @@ package com.liferay.client.extension.internal.upgrade.registry;
 
 import com.liferay.client.extension.internal.upgrade.v3_0_0.ClassNamesUpgradeProcess;
 import com.liferay.client.extension.internal.upgrade.v3_1_0.util.ClientExtensionEntryRelTable;
+import com.liferay.client.extension.internal.upgrade.v3_5_2.CETConfigurationUpgradeProcess;
 import com.liferay.portal.kernel.service.ReleaseLocalService;
 import com.liferay.portal.kernel.upgrade.BaseExternalReferenceCodeUpgradeProcess;
 import com.liferay.portal.kernel.upgrade.CTModelUpgradeProcess;
@@ -15,6 +16,7 @@ import com.liferay.portal.kernel.upgrade.UpgradeProcessFactory;
 import com.liferay.portal.upgrade.registry.UpgradeStepRegistrator;
 import com.liferay.portal.upgrade.release.ReleaseRenamingUpgradeStep;
 
+import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -110,7 +112,14 @@ public class ClientExtensionUpgradeStepRegistrator
 				"lastPublishDate DATE null"));
 
 		registry.register("3.5.0", "3.5.1", new DummyUpgradeProcess());
+
+		registry.register(
+			"3.5.1", "3.5.2",
+			new CETConfigurationUpgradeProcess(_configurationAdmin));
 	}
+
+	@Reference
+	private ConfigurationAdmin _configurationAdmin;
 
 	@Reference
 	private ReleaseLocalService _releaseLocalService;
