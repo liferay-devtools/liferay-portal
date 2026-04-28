@@ -27,9 +27,9 @@ public class CETConfigurationUpgradeProcess extends UpgradeProcess {
 	protected void doUpgrade() throws Exception {
 		Configuration[] configurations = _configurationAdmin.listConfigurations(
 			StringBundler.concat(
-				"(", Constants.SERVICE_PID,
+				"(&(", Constants.SERVICE_PID,
 				"=com.liferay.client.extension.type.configuration.",
-				"CETConfiguration~*)"));
+				"CETConfiguration~*)(!(.client.extension.config.bundle.id=*)))"));
 
 		if (configurations == null) {
 			return;
