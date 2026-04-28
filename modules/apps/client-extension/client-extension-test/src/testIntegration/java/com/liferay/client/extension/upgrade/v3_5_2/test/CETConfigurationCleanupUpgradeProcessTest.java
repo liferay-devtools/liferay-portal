@@ -42,14 +42,22 @@ public class CETConfigurationCleanupUpgradeProcessTest {
 	public void tearDown() throws Exception {
 		_deleteConfiguration(_STALE_CET_PID_1);
 		_deleteConfiguration(_STALE_CET_PID_2);
+		_deleteConfiguration(_TRACKER_CET_PID);
 		_deleteConfiguration(_UNRELATED_PID);
 	}
 
 	@Test
 	public void testUpgrade() throws Exception {
-		_createConfiguration(_STALE_CET_PID_1);
-		_createConfiguration(_STALE_CET_PID_2);
-		_createConfiguration(_UNRELATED_PID);
+		_createConfiguration(_STALE_CET_PID_1, new Hashtable<>());
+		_createConfiguration(_STALE_CET_PID_2, new Hashtable<>());
+
+		Hashtable<String, Object> trackerProperties = new Hashtable<>();
+
+		trackerProperties.put(_BUNDLE_ID_PROPERTY_KEY, 1L);
+
+		_createConfiguration(_TRACKER_CET_PID, trackerProperties);
+
+		_createConfiguration(_UNRELATED_PID, new Hashtable<>());
 
 		Configuration[] cetConfigurationsBeforeUpgrade =
 			_configurationAdmin.listConfigurations(
@@ -58,11 +66,12 @@ public class CETConfigurationCleanupUpgradeProcessTest {
 					_CET_CONFIGURATION_PID_PREFIX, "*)"));
 
 		Assert.assertNotNull(
-			"Stale CET configurations must exist before upgrade",
+			"CET configurations must exist before upgrade",
 			cetConfigurationsBeforeUpgrade);
 		Assert.assertEquals(
-			"Two stale CET configurations must exist before upgrade", 2,
-			cetConfigurationsBeforeUpgrade.length);
+			"Two stale and one tracker-installed CET configuration must " +
+				"exist before upgrade",
+			3, cetConfigurationsBeforeUpgrade.length);
 
 		UpgradeProcess upgradeProcess = _getUpgradeProcess();
 
@@ -72,12 +81,21 @@ public class CETConfigurationCleanupUpgradeProcessTest {
 
 		upgradeProcess.upgrade();
 
-		Assert.assertNull(
-			"All stale CET configurations should be deleted",
+		Configuration[] cetConfigurationsAfterUpgrade =
 			_configurationAdmin.listConfigurations(
 				StringBundler.concat(
 					"(", Constants.SERVICE_PID, "=",
-					_CET_CONFIGURATION_PID_PREFIX, "*)")));
+					_CET_CONFIGURATION_PID_PREFIX, "*)"));
+
+		Assert.assertNotNull(
+			"Tracker-installed CET configuration must survive upgrade",
+			cetConfigurationsAfterUpgrade);
+		Assert.assertEquals(
+			"Only the tracker-installed CET configuration should remain", 1,
+			cetConfigurationsAfterUpgrade.length);
+		Assert.assertEquals(
+			_TRACKER_CET_PID, cetConfigurationsAfterUpgrade[0].getPid());
+
 		Assert.assertNotNull(
 			"Unrelated configuration should survive",
 			_configurationAdmin.listConfigurations(
@@ -85,11 +103,14 @@ public class CETConfigurationCleanupUpgradeProcessTest {
 					"(", Constants.SERVICE_PID, "=", _UNRELATED_PID, ")")));
 	}
 
-	private void _createConfiguration(String pid) throws Exception {
+	private void _createConfiguration(
+			String pid, Hashtable<String, Object> properties)
+		throws Exception {
+
 		Configuration configuration = _configurationAdmin.getConfiguration(
 			pid, "?");
 
-		configuration.update(new Hashtable<>());
+		configuration.update(properties);
 	}
 
 	private void _deleteConfiguration(String pid) throws Exception {
@@ -133,6 +154,9 @@ public class CETConfigurationCleanupUpgradeProcessTest {
 		return upgradeProcesses[0];
 	}
 
+	private static final String _BUNDLE_ID_PROPERTY_KEY =
+		".client.extension.config.bundle.id";
+
 	private static final String _CET_CONFIGURATION_PID_PREFIX =
 		"com.liferay.client.extension.type.configuration.CETConfiguration~";
 
@@ -145,6 +169,9 @@ public class CETConfigurationCleanupUpgradeProcessTest {
 
 	private static final String _STALE_CET_PID_2 =
 		_CET_CONFIGURATION_PID_PREFIX + "upgrade-test-cet-2/liferay.com";
+
+	private static final String _TRACKER_CET_PID =
+		_CET_CONFIGURATION_PID_PREFIX + "upgrade-test-tracker/liferay.com";
 
 	private static final String _UNRELATED_PID =
 		"com.liferay.client.extension.upgrade.test.unrelated";
