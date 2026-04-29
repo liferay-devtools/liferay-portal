@@ -6,17 +6,11 @@
 package com.liferay.client.extension.internal.upgrade.v3_5_2;
 
 import com.liferay.petra.string.StringBundler;
-import com.liferay.portal.kernel.dao.jdbc.AutoBatchPreparedStatementUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
 
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author Anthony Chu
@@ -29,45 +23,21 @@ public class CETConfigurationUpgradeProcess extends UpgradeProcess {
 			return;
 		}
 
-		List<String> configurationIds = new ArrayList<>();
-
-		try (Statement statement = connection.createStatement();
-
-			ResultSet resultSet = statement.executeQuery(
+		try (PreparedStatement preparedStatement = connection.prepareStatement(
 				StringBundler.concat(
-					"select configurationId from Configuration_ where ",
-					"configurationId like 'com.liferay.client.extension.type.",
-					"configuration.CETConfiguration~%' and (dictionary is ",
-					"null or dictionary not like ",
+					"delete from Configuration_ where configurationId like ",
+					"'com.liferay.client.extension.type.configuration.",
+					"CETConfiguration~%' and (dictionary is null or ",
+					"dictionary not like ",
 					"'%.client.extension.config.bundle.id=%')"))) {
 
-			while (resultSet.next()) {
-				configurationIds.add(resultSet.getString("configurationId"));
+			int deletedCount = preparedStatement.executeUpdate();
+
+			if (_log.isInfoEnabled()) {
+				_log.info(
+					"Deleted " + deletedCount +
+						" persisted CET configurations");
 			}
-		}
-
-		if (configurationIds.isEmpty()) {
-			return;
-		}
-
-		try (PreparedStatement preparedStatement =
-				AutoBatchPreparedStatementUtil.autoBatch(
-					connection,
-					"delete from Configuration_ where configurationId = ?")) {
-
-			for (String configurationId : configurationIds) {
-				if (_log.isInfoEnabled()) {
-					_log.info(
-						"Deleting persisted CET configuration " +
-							configurationId);
-				}
-
-				preparedStatement.setString(1, configurationId);
-
-				preparedStatement.addBatch();
-			}
-
-			preparedStatement.executeBatch();
 		}
 	}
 
