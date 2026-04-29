@@ -11,16 +11,14 @@ import com.liferay.portal.kernel.dao.db.DB;
 import com.liferay.portal.kernel.dao.db.DBManagerUtil;
 import com.liferay.portal.kernel.dao.jdbc.DataAccess;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
-import com.liferay.portal.kernel.upgrade.UpgradeStep;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.upgrade.registry.UpgradeStepRegistrator;
+import com.liferay.portal.upgrade.test.util.UpgradeTestUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-
-import java.util.Objects;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -59,11 +57,10 @@ public class CETConfigurationCleanupUpgradeProcessTest {
 			_TRACKER_CET_PID, ".client.extension.config.bundle.id=L\"1\"\n");
 		_insertConfiguration(_UNRELATED_PID, "");
 
-		UpgradeProcess upgradeProcess = _getUpgradeProcess();
-
-		Assert.assertNotNull(
-			"CET configuration cleanup upgrade step must be registered",
-			upgradeProcess);
+		UpgradeProcess upgradeProcess = UpgradeTestUtil.getUpgradeStep(
+			_upgradeStepRegistrator,
+			"com.liferay.client.extension.internal.upgrade.v3_5_2." +
+				"CETConfigurationUpgradeProcess");
 
 		upgradeProcess.upgrade();
 
@@ -96,34 +93,6 @@ public class CETConfigurationCleanupUpgradeProcessTest {
 		}
 	}
 
-	private UpgradeProcess _getUpgradeProcess() {
-		UpgradeProcess[] upgradeProcesses = new UpgradeProcess[1];
-
-		_upgradeStepRegistrator.register(
-			(fromSchemaVersionString, toSchemaVersionString, upgradeSteps) -> {
-				if (!Objects.equals(fromSchemaVersionString, "3.5.1") ||
-					!Objects.equals(toSchemaVersionString, "3.5.2")) {
-
-					return;
-				}
-
-				for (UpgradeStep upgradeStep : upgradeSteps) {
-					Class<?> upgradeStepClass = upgradeStep.getClass();
-
-					if (Objects.equals(
-							upgradeStepClass.getName(),
-							_CLASS_NAME_CET_CONFIGURATION_UPGRADE_PROCESS)) {
-
-						upgradeProcesses[0] = (UpgradeProcess)upgradeStep;
-
-						return;
-					}
-				}
-			});
-
-		return upgradeProcesses[0];
-	}
-
 	private void _insertConfiguration(String pid, String dictionary)
 		throws Exception {
 
@@ -142,10 +111,6 @@ public class CETConfigurationCleanupUpgradeProcessTest {
 
 	private static final String _CET_CONFIGURATION_PID_PREFIX =
 		"com.liferay.client.extension.type.configuration.CETConfiguration~";
-
-	private static final String _CLASS_NAME_CET_CONFIGURATION_UPGRADE_PROCESS =
-		"com.liferay.client.extension.internal.upgrade.v3_5_2." +
-			"CETConfigurationUpgradeProcess";
 
 	private static final String _STALE_CET_PID_1 =
 		_CET_CONFIGURATION_PID_PREFIX + "upgrade-test-cet-1/liferay.com";
