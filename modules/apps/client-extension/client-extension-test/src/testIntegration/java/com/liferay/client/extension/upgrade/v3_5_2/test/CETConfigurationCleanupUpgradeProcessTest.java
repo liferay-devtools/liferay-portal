@@ -47,11 +47,7 @@ public class CETConfigurationCleanupUpgradeProcessTest {
 	public void tearDown() throws Exception {
 		DB db = DBManagerUtil.getDB();
 
-		db.runSQL(
-			StringBundler.concat(
-				"delete from Configuration_ where configurationId in ('",
-				_STALE_CET_PID_1, "', '", _STALE_CET_PID_2, "', '",
-				_TRACKER_CET_PID, "', '", _UNRELATED_PID, "')"));
+		db.runSQL("delete from Configuration_ where " + _pidsInClause());
 	}
 
 	@Test
@@ -74,11 +70,8 @@ public class CETConfigurationCleanupUpgradeProcessTest {
 			Statement statement = connection.createStatement();
 
 			ResultSet resultSet = statement.executeQuery(
-				StringBundler.concat(
-					"select configurationId from Configuration_ where ",
-					"configurationId in ('", _STALE_CET_PID_1, "', '",
-					_STALE_CET_PID_2, "', '", _TRACKER_CET_PID, "', '",
-					_UNRELATED_PID, "')"))) {
+				"select configurationId from Configuration_ where " +
+					_pidsInClause())) {
 
 			Set<String> survivingPids = new HashSet<>();
 
@@ -106,6 +99,12 @@ public class CETConfigurationCleanupUpgradeProcessTest {
 
 			preparedStatement.execute();
 		}
+	}
+
+	private String _pidsInClause() {
+		return StringBundler.concat(
+			"configurationId in ('", _STALE_CET_PID_1, "', '", _STALE_CET_PID_2,
+			"', '", _TRACKER_CET_PID, "', '", _UNRELATED_PID, "')");
 	}
 
 	private static final String _CET_CONFIGURATION_PID_PREFIX =
