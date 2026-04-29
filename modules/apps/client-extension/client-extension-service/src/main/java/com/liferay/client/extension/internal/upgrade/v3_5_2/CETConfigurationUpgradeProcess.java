@@ -32,8 +32,9 @@ public class CETConfigurationUpgradeProcess extends UpgradeProcess {
 				StringBundler.concat(
 					"select configurationId from Configuration_ where ",
 					"configurationId like 'com.liferay.client.extension.type.",
-					"configuration.CETConfiguration~%' and dictionary not ",
-					"like '%.client.extension.config.bundle.id=%'"));
+					"configuration.CETConfiguration~%' and (dictionary is ",
+					"null or dictionary not like ",
+					"'%.client.extension.config.bundle.id=%')"));
 
 			PreparedStatement preparedStatement =
 				AutoBatchPreparedStatementUtil.autoBatch(

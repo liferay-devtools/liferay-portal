@@ -53,7 +53,7 @@ public class CETConfigurationCleanupUpgradeProcessTest {
 	@Test
 	public void testUpgrade() throws Exception {
 		_insertConfiguration(_STALE_CET_PID_1, "");
-		_insertConfiguration(_STALE_CET_PID_2, "");
+		_insertConfiguration(_STALE_CET_PID_2, null);
 		_insertConfiguration(
 			_TRACKER_CET_PID, ".client.extension.config.bundle.id=L\"1\"\n");
 		_insertConfiguration(_UNRELATED_PID, "");
