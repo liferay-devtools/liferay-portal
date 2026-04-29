@@ -11,6 +11,7 @@ import com.liferay.portal.kernel.dao.db.DB;
 import com.liferay.portal.kernel.dao.db.DBManagerUtil;
 import com.liferay.portal.kernel.dao.jdbc.DataAccess;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
+import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.upgrade.registry.UpgradeStepRegistrator;
@@ -19,6 +20,10 @@ import com.liferay.portal.upgrade.test.util.UpgradeTestUtil;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -64,32 +69,26 @@ public class CETConfigurationCleanupUpgradeProcessTest {
 
 		upgradeProcess.upgrade();
 
-		Assert.assertFalse(
-			"Stale CET configuration must be deleted",
-			_configurationExists(_STALE_CET_PID_1));
-		Assert.assertFalse(
-			"Stale CET configuration must be deleted",
-			_configurationExists(_STALE_CET_PID_2));
-		Assert.assertTrue(
-			"Tracker-installed CET configuration must survive upgrade",
-			_configurationExists(_TRACKER_CET_PID));
-		Assert.assertTrue(
-			"Unrelated configuration must survive upgrade",
-			_configurationExists(_UNRELATED_PID));
-	}
-
-	private boolean _configurationExists(String pid) throws Exception {
 		try (Connection connection = DataAccess.getConnection();
 
-			PreparedStatement preparedStatement = connection.prepareStatement(
-				"select configurationId from Configuration_ where " +
-					"configurationId = ?")) {
+			Statement statement = connection.createStatement();
 
-			preparedStatement.setString(1, pid);
+			ResultSet resultSet = statement.executeQuery(
+				StringBundler.concat(
+					"select configurationId from Configuration_ where ",
+					"configurationId in ('", _STALE_CET_PID_1, "', '",
+					_STALE_CET_PID_2, "', '", _TRACKER_CET_PID, "', '",
+					_UNRELATED_PID, "')"))) {
 
-			try (ResultSet resultSet = preparedStatement.executeQuery()) {
-				return resultSet.next();
+			Set<String> survivingPids = new HashSet<>();
+
+			while (resultSet.next()) {
+				survivingPids.add(resultSet.getString("configurationId"));
 			}
+
+			Assert.assertEquals(
+				SetUtil.fromArray(_TRACKER_CET_PID, _UNRELATED_PID),
+				survivingPids);
 		}
 	}
 
