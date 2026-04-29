@@ -15,6 +15,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author Anthony Chu
  */
@@ -26,6 +29,8 @@ public class CETConfigurationUpgradeProcess extends UpgradeProcess {
 			return;
 		}
 
+		List<String> configurationIds = new ArrayList<>();
+
 		try (Statement statement = connection.createStatement();
 
 			ResultSet resultSet = statement.executeQuery(
@@ -34,16 +39,23 @@ public class CETConfigurationUpgradeProcess extends UpgradeProcess {
 					"configurationId like 'com.liferay.client.extension.type.",
 					"configuration.CETConfiguration~%' and (dictionary is ",
 					"null or dictionary not like ",
-					"'%.client.extension.config.bundle.id=%')"));
+					"'%.client.extension.config.bundle.id=%')"))) {
 
-			PreparedStatement preparedStatement =
+			while (resultSet.next()) {
+				configurationIds.add(resultSet.getString("configurationId"));
+			}
+		}
+
+		if (configurationIds.isEmpty()) {
+			return;
+		}
+
+		try (PreparedStatement preparedStatement =
 				AutoBatchPreparedStatementUtil.autoBatch(
 					connection,
 					"delete from Configuration_ where configurationId = ?")) {
 
-			while (resultSet.next()) {
-				String configurationId = resultSet.getString("configurationId");
-
+			for (String configurationId : configurationIds) {
 				if (_log.isInfoEnabled()) {
 					_log.info(
 						"Deleting persisted CET configuration " +
