@@ -65,19 +65,19 @@ public class WebContextConfigurationCORSClientTest
 		assertJaxRSUrl(_URL, HttpMethod.GET, false, false);
 		assertJaxRSUrl(_URL, HttpMethod.GET, false, true, "::1");
 		assertJaxRSUrl(
-			_URL, HttpMethod.GET, false, true, "http://127.0.0.1:",
-			PortalUtil.getPortalServerPort(false));
+			_URL, HttpMethod.GET, false, true,
+			"http://127.0.0.1:" + PortalUtil.getPortalServerPort(false));
 		assertJaxRSUrl(
-			_URL, HttpMethod.GET, false, true, "http://localhost:",
-			PortalUtil.getPortalServerPort(false));
+			_URL, HttpMethod.GET, false, true,
+			"http://localhost:" + PortalUtil.getPortalServerPort(false));
 		assertJaxRSUrl(_URL, HttpMethod.OPTIONS, false, false);
 		assertJaxRSUrl(_URL, HttpMethod.OPTIONS, false, true, "::1");
 		assertJaxRSUrl(
-			_URL, HttpMethod.OPTIONS, false, true, "http://127.0.0.1:",
-			PortalUtil.getPortalServerPort(false));
+			_URL, HttpMethod.OPTIONS, false, true,
+			"http://127.0.0.1:" + PortalUtil.getPortalServerPort(false));
 		assertJaxRSUrl(
-			_URL, HttpMethod.OPTIONS, false, true, "http://localhost:",
-			PortalUtil.getPortalServerPort(false));
+			_URL, HttpMethod.OPTIONS, false, true,
+			"http://localhost:" + PortalUtil.getPortalServerPort(false));
 	}
 
 	@Test
@@ -85,19 +85,19 @@ public class WebContextConfigurationCORSClientTest
 		assertJaxRSUrl(_URL, HttpMethod.GET, true, false);
 		assertJaxRSUrl(_URL, HttpMethod.GET, true, false, "::1");
 		assertJaxRSUrl(
-			_URL, HttpMethod.GET, true, false, "http://127.0.0.1:",
-			PortalUtil.getPortalServerPort(false));
+			_URL, HttpMethod.GET, true, false,
+			"http://127.0.0.1:" + PortalUtil.getPortalServerPort(false));
 		assertJaxRSUrl(
-			_URL, HttpMethod.GET, true, false, "http://localhost:",
-			PortalUtil.getPortalServerPort(false));
+			_URL, HttpMethod.GET, true, false,
+			"http://localhost:" + PortalUtil.getPortalServerPort(false));
 		assertJaxRSUrl(_URL, HttpMethod.OPTIONS, true, false);
 		assertJaxRSUrl(_URL, HttpMethod.OPTIONS, true, true, "::1");
 		assertJaxRSUrl(
-			_URL, HttpMethod.OPTIONS, true, true, "http://127.0.0.1:",
-			PortalUtil.getPortalServerPort(false));
+			_URL, HttpMethod.OPTIONS, true, true,
+			"http://127.0.0.1:" + PortalUtil.getPortalServerPort(false));
 		assertJaxRSUrl(
-			_URL, HttpMethod.OPTIONS, true, true, "http://localhost:",
-			PortalUtil.getPortalServerPort(false));
+			_URL, HttpMethod.OPTIONS, true, true,
+			"http://localhost:" + PortalUtil.getPortalServerPort(false));
 	}
 
 	private static final String _PATH = RandomTestUtil.randomString();
