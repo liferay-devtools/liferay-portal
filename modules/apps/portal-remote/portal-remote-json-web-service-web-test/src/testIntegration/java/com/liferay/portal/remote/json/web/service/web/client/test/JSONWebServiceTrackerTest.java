@@ -69,8 +69,8 @@ public class JSONWebServiceTrackerTest {
 	@Test
 	public void testWebServiceContextAppearsInTheSummary() throws IOException {
 		URL url = new URL(
-			"http://localhost:", PortalUtil.getPortalServerPort(false),
-			"/api/jsonws");
+			"http://localhost:" + PortalUtil.getPortalServerPort(false) +
+				"/api/jsonws");
 
 		String body = URLUtil.toString(url);
 

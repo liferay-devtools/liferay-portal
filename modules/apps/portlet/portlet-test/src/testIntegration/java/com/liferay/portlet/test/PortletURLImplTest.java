@@ -75,7 +75,7 @@ public class PortletURLImplTest {
 		themeDisplay.setPlid(layout.getPlid());
 
 		themeDisplay.setPortalURL(
-			"http://localhost:", PortalUtil.getPortalServerPort(false));
+			"http://localhost:" + PortalUtil.getPortalServerPort(false));
 		themeDisplay.setScopeGroupId(_group.getGroupId());
 		themeDisplay.setSiteGroupId(_group.getGroupId());
 
@@ -136,7 +136,7 @@ public class PortletURLImplTest {
 		themeDisplay.setPlid(layout.getPlid());
 
 		themeDisplay.setPortalURL(
-			"http://localhost:", PortalUtil.getPortalServerPort(false));
+			"http://localhost:" + PortalUtil.getPortalServerPort(false));
 		themeDisplay.setScopeGroupId(_group.getGroupId());
 		themeDisplay.setSiteGroupId(_group.getGroupId());
 

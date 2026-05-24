@@ -127,7 +127,7 @@ public class DepotEntryUserNotificationTest {
 		userNotificationFeedEntry = _getUserNotificationFeedEntry(_depotEntry2);
 
 		Assert.assertEquals(
-			"http://localhost:", PortalUtil.getPortalServerPort(false),
+			"http://localhost:" + PortalUtil.getPortalServerPort(false),
 			"/path-friendly-url-public/cms/projects",
 			userNotificationFeedEntry.getLink());
 	}
@@ -248,7 +248,7 @@ public class DepotEntryUserNotificationTest {
 
 		serviceContext.setLanguageId("en_US");
 		serviceContext.setPortalURL(
-			"http://localhost:", PortalUtil.getPortalServerPort(false));
+			"http://localhost:" + PortalUtil.getPortalServerPort(false));
 
 		ThemeDisplay themeDisplay = _getThemeDisplay();
 
