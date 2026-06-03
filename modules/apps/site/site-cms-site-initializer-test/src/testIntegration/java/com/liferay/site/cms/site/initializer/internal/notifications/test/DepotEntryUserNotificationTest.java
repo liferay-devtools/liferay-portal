@@ -127,8 +127,8 @@ public class DepotEntryUserNotificationTest {
 		userNotificationFeedEntry = _getUserNotificationFeedEntry(_depotEntry2);
 
 		Assert.assertEquals(
-			"http://localhost:" + PortalUtil.getPortalServerPort(false),
-			"/path-friendly-url-public/cms/projects",
+			"http://localhost:" + PortalUtil.getPortalServerPort(false) +
+				"/path-friendly-url-public/cms/projects",
 			userNotificationFeedEntry.getLink());
 	}
 
