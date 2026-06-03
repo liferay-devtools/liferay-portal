@@ -10,8 +10,6 @@ import com.liferay.portal.kernel.util.ArrayUtil;
 import com.puppycrawl.tools.checkstyle.api.DetailAST;
 import com.puppycrawl.tools.checkstyle.api.TokenTypes;
 
-import java.util.List;
-
 /**
  * @author Alan Huang
  */
@@ -19,7 +17,7 @@ public class TestClassHardcodedPortCheck extends BaseCheck {
 
 	@Override
 	public int[] getDefaultTokens() {
-		return new int[] {TokenTypes.CLASS_DEF};
+		return new int[] {TokenTypes.NUM_INT, TokenTypes.STRING_LITERAL};
 	}
 
 	@Override
@@ -30,12 +28,7 @@ public class TestClassHardcodedPortCheck extends BaseCheck {
 			return;
 		}
 
-		List<DetailAST> childDetailASTs = getAllChildTokens(
-			detailAST, true, TokenTypes.NUM_INT, TokenTypes.STRING_LITERAL);
-
-		for (DetailAST childDetailAST : childDetailASTs) {
-			_checkHardcodedPort(childDetailAST);
-		}
+		_checkHardcodedPort(detailAST);
 	}
 
 	private void _checkHardcodedPort(DetailAST detailAST) {
