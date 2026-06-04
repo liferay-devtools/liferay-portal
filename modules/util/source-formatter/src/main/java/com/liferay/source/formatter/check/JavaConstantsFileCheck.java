@@ -73,13 +73,11 @@ public class JavaConstantsFileCheck extends BaseFileCheck {
 			matcher.appendReplacement(sb, replacement);
 		}
 
-		if (sb.length() > 0) {
-			matcher.appendTail(sb);
+		matcher.appendTail(sb);
 
-			return sb.toString();
-		}
+		return sb.toString();
 
-		return content;
+		//		return content;
 	}
 
 	private static final Pattern _constantPattern = Pattern.compile(
