@@ -53,7 +53,7 @@ public class JSONObjectDefinitionFileCheck extends BaseFileCheck {
 
 		String regex = _getClassNameRegex();
 
-		if (className.matches(regex)) {
+		if ((regex == null) || className.matches(regex)) {
 			return content;
 		}
 
