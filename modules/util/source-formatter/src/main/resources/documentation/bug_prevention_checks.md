@@ -71,6 +71,7 @@ InnerExceptionClassCheck | .java | Checks that classes that should have either p
 JSCompatibilityCheck | | Checks for JavaScript compatibility. |
 [JSLodashDependencyCheck](check/js_lodash_dependency_check.md#jslodashdependencycheck) | .js or .jsx | Finds incorrect use of `AUI._`. |
 [JSONDeprecatedPackagesCheck](check/json_deprecated_packages_check.md#jsondeprecatedpackagescheck) | .ipynb, .json, or .npmbridgerc | Finds incorrect use of deprecated packages in `package.json` files. |
+JSONObjectDefinitionFileCheck | .ipynb, .json, or .npmbridgerc | Checks if the `className` matches the pattern specified by `_classNamePattern` in `ObjectDefinitionClassNameProcessorImpl.java`. |
 JSONPackageJSONBNDVersionCheck | .ipynb, .json, or .npmbridgerc | Checks the version for dependencies in `package.json` files. |
 JSONPackageJSONCheck | .ipynb, .json, or .npmbridgerc | Checks content of `package.json` files. |
 JSONPackageJSONDependencyVersionCheck | .ipynb, .json, or .npmbridgerc | Checks the version for dependencies in `package.json` files. |
