@@ -5,13 +5,12 @@
 
 package com.liferay.source.formatter.check;
 
-import com.liferay.petra.io.unsync.UnsyncBufferedReader;
-import com.liferay.petra.io.unsync.UnsyncStringReader;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.json.JSONObjectImpl;
 import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.source.formatter.checkstyle.util.CheckstyleUtil;
 import com.liferay.source.formatter.checkstyle.util.DetailASTUtil;
 import com.liferay.source.formatter.util.FileUtil;
 
@@ -26,7 +25,6 @@ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
 import java.io.File;
 import java.io.IOException;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -144,19 +142,8 @@ public class JSONObjectDefinitionFileCheck extends BaseFileCheck {
 
 		String content = FileUtil.read(file);
 
-		List<String> lines = new ArrayList<>();
-
-		try (UnsyncBufferedReader unsyncBufferedReader =
-				new UnsyncBufferedReader(new UnsyncStringReader(content))) {
-
-			String line = null;
-
-			while ((line = unsyncBufferedReader.readLine()) != null) {
-				lines.add(line);
-			}
-		}
-
-		FileText fileText = new FileText(file, lines);
+		FileText fileText = new FileText(
+			file, CheckstyleUtil.getLines(content));
 
 		FileContents fileContents = new FileContents(fileText);
 
