@@ -7,7 +7,6 @@ package com.liferay.source.formatter.check;
 
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.json.JSONObjectImpl;
-import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.source.formatter.checkstyle.util.CheckstyleUtil;
@@ -15,7 +14,6 @@ import com.liferay.source.formatter.checkstyle.util.DetailASTUtil;
 import com.liferay.source.formatter.util.FileUtil;
 
 import com.puppycrawl.tools.checkstyle.JavaParser;
-import com.puppycrawl.tools.checkstyle.api.CheckstyleException;
 import com.puppycrawl.tools.checkstyle.api.DetailAST;
 import com.puppycrawl.tools.checkstyle.api.FileContents;
 import com.puppycrawl.tools.checkstyle.api.FileText;
@@ -23,7 +21,6 @@ import com.puppycrawl.tools.checkstyle.api.FullIdent;
 import com.puppycrawl.tools.checkstyle.api.TokenTypes;
 
 import java.io.File;
-import java.io.IOException;
 
 import java.util.List;
 
@@ -40,9 +37,9 @@ public class JSONObjectDefinitionFileCheck extends BaseFileCheck {
 	@Override
 	protected String doProcess(
 			String fileName, String absolutePath, String content)
-		throws CheckstyleException, IOException, JSONException {
+		throws Exception {
 
-		if (!absolutePath.endsWith("-definition-object-definition.json")) {
+		if (!absolutePath.endsWith("-object-definition.json")) {
 			return content;
 		}
 
@@ -121,9 +118,7 @@ public class JSONObjectDefinitionFileCheck extends BaseFileCheck {
 		return null;
 	}
 
-	private synchronized String _getClassNameRegex()
-		throws CheckstyleException, IOException {
-
+	private synchronized String _getClassNameRegex() throws Exception {
 		if (_classNameRegex != null) {
 			return _classNameRegex;
 		}
