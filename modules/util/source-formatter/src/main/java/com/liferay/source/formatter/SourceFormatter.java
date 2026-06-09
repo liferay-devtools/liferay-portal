@@ -586,8 +586,21 @@ public class SourceFormatter {
 						_sourceFormatterExcludes, false));
 			}
 
-			if (recentChangesFileName.endsWith(".java") &&
-				recentChangesFileName.contains("/upgrade/")) {
+			if (recentChangesFileName.endsWith(
+					"/modules/apps/object/object-service/src/main/java/com" +
+						"/liferay/object/internal/definition/processor" +
+							"/ObjectDefinitionClassNameProcessorImpl.java")) {
+
+				dependentFileNames.addAll(
+					SourceFormatterUtil.filterFileNames(
+						_allFileNames, new String[0],
+						new String[] {
+							"**/object-definitions/*-object-definition.json"
+						},
+						_sourceFormatterExcludes, false));
+			}
+			else if (recentChangesFileName.endsWith(".java") &&
+					 recentChangesFileName.contains("/upgrade/")) {
 
 				dependentFileNames = _addDependentFileName(
 					dependentFileNames, recentChangesFileName, "bnd.bnd");
