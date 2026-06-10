@@ -84,6 +84,10 @@ public class JSONObjectDefinitionFileCheck extends BaseFileCheck {
 
 		DetailAST firstChildDetailAST = detailAST.getFirstChild();
 
+		if (firstChildDetailAST == null) {
+			return false;
+		}
+
 		DetailAST nextSiblingDetailAST = firstChildDetailAST.getNextSibling();
 
 		if (_appendString(firstChildDetailAST, sb) &&
