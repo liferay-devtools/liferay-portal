@@ -47,50 +47,54 @@ gradle.buildFinished {
 		logger.lifecycle "Gradle build finished at {}.", date.format("yyyy-MM-dd HH:mm:ss.SSS", TimeZone.getTimeZone("UTC"))
 	}
 
-	ByteArrayOutputStream errorByteArrayOutputStream = new ByteArrayOutputStream()
-	ByteArrayOutputStream outputByteArrayOutputStream = new ByteArrayOutputStream()
+	File dotGitFolder = new File(gradle.gradleUserHomeDir, ".git")
 
-	exec {
-		commandLine "git", "ls-files", "--exclude-standard", "--others"
-		ignoreExitValue = true
-		errorOutput = errorByteArrayOutputStream
-		standardOutput = outputByteArrayOutputStream
-		workingDir = gradle.gradleUserHomeDir
-	}
+	if (dotGitFolder.exists()) {
+		ByteArrayOutputStream errorByteArrayOutputStream = new ByteArrayOutputStream()
+		ByteArrayOutputStream outputByteArrayOutputStream = new ByteArrayOutputStream()
 
-	String errorString = errorByteArrayOutputStream.toString()
+		exec {
+			commandLine "git", "ls-files", "--exclude-standard", "--others"
+			ignoreExitValue = true
+			errorOutput = errorByteArrayOutputStream
+			standardOutput = outputByteArrayOutputStream
+			workingDir = gradle.gradleUserHomeDir
+		}
 
-	String lowerCaseErrorString = errorString.toLowerCase()
+		String errorString = errorByteArrayOutputStream.toString()
 
-	if (!lowerCaseErrorString.contains("not a git repository")) {
-		logger.error errorString
-	}
+		String lowerCaseErrorString = errorString.toLowerCase()
 
-	String output = outputByteArrayOutputStream.toString()
+		if (!lowerCaseErrorString.contains("not a git repository")) {
+			logger.error errorString
+		}
 
-	List<String> fileNames = output.readLines()
+		String output = outputByteArrayOutputStream.toString()
 
-	fileNames.retainAll {
-		it.endsWith ".pom"
-	}
+		List<String> fileNames = output.readLines()
 
-	fileNames.each {
-		String pomFileName ->
+		fileNames.retainAll {
+			it.endsWith ".pom"
+		}
 
-		File pomFile = new File(gradle.gradleUserHomeDir, pomFileName)
+		fileNames.each {
+			String pomFileName ->
 
-		rootProject.ant.fixcrlf encoding: "UTF-8", eol: "lf", file: pomFile, fixlast: false
+			File pomFile = new File(gradle.gradleUserHomeDir, pomFileName)
 
-		HashValue hashValue = HashUtil.sha1(pomFile)
+			rootProject.ant.fixcrlf encoding: "UTF-8", eol: "lf", file: pomFile, fixlast: false
 
-		String hash = hashValue.asHexString()
-		File hashDir = pomFile.parentFile
+			HashValue hashValue = HashUtil.sha1(pomFile)
 
-		if (hashDir.name != hash) {
-			boolean success = hashDir.renameTo new File(hashDir.parentFile, hash)
+			String hash = hashValue.asHexString()
+			File hashDir = pomFile.parentFile
 
-			if (!success) {
-				delete hashDir
+			if (hashDir.name != hash) {
+				boolean success = hashDir.renameTo new File(hashDir.parentFile, hash)
+
+				if (!success) {
+					delete hashDir
+				}
 			}
 		}
 	}
