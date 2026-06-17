@@ -117,40 +117,19 @@
 			],
 			"objectFields": [
 				{
-					"DBType": "Date",
-					"businessType": "Date",
-					"defaultValue": "",
-					"externalReferenceCode": "37555450-fe52-e50b-08c5-94bc3f70fe00",
-					"id": 44133,
-					"indexed": false,
-					"indexedAsKeyword": false,
-					"indexedLanguageId": "",
-					"label": {
-						"en_US": "Create Date"
-					},
-					"listTypeDefinitionId": 0,
-					"name": "createDate",
-					"objectFieldSettings": [
-					],
-					"required": false,
-					"state": false,
-					"system": true,
-					"type": "Date"
-				},
-				{
 					"DBType": "String",
 					"businessType": "Text",
 					"defaultValue": "",
-					"externalReferenceCode": "30ed45d6-696c-cd6b-f5f4-ec258b42f420",
-					"id": 44132,
+					"externalReferenceCode": "1dcbd7a6-6f8f-6ff9-f553-9ec4a1954f97",
+					"id": 44137,
 					"indexed": false,
 					"indexedAsKeyword": false,
 					"indexedLanguageId": "",
 					"label": {
-						"en_US": "Author"
+						"en_US": "Status"
 					},
 					"listTypeDefinitionId": 0,
-					"name": "creator",
+					"name": "status",
 					"objectFieldSettings": [
 					],
 					"required": false,
@@ -183,25 +162,21 @@
 					"DBType": "String",
 					"businessType": "Text",
 					"defaultValue": "",
-					"externalReferenceCode": "47356a30-ea5e-997b-6e7f-6e92247310dc",
-					"id": 44138,
-					"indexed": true,
+					"externalReferenceCode": "30ed45d6-696c-cd6b-f5f4-ec258b42f420",
+					"id": 44132,
+					"indexed": false,
 					"indexedAsKeyword": false,
-					"indexedLanguageId": "en_US",
+					"indexedLanguageId": "",
 					"label": {
-						"en_US": "Field1"
+						"en_US": "Author"
 					},
 					"listTypeDefinitionId": 0,
-					"name": "field1",
+					"name": "creator",
 					"objectFieldSettings": [
-						{
-							"name": "showCounter",
-							"value": "false"
-						}
 					],
-					"required": true,
+					"required": false,
 					"state": false,
-					"system": false,
+					"system": true,
 					"type": "String"
 				},
 				{
@@ -226,6 +201,52 @@
 					"type": "Long"
 				},
 				{
+					"DBType": "String",
+					"businessType": "Text",
+					"defaultValue": "",
+					"externalReferenceCode": "47356a30-ea5e-997b-6e7f-6e92247310dc",
+					"id": 44138,
+					"indexed": true,
+					"indexedAsKeyword": false,
+					"indexedLanguageId": "en_US",
+					"label": {
+						"en_US": "Field1"
+					},
+					"listTypeDefinitionId": 0,
+					"name": "field1",
+					"objectFieldSettings": [
+						{
+							"name": "showCounter",
+							"value": "false"
+						}
+					],
+					"required": true,
+					"state": false,
+					"system": false,
+					"type": "String"
+				},
+				{
+					"DBType": "Date",
+					"businessType": "Date",
+					"defaultValue": "",
+					"externalReferenceCode": "37555450-fe52-e50b-08c5-94bc3f70fe00",
+					"id": 44133,
+					"indexed": false,
+					"indexedAsKeyword": false,
+					"indexedLanguageId": "",
+					"label": {
+						"en_US": "Create Date"
+					},
+					"listTypeDefinitionId": 0,
+					"name": "createDate",
+					"objectFieldSettings": [
+					],
+					"required": false,
+					"state": false,
+					"system": true,
+					"type": "Date"
+				},
+				{
 					"DBType": "Date",
 					"businessType": "Date",
 					"defaultValue": "",
@@ -245,27 +266,6 @@
 					"state": false,
 					"system": true,
 					"type": "Date"
-				},
-				{
-					"DBType": "String",
-					"businessType": "Text",
-					"defaultValue": "",
-					"externalReferenceCode": "1dcbd7a6-6f8f-6ff9-f553-9ec4a1954f97",
-					"id": 44137,
-					"indexed": false,
-					"indexedAsKeyword": false,
-					"indexedLanguageId": "",
-					"label": {
-						"en_US": "Status"
-					},
-					"listTypeDefinitionId": 0,
-					"name": "status",
-					"objectFieldSettings": [
-					],
-					"required": false,
-					"state": false,
-					"system": true,
-					"type": "String"
 				}
 			],
 			"objectLayouts": [
