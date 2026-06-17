@@ -110,15 +110,12 @@ public class JSONObjectDefinitionFileCheck extends BaseFileCheck {
 				return -1;
 			}
 
-			NaturalOrderStringComparator naturalOrderStringComparator =
-				new NaturalOrderStringComparator();
-
 			String externalReferenceCode1 = jsonObject1.getString(
 				"externalReferenceCode");
 			String externalReferenceCode2 = jsonObject2.getString(
 				"externalReferenceCode");
 
-			return naturalOrderStringComparator.compare(
+			return _naturalOrderStringComparator.compare(
 				externalReferenceCode1, externalReferenceCode2);
 		}
 
@@ -137,6 +134,9 @@ public class JSONObjectDefinitionFileCheck extends BaseFileCheck {
 
 			return false;
 		}
+
+		private static final NaturalOrderStringComparator
+			_naturalOrderStringComparator = new NaturalOrderStringComparator();
 
 	}
 
