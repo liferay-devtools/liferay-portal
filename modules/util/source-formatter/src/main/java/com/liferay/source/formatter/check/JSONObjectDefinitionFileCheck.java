@@ -113,10 +113,13 @@ public class JSONObjectDefinitionFileCheck extends BaseFileCheck {
 			NaturalOrderStringComparator naturalOrderStringComparator =
 				new NaturalOrderStringComparator();
 
-			String name1 = jsonObject1.getString("name");
-			String name2 = jsonObject2.getString("name");
+			String externalReferenceCode1 = jsonObject1.getString(
+				"externalReferenceCode");
+			String externalReferenceCode2 = jsonObject2.getString(
+				"externalReferenceCode");
 
-			return naturalOrderStringComparator.compare(name1, name2);
+			return naturalOrderStringComparator.compare(
+				externalReferenceCode1, externalReferenceCode2);
 		}
 
 		private boolean _isRelationship(JSONObject jsonObject) {
