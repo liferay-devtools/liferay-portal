@@ -115,8 +115,17 @@ public class JSONObjectDefinitionFileCheck extends BaseFileCheck {
 			String externalReferenceCode2 = jsonObject2.getString(
 				"externalReferenceCode");
 
-			return _naturalOrderStringComparator.compare(
-				externalReferenceCode1, externalReferenceCode2);
+			if (Validator.isNotNull(externalReferenceCode1) &&
+				Validator.isNotNull(externalReferenceCode2)) {
+
+				return _naturalOrderStringComparator.compare(
+					externalReferenceCode1, externalReferenceCode2);
+			}
+
+			String name1 = jsonObject1.getString("name");
+			String name2 = jsonObject2.getString("name");
+
+			return _naturalOrderStringComparator.compare(name1, name2);
 		}
 
 		private boolean _isRelationship(JSONObject jsonObject) {
