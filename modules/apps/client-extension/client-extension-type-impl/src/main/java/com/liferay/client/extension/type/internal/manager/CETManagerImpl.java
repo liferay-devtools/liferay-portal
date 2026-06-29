@@ -14,8 +14,12 @@ import com.liferay.client.extension.type.deployer.CETDeployer;
 import com.liferay.client.extension.type.factory.CETFactory;
 import com.liferay.client.extension.type.manager.CETManager;
 import com.liferay.petra.function.transform.TransformUtil;
+import com.liferay.portal.kernel.annotation.ImplementationClassName;
 import com.liferay.portal.kernel.cache.PortalCache;
-import com.liferay.portal.kernel.cache.SingleVMPool;
+import com.liferay.portal.kernel.cache.PortalCacheHelperUtil;
+import com.liferay.portal.kernel.cache.PortalCacheManagerNames;
+import com.liferay.portal.kernel.cache.PortalCacheMapSynchronizeUtil;
+import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
@@ -134,17 +138,25 @@ public class CETManagerImpl implements CETManager {
 	}
 
 	@Activate
-	protected void activate() {
-		_portalCache =
-			(PortalCache<Long, CETHolder>)_singleVMPool.getPortalCache(
-				CETManagerImpl.class.getName());
+	protected void activate() throws Exception {
+		PortalCacheMapSynchronizeUtil.synchronize(
+			_getEntryPortalCache(), _cets,
+			new PortalCacheMapSynchronizeUtil.Synchronizer<Long, Object>() {
+
+				@Override
+				public void onSynchronize(
+					Map<? extends Long, ? extends Object> map, Long key,
+					Object value, int timeToLive) {
+
+					map.remove(key);
+				}
+
+			});
 	}
 
 	@Deactivate
 	protected void deactivate() {
-		if (_portalCache != null) {
-			_portalCache.removeAll();
-		}
+		_cets.clear();
 
 		for (Map.Entry<Long, Map<String, CET>> entry1 : _cetsMaps.entrySet()) {
 			Map<String, CET> cetsMap = entry1.getValue();
@@ -171,20 +183,18 @@ public class CETManagerImpl implements CETManager {
 	private CET _getCET(ClientExtensionEntry clientExtensionEntry)
 		throws PortalException {
 
-		long key = clientExtensionEntry.getClientExtensionEntryId();
+		long clientExtensionEntryId =
+			clientExtensionEntry.getClientExtensionEntryId();
 
-		CETHolder cetHolder = _portalCache.get(key);
+		CET cet = _cets.get(clientExtensionEntryId);
 
-		if ((cetHolder != null) &&
-			(cetHolder._mvccVersion == clientExtensionEntry.getMvccVersion())) {
-
-			return cetHolder._cet;
+		if (cet != null) {
+			return cet;
 		}
 
-		CET cet = _cetFactory.create(clientExtensionEntry, true);
+		cet = _cetFactory.create(clientExtensionEntry, true);
 
-		_portalCache.put(
-			key, new CETHolder(cet, clientExtensionEntry.getMvccVersion()));
+		_cets.put(clientExtensionEntryId, cet);
 
 		return cet;
 	}
@@ -256,6 +266,25 @@ public class CETManagerImpl implements CETManager {
 		return cetsMap;
 	}
 
+	@SuppressWarnings("unchecked")
+	private PortalCache<Long, Object> _getEntryPortalCache() throws Exception {
+		Class<?> modelClass = _clientExtensionEntryLocalService.getClass(
+		).getClassLoader(
+		).loadClass(
+			ClientExtensionEntry.class.getAnnotation(
+				ImplementationClassName.class
+			).value()
+		);
+
+		PortalCache<?, ?> portalCache = _entityCache.getPortalCache(modelClass);
+
+		return (PortalCache<Long, Object>)
+			(PortalCache<?, ?>)PortalCacheHelperUtil.getPortalCache(
+				PortalCacheManagerNames.MULTI_VM,
+				portalCache.getPortalCacheName(), portalCache.isMVCC(),
+				portalCache.isSharded());
+	}
+
 	private Map<String, List<ServiceRegistration<?>>>
 		_getServiceRegistrationsMap(long companyId) {
 
@@ -320,29 +349,17 @@ public class CETManagerImpl implements CETManager {
 	@Reference
 	private CETFactory _cetFactory;
 
+	private final Map<Long, CET> _cets = new ConcurrentHashMap<>();
 	private final Map<Long, Map<String, CET>> _cetsMaps =
 		new ConcurrentHashMap<>();
 
 	@Reference
 	private ClientExtensionEntryLocalService _clientExtensionEntryLocalService;
 
-	private PortalCache<Long, CETHolder> _portalCache;
+	@Reference
+	private EntityCache _entityCache;
+
 	private final Map<Long, Map<String, List<ServiceRegistration<?>>>>
 		_serviceRegistrationsMaps = new ConcurrentHashMap<>();
-
-	@Reference
-	private SingleVMPool _singleVMPool;
-
-	private static class CETHolder {
-
-		private CETHolder(CET cet, long mvccVersion) {
-			_cet = cet;
-			_mvccVersion = mvccVersion;
-		}
-
-		private final CET _cet;
-		private final long _mvccVersion;
-
-	}
 
 }
