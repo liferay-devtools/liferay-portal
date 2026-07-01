@@ -85,10 +85,10 @@ $custom-control-indicator-checked-disabled-border-color: $custom-control-indicat
 
 // .custom-control-input
 
-$custom-control-input-size: 1.5rem !default;
 $custom-control-input-offset: calc(
 	(#{$custom-control-input-size} - #{$custom-control-indicator-size}) / -2
 ) !default;
+$custom-control-input-size: 1.5rem !default;
 
 // .custom-control
 
