@@ -268,9 +268,9 @@ $grid-gutter-width: 24px !default;
 $grid-row-columns: 6 !default;
 
 $container-max-widths: (
-	sm: var(--container-max-sm, 540px),
-	md: var(--container-max-md, 720px),
 	lg: var(--container-max-lg, 960px),
+	md: var(--container-max-md, 720px),
+	sm: var(--container-max-sm, 540px),
 	xl: var(--container-max-xl, 1248px),
 ) !default;
 
