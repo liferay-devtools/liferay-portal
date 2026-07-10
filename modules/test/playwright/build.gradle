@@ -1,3 +1,5 @@
+import com.liferay.gradle.plugins.node.task.ExecuteNodeScriptTask
+
 buildscript {
 	dependencies {
 		classpath group: "com.liferay", name: "com.liferay.gradle.plugins.defaults", version: "latest.release"
@@ -16,4 +18,19 @@ apply plugin: "com.liferay.node"
 
 node {
 	nodeVersion = "20.12.2"
+}
+
+task runPlaywright(type: ExecuteNodeScriptTask)
+
+runPlaywright {
+	if (project.hasProperty("playwright.args")) {
+		String playwrightArgs = project.property("playwright.args")
+
+		args playwrightArgs.split("(?<!\\\\)\\s+").collect {
+			it.replace("\\ ", " ")
+		}
+	}
+
+	dependsOn "npmInstall"
+	scriptFile = "node_modules/.bin/playwright"
 }
