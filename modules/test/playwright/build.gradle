@@ -1,3 +1,5 @@
+import com.liferay.gradle.plugins.node.task.ExecuteNodeScriptTask
+
 buildscript {
 	dependencies {
 		classpath group: "com.liferay", name: "com.liferay.gradle.plugins.defaults", version: "latest.release"
@@ -16,4 +18,60 @@ apply plugin: "com.liferay.node"
 
 node {
 	nodeVersion = "20.12.2"
+}
+
+task runPlaywright(type: ExecuteNodeScriptTask)
+
+runPlaywright {
+	if (project.hasProperty("playwright.args")) {
+		args _splitArgs(project.property("playwright.args"))
+	}
+
+	dependsOn "npmInstall"
+	scriptFile = "node_modules/.bin/playwright"
+}
+
+private List<String> _splitArgs(String argsString) {
+	List<String> args = new ArrayList<>()
+
+	char quote
+
+	StringBuilder sb = new StringBuilder()
+
+	for (char c : argsString.toCharArray()) {
+		if (quote != 0) {
+			if (c == quote) {
+				quote = 0
+			}
+			else {
+				sb.append(c)
+			}
+
+			continue
+		}
+
+		if ((c == "\"") || (c == "'")) {
+			quote = c
+
+			continue
+		}
+
+		if (Character.isWhitespace(c)) {
+			if (sb.length() > 0) {
+				args.add(sb.toString())
+
+				sb.setLength(0)
+			}
+
+			continue
+		}
+
+		sb.append(c)
+	}
+
+	if (sb.length() > 0) {
+		args.add(sb.toString())
+	}
+
+	return args
 }
