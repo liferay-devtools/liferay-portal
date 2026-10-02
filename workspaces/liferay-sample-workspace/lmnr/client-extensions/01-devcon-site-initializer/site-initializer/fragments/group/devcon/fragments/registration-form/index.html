@@ -1,0 +1,54 @@
+<div class="devcon-registration-form">
+	<form class="devcon-registration-form__form" data-devcon-registration-form>
+		<div class="devcon-registration-form__field">
+			<label for="devconRegName">Full Name *</label>
+
+			<input id="devconRegName" name="name" required type="text" />
+		</div>
+
+		<div class="devcon-registration-form__field">
+			<label for="devconRegEmail">Email Address *</label>
+
+			<input id="devconRegEmail" name="emailAddress" required type="email" />
+		</div>
+
+		<div class="devcon-registration-form__field">
+			<label for="devconRegCompany">Company</label>
+
+			<input id="devconRegCompany" name="company" type="text" />
+		</div>
+
+		<div class="devcon-registration-form__field">
+			<label for="devconRegEvent">Event *</label>
+
+			<select data-devcon-registration-event id="devconRegEvent" name="eventExternalReferenceCode" required>
+				<option value="" disabled selected>Loading events&hellip;</option>
+			</select>
+
+			<p class="devcon-registration-form__hint" data-devcon-registration-event-hint></p>
+		</div>
+
+		<div class="devcon-registration-form__field">
+			<label for="devconRegDietary">Dietary Restrictions</label>
+
+			<!-- Hardcoded to match the DIETARY_RESTRICTION list type: Guest cannot read a
+			     picklist over REST. See rules/guest-access.md. -->
+
+			<select id="devconRegDietary" name="dietaryRestrictions">
+				<option value="" selected>None specified</option>
+				<option value="vegetarian">Vegetarian</option>
+				<option value="vegan">Vegan</option>
+				<option value="glutenFree">Gluten Free</option>
+				<option value="dairyFree">Dairy Free</option>
+				<option value="nutAllergy">Nut Allergy</option>
+				<option value="shellfishAllergy">Shellfish Allergy</option>
+				<option value="halal">Halal</option>
+				<option value="kosher">Kosher</option>
+			</select>
+		</div>
+
+		<button class="devcon-registration-form__submit btn btn-primary" type="submit">Register</button>
+
+		<div class="devcon-registration-form__message" data-devcon-registration-message role="status" aria-live="polite"></div>
+	</form>
+</div>
