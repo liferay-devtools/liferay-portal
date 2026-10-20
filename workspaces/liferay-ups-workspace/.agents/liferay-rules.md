@@ -15,7 +15,7 @@ Before answering, identify three things:
 
 1. **Workspace root**: the directory containing `gradle.properties` and `settings.gradle`. If neither exists, the user has not initialized a workspace; invoke the `workspace-init` skill.
 
-1. **DXP version**: read `liferay.workspace.product` from `gradle.properties`. Quarterly releases (`-Qx`) and 7.4 lines use the modern path (Client Extensions, Objects, Fragments). Versions below 7.4 use legacy OSGi modules.
+1. **DXP version**: read `liferay.workspace.product` from `gradle.properties`. Quarterly releases (`-Qx`) and 7.4 lines use the modern path (Client Extensions, Objects, Fragments). Versions below 7.4 use legacy OSGi modules. **This pack is the same for every release**, so a 2026.Q1 workspace reads text verified on later quarters. Each skill states a release difference where it describes the feature ("on 2026.Q1 and 2026.Q2", or a heading prefixed `DXP 2026.Q3+:`); compare it with this version before acting. A `Verified on 2026.QN` note means unverified on any earlier quarter, and `Verified on 2026.Q2.7` means that patch only. "From source" means read from master source, not run.
 
 1. **Bundle state**: `bundles/` exists when `blade server init` has run. The Tomcat install lives at `bundles/tomcat*/`. The active HTTP port is the `port` attribute on the `<Connector protocol="HTTP/1.1">` element in `bundles/tomcat*/conf/server.xml`. Default is 8080.
 
@@ -49,6 +49,29 @@ Use Blade as the primary CLI. Prefer `blade gw <task>` over invoking Gradle dire
 - **Verification**: success is defined by runtime activation (`STARTED` log status), not just a successful command exit code.
 - **CLI capability check**: before using a CLI tool to scaffold or initialize a project, verify what it supports (e.g., `blade --help`, `blade <command> --help`) rather than assuming. Do not assume a command supports a given task without checking first.
 
+## Server Restarts — Ask Once per Session
+
+Stopping a running Liferay server interrupts the user: sessions end, open editors lose work, and the MCP connection drops without reconnecting. So the **user** decides how restarts are handled, once per session.
+
+**Covered:** any stop, restart, or kill of a running Tomcat or Liferay container — `shutdown.sh`/`startup.sh`, `blade server stop`, `docker compose down`/`restart`. It also covers anything that requires one, such as clearing `bundles/osgi/state/`. **Not covered:** starting a server that is not running, when the user asked for it or a setup skill calls for it.
+
+**The first time a restart is needed in a session**, stop and ask which behavior the user wants for the rest of the session:
+
+1. **Confirm each time.** Before every restart, say what changed and why, then wait for a yes.
+
+1. **Permission to restart.** Restart when needed without asking again, but still say what is being restarted and why, before doing it.
+
+Keep the answer for the current session only. Do not write it to a file or to memory unless the user asks. A new session asks again.
+
+Whatever the choice:
+
+- **Check that a restart is really needed first.** Many changes take effect live (a flag toggled in the Feature Flags UI, OSGi `.config` files, CET redeploys). A change that did not work is more often the wrong endpoint or a stale zip than a missing restart. A Deprecation flag that a new database stored as off is not changed by a restart either (`rules/feature-flags-catalog.md`).
+- **Never stop a process this session did not start** — another workspace holding port 8080, for example — without asking, even under permission 2.
+- **Non-local environments always need confirmation** (dev, UAT, prod, Liferay Cloud), whatever was chosen; see `production-standards`.
+- **After any restart,** wait for the server to answer, then prompt the user to reconnect MCP if it is in use (`skills/mcp-server/SKILL.md`).
+
+Skills that restart the server (`feature-flags`, `deploy-and-verify`, `build-site`, `workspace-init`, `manage-environments`) apply this policy instead of restarting on their own.
+
 ## Preflight Rule for New Code Generation
 
 Before writing the **first line** of any artifact below, load its skill. Always, and before authoring — not after something fails. Glob based autoloading does not fire on an empty workspace, so nothing else will surface these.
@@ -63,6 +86,9 @@ Before writing the **first line** of any artifact below, load its skill. Always,
 | Any `client-extension.yaml` | `scaffold-client-extension` |
 | Role, or any `resource-permissions.json` grant | `manage-roles-permissions` |
 | Commerce product or SKU | `commerce-catalogs` |
+| Form Container, or a form that saves to an object | `manage-form-containers` |
+| Data Set definition or Data Set fragment | `manage-data-sets` |
+| `Analytics.track` call or segment lookup | `manage-analytics` |
 
 Most real tasks match two or more rows — load all of them. Skipping one is not the smaller risk: much of what these skills document are failures that are **silent**, where the build succeeds and the defect only shows later, and the skill is the only place that behavior is written down. Reading portal source instead is not a substitute — the source shows what the code does, not which of its behaviors have already cost someone a day.
 
@@ -98,12 +124,15 @@ Every skill lives under `skills/` and owns one workflow. Match the user's intent
 | Create roles or grant permissions on objects, pages, or sites | `manage-roles-permissions` |
 | Manage environment configs, promote to UAT, or capture a site initializer | `manage-environments` |
 | Manage Commerce catalogs, products, SKUs, or B2B accounts | `commerce-catalogs` |
+| Build a form that creates or edits an object entry, or fix one that renders nothing | `manage-form-containers` |
+| Show object entries as a table, list, or cards with filters, sort, and row actions | `manage-data-sets` |
+| Connect DXP to Analytics Cloud / LDP, track a custom event, read real-time segments, or verify an event in an Event Analysis | `manage-analytics` |
 | Deploy and operate a Liferay Cloud (LXC) project via `lcp` | `manage-cloud-project` |
 | Build an entire site experience from one prompt (orchestrator; calls the others) | `build-site` |
 | Author a new workspace skill from source code or a spec doc | `author-skill` |
 | Commit a workspace skill to liferay-portal | `commit-skill` |
 
-Site building is **site initializer first**: the `siteInitializer` CET tree is the single source of truth. Build by triggering the initializer, then iterate by editing the source tree and applying each change live (theme, objects, fragments) or by reprovisioning (pages). See `rules/site-initializer-format.md`.
+Site building is **site initializer first**: the `siteInitializer` CET tree is the single source of truth. Build by triggering the initializer, then iterate by editing the source tree and applying each change live (theme, objects, fragments) or by firing the initializer again with a clean redeploy, which updates the existing site (pages). Reprovision only to remove pages. See `rules/site-initializer-format.md`.
 
 ## Reference Cards
 
