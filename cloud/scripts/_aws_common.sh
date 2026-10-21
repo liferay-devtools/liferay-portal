@@ -2,7 +2,50 @@
 
 source "$(dirname "${BASH_SOURCE[0]}")/_common.sh"
 
-function aws_login {
+function generate_remote_backend_overrides {
+	local configuration_json_file="${1}"
+
+	local bucket_name
+
+	bucket_name=$(jq --raw-output '.tfstate.bucket_name' "${configuration_json_file}")
+
+	local deployment_name
+
+	deployment_name=$(jq --raw-output '.deployment_name' "${configuration_json_file}")
+
+	local region
+
+	region=$(jq --raw-output '.region' "${configuration_json_file}")
+
+	local directory
+
+	for directory in eks platform
+	do
+		cat > "${ROOT_CLOUD_DIR}/terraform/aws/${directory}/backend_override.tf" <<EOF
+terraform {
+	backend "s3" {
+		bucket="${bucket_name}"
+		encrypt=true
+		key="${deployment_name}/${region}/${directory}/terraform.tfstate"
+		region="${region}"
+		use_lockfile=true
+	}
+}
+EOF
+	done
+}
+
+function get_kms_key_id {
+	local alias_name="${1}"
+	local region="${2}"
+
+	aws kms list-aliases \
+		--output text \
+		--query "Aliases[?AliasName=='${alias_name}'].TargetKeyId" \
+		--region "${region}"
+}
+
+function log_in {
 	local configuration_json_file="${1}"
 
 	if aws sts get-caller-identity &> /dev/null
@@ -32,67 +75,17 @@ function aws_login {
 	echo "Using the AWS account ${account_id}."
 }
 
-function connect_to_cluster {
-	push_directory "${ROOT_CLOUD_DIR}/terraform/aws/eks"
-
-	echo "Connecting to the EKS cluster."
-
-	terraform init
-
-	local cluster_name
-
-	cluster_name=$(terraform output -raw cluster_name)
+function update_kubeconfig {
+	local cluster_name="${1}"
+	local cluster_terraform_stack="${2}"
 
 	local region
 
-	region=$(terraform output -raw region)
+	region=$(run_terraform "aws" "${cluster_terraform_stack}" output -raw region)
 
-	if [[ -z ${cluster_name} ]] || [[ -z ${region} ]]
-	then
-		echo "There is no EKS cluster in the Terraform state." >&2
-
-		pop_directory
-
-		return 1
-	fi
-
-	export KUBE_CONFIG_PATH="${HOME}/.kube/config"
-
-	if ! aws eks update-kubeconfig \
+	aws eks update-kubeconfig \
 		--name "${cluster_name}" \
 		--region "${region}"
-	then
-		echo "The EKS cluster ${cluster_name} could not be reached." >&2
-
-		pop_directory
-
-		return 1
-	fi
-
-	pop_directory
-}
-
-function generate_remote_backend_overrides {
-	local bucket_name="${1}"
-	local deployment_name="${2}"
-	local region="${3}"
-
-	local directory
-
-	for directory in eks platform
-	do
-		cat > "${ROOT_CLOUD_DIR}/terraform/aws/${directory}/backend_override.tf" <<EOF
-terraform {
-	backend "s3" {
-		bucket="${bucket_name}"
-		encrypt=true
-		key="${deployment_name}/${region}/${directory}/terraform.tfstate"
-		region="${region}"
-		use_lockfile=true
-	}
-}
-EOF
-	done
 }
 
 function validate_config_json {
@@ -104,7 +97,7 @@ function validate_config_json {
 		".region"
 	)
 
-	if jq --exit-status '.tfstate | objects' "${configuration_json_file}" &> /dev/null
+	if has_remote_tfstate "${configuration_json_file}"
 	then
 		required_keys+=(
 			".tfstate.bucket_name"

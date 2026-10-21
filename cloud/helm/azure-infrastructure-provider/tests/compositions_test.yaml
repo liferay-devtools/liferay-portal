@@ -1,6 +1,9 @@
 release:
     name: my-release
     namespace: crossplane-system
+set:
+    database:
+        engine: postgresql
 suite: Compositions
 templates:
     -   templates/compositions.yaml
@@ -344,7 +347,7 @@ tests:
             -   documentIndex: 0
                 matchRegex:
                     path: spec.pipeline[1].input.inline.template
-                    pattern: "kind: FlexibleServer\\s+metadata:[\\s\\S]{0,300}?dataPlaneKey: \\{\\{ index \\$dataPlaneKeys \\$dataPlane \\}\\}\\s+name: \\{\\{ \\$databaseServerName \\}\\}"
+                    pattern: "kind: FlexibleServer\\s+metadata:[\\s\\S]{0,300}?dataPlaneKey: \\{\\{ index \\$dataPlaneKeys \\$dataPlane \\}\\}\\s+databaseEngine: \\{\\{ \\$env.databaseEngine \\}\\}\\s+name: \\{\\{ \\$databaseServerName \\}\\}"
             -   documentIndex: 0
                 matchRegex:
                     path: spec.pipeline[1].input.inline.template

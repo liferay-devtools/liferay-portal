@@ -83,6 +83,7 @@ public class SourceFormatBuildTest
 	@Test
 	public void testGetWorkspace() throws Exception {
 		String gitHubURL = RandomTestUtil.randomString();
+		String ownerUsername = RandomTestUtil.randomString();
 
 		PullRequest pullRequest = Mockito.mock(PullRequest.class);
 
@@ -99,6 +100,12 @@ public class SourceFormatBuildTest
 		).getHtmlURL();
 
 		Mockito.doReturn(
+			ownerUsername
+		).when(
+			pullRequest
+		).getOwnerUsername();
+
+		Mockito.doReturn(
 			RandomTestUtil.randomString()
 		).when(
 			pullRequest
@@ -106,11 +113,6 @@ public class SourceFormatBuildTest
 
 		SourceFormatBuild sourceFormatBuild = Mockito.mock(
 			SourceFormatBuild.class);
-
-		Mockito.doCallRealMethod(
-		).when(
-			sourceFormatBuild
-		).getWorkspace();
 
 		Mockito.doReturn(
 			RandomTestUtil.randomString()
@@ -123,6 +125,11 @@ public class SourceFormatBuildTest
 		).when(
 			sourceFormatBuild
 		).getPullRequest();
+
+		Mockito.doCallRealMethod(
+		).when(
+			sourceFormatBuild
+		).getWorkspace();
 
 		WorkspaceGitRepository workspaceGitRepository = Mockito.mock(
 			WorkspaceGitRepository.class);
@@ -153,8 +160,8 @@ public class SourceFormatBuildTest
 
 		inOrder.verify(
 			workspaceGitRepository
-		).setUsePullRequestBaseRepository(
-			true
+		).setBaseBranchUsername(
+			ownerUsername
 		);
 
 		inOrder.verify(

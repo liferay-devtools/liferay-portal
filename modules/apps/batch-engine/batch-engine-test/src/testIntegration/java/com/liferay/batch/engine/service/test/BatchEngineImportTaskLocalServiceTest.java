@@ -5,6 +5,8 @@
 
 package com.liferay.batch.engine.service.test;
 
+import com.fasterxml.jackson.core.io.JsonEOFException;
+
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.batch.engine.BatchEngineTaskExecuteStatus;
 import com.liferay.batch.engine.BatchEngineTaskOperation;
@@ -20,6 +22,9 @@ import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.test.log.LogCapture;
+import com.liferay.portal.test.log.LogEntry;
+import com.liferay.portal.test.log.LoggerTestUtil;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
@@ -169,8 +174,28 @@ public class BatchEngineImportTaskLocalServiceTest {
 
 		Assert.assertTrue(content, content.contains(password));
 
-		batchEngineImportTask = _updateExecuteStatus(
-			batchEngineImportTask, batchEngineTaskExecuteStatus);
+		try (LogCapture logCapture = LoggerTestUtil.configureLog4JLogger(
+				"com.liferay.batch.engine.service.impl." +
+					"BatchEngineImportTaskLocalServiceImpl",
+				LoggerTestUtil.ERROR)) {
+
+			batchEngineImportTask = _updateExecuteStatus(
+				batchEngineImportTask, batchEngineTaskExecuteStatus);
+
+			List<LogEntry> logEntries = logCapture.getLogEntries();
+
+			Assert.assertEquals(logEntries.toString(), 1, logEntries.size());
+
+			LogEntry logEntry = logEntries.get(0);
+
+			Assert.assertEquals(
+				StringBundler.concat(
+					"Unable to remove password fields from batch engine ",
+					"import task ",
+					batchEngineImportTask.getBatchEngineImportTaskId(), ": ",
+					JsonEOFException.class.getName()),
+				logEntry.getMessage());
+		}
 
 		try (InputStream inputStream =
 				_batchEngineImportTaskLocalService.openContentInputStream(

@@ -24,49 +24,20 @@ function main {
 
 	configuration_json_file=$(resolve_config_json "${1}")
 
-	generate_tfvars "azure" "${configuration_json_file}" "aks"
+	_validate_setup_values "${configuration_json_file}"
 
-	generate_tfvars "azure" "${configuration_json_file}" "platform"
+	export_database_engine "${configuration_json_file}"
 
-	az_login "${configuration_json_file}"
+	prepare_terraform_stacks "azure" "aks" "${configuration_json_file}"
 
-	local terraform_args=()
+	log_in "${configuration_json_file}"
 
-	while IFS= read -r terraform_arg
-	do
-		terraform_args+=("${terraform_arg}")
-	done < <(get_terraform_args "${configuration_json_file}")
-
-	if jq --exit-status '.tfstate | objects' "${configuration_json_file}" &> /dev/null
+	if has_remote_tfstate "${configuration_json_file}"
 	then
-		local container_name
-		local deployment_name
-		local region
-		local resource_group_name
-		local storage_account_name
-
-		container_name="$(jq --raw-output '.tfstate.container_name' "${configuration_json_file}")"
-		deployment_name="$(jq --raw-output '.deployment_name' "${configuration_json_file}")"
-		region="$(jq --raw-output '.region' "${configuration_json_file}")"
-		resource_group_name="$(jq --raw-output '.tfstate.resource_group_name' "${configuration_json_file}")"
-		storage_account_name="$(jq --raw-output '.tfstate.storage_account_name' "${configuration_json_file}")"
-
-		_create_tfstate_storage "${container_name}" "${region}" "${resource_group_name}" "${storage_account_name}"
-
-		_grant_tfstate_access "${container_name}" "${resource_group_name}" "${storage_account_name}"
-
-		generate_remote_backend_overrides "${container_name}" "${deployment_name}" "${region}" "${resource_group_name}" "${storage_account_name}"
-	else
-		generate_local_backend_overrides "azure" "aks" "platform"
+		_create_tfstate_storage "${configuration_json_file}"
 	fi
 
-	_set_up_azure_aks "${terraform_args[@]}"
-
-	connect_to_cluster
-
-	set_up_platform "azure" "${terraform_args[@]}"
-
-	install_liferay_platform_chart "azure" "${configuration_json_file}"
+	set_up "azure" "aks" "${configuration_json_file}"
 }
 
 function _configure_storage_account {
@@ -107,10 +78,23 @@ function _create_storage_account {
 }
 
 function _create_tfstate_storage {
-	local container_name="${1}"
-	local region="${2}"
-	local resource_group_name="${3}"
-	local storage_account_name="${4}"
+	local configuration_json_file="${1}"
+
+	local container_name
+
+	container_name=$(jq --raw-output '.tfstate.container_name' "${configuration_json_file}")
+
+	local region
+
+	region=$(jq --raw-output '.region' "${configuration_json_file}")
+
+	local resource_group_name
+
+	resource_group_name=$(jq --raw-output '.tfstate.resource_group_name' "${configuration_json_file}")
+
+	local storage_account_name
+
+	storage_account_name=$(jq --raw-output '.tfstate.storage_account_name' "${configuration_json_file}")
 
 	if ! az group show --name "${resource_group_name}" &> /dev/null
 	then
@@ -158,6 +142,8 @@ function _create_tfstate_storage {
 	else
 		_log "Storage container ${container_name} already exists. Skipping creation process."
 	fi
+
+	_grant_tfstate_access "${container_name}" "${resource_group_name}" "${storage_account_name}"
 }
 
 function _grant_tfstate_access {
@@ -232,18 +218,24 @@ function _log {
 	echo "[Tfstate storage configuration] ${1}"
 }
 
-function _set_up_azure_aks {
-	push_directory "${ROOT_CLOUD_DIR}/terraform/azure/aks"
+function _validate_setup_values {
+	local configuration_json_file="${1}"
 
-	echo "Setting up the Azure AKS cluster."
+	local chart_registry
 
-	terraform init
+	chart_registry=$(jq --raw-output '.artifacts.charts."liferay-azure-infrastructure-provider".registry // error("artifacts.charts.liferay-azure-infrastructure-provider.registry is missing")' "${configuration_json_file}")
 
-	terraform apply -input=false "${@}"
+	local chart_version
 
-	echo "Azure AKS cluster setup complete."
+	chart_version=$(jq --raw-output '.artifacts.charts."liferay-azure-infrastructure-provider".version // error("artifacts.charts.liferay-azure-infrastructure-provider.version is missing")' "${configuration_json_file}")
 
-	pop_directory
+	helm \
+		template \
+		--values <(jq '.setup' "${configuration_json_file}") \
+		--version "${chart_version}" \
+		liferay-azure-infrastructure-provider \
+		"oci://${chart_registry}/liferay-azure-infrastructure-provider" \
+		> /dev/null
 }
 
 main "${@}"
