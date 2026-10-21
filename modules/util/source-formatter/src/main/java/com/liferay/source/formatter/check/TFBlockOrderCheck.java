@@ -31,8 +31,8 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 
 		String[] lines = content.split("\n", -1);
 
-		_sortTopLevelBlocks(lines);
 		_sortEntries(lines);
+		_sortTopLevelBlocks(lines);
 
 		StringBundler sb = new StringBundler(lines.length * 2);
 
