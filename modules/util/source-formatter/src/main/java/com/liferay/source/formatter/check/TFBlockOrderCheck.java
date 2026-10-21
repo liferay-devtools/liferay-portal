@@ -66,7 +66,7 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 			}
 
 			if (indent.equals(childIndent) && !_isCloseLine(trimmedLine)) {
-				entry = new Entry(group, i, trimmedLine);
+				entry = new Entry(trimmedLine, group, i);
 
 				entries.add(entry);
 			}
@@ -181,7 +181,7 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 				continue;
 			}
 
-			Entry block = new Entry(0, i, lines[i]);
+			Entry block = new Entry(lines[i], 0, i);
 
 			for (i = i + 1; i < lines.length; i++) {
 				String heredocMarker = _getHeredocMarker(
@@ -381,10 +381,10 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 
 	private class Entry {
 
-		public Entry(int group, int startLineIndex, String firstLine) {
+		public Entry(String firstLine, int group, int startLineIndex) {
+			_firstLine = firstLine;
 			_group = group;
 			_startLineIndex = startLineIndex;
-			_firstLine = firstLine;
 
 			_endLineIndex = startLineIndex;
 		}
