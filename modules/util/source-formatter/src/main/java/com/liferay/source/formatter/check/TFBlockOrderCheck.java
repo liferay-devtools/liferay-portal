@@ -12,6 +12,7 @@ import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.NaturalOrderStringComparator;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.source.formatter.check.util.TFSourceUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -47,7 +48,7 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 	}
 
 	private int _addHeredocLines(Entry entry, String[] lines, int lineIndex) {
-		String heredocMarker = _getHeredocMarker(
+		String heredocMarker = TFSourceUtil.getHeredocMarker(
 			StringUtil.trim(lines[lineIndex]));
 
 		if (heredocMarker == null) {
@@ -133,16 +134,6 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 		}
 
 		return -1;
-	}
-
-	private String _getHeredocMarker(String trimmedLine) {
-		Matcher matcher = _heredocPattern.matcher(trimmedLine);
-
-		if (matcher.find()) {
-			return matcher.group(1);
-		}
-
-		return null;
 	}
 
 	private String _getIndent(String line) {
@@ -274,7 +265,7 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 		for (int i = 0; i < lines.length; i++) {
 			String trimmedLine = StringUtil.trim(lines[i]);
 
-			String heredocMarker = _getHeredocMarker(trimmedLine);
+			String heredocMarker = TFSourceUtil.getHeredocMarker(trimmedLine);
 
 			if (heredocMarker != null) {
 				int heredocEndLineIndex = _getHeredocEndLineIndex(
@@ -362,8 +353,6 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 
 	private static final String[] _SORTABLE_LIST_KEYS = {"Action", "NotAction"};
 
-	private static final Pattern _heredocPattern = Pattern.compile(
-		"<<-?(\\w+)$");
 	private static final Pattern _indentPattern = Pattern.compile("^\\s*");
 	private static final Pattern _keyPattern = Pattern.compile(
 		"^(\"[^\"]+\"|[\\w.-]+)\\s*[:=](?!=)");

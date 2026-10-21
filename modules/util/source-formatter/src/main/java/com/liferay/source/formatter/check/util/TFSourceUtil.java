@@ -1,0 +1,120 @@
+/**
+ * SPDX-FileCopyrightText: (c) 2026 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
+ */
+
+package com.liferay.source.formatter.check.util;
+
+import com.liferay.petra.string.CharPool;
+import com.liferay.portal.kernel.util.StringUtil;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+/**
+ * @author Alan Huang
+ */
+public class TFSourceUtil {
+
+	public static String getHeredocMarker(String line) {
+		Matcher matcher = _heredocPattern.matcher(
+			StringUtil.trim(_removeComment(line)));
+
+		if (matcher.find()) {
+			return matcher.group(1);
+		}
+
+		return null;
+	}
+
+	public static int getStringEndIndex(String line, int index) {
+		while (index < line.length()) {
+			char c = line.charAt(index);
+
+			if (c == CharPool.BACK_SLASH) {
+				index += 2;
+
+				continue;
+			}
+
+			if (c == CharPool.QUOTE) {
+				return index + 1;
+			}
+
+			if (line.startsWith("$${", index) ||
+				line.startsWith("%%{", index)) {
+
+				index += 3;
+
+				continue;
+			}
+
+			if (line.startsWith("${", index) || line.startsWith("%{", index)) {
+				index = _getTemplateEndIndex(line, index + 2);
+
+				continue;
+			}
+
+			index++;
+		}
+
+		return index;
+	}
+
+	private static int _getTemplateEndIndex(String line, int index) {
+		int level = 0;
+
+		while (index < line.length()) {
+			char c = line.charAt(index);
+
+			if (c == CharPool.QUOTE) {
+				index = getStringEndIndex(line, index + 1);
+
+				continue;
+			}
+
+			if (c == CharPool.OPEN_CURLY_BRACE) {
+				level++;
+			}
+			else if (c == CharPool.CLOSE_CURLY_BRACE) {
+				if (level == 0) {
+					return index + 1;
+				}
+
+				level--;
+			}
+
+			index++;
+		}
+
+		return index;
+	}
+
+	private static String _removeComment(String line) {
+		int i = 0;
+
+		while (i < line.length()) {
+			char c = line.charAt(i);
+
+			if (c == CharPool.QUOTE) {
+				i = getStringEndIndex(line, i + 1);
+
+				continue;
+			}
+
+			if ((c == CharPool.POUND) || line.startsWith("//", i) ||
+				line.startsWith("/*", i)) {
+
+				return line.substring(0, i);
+			}
+
+			i++;
+		}
+
+		return line;
+	}
+
+	private static final Pattern _heredocPattern = Pattern.compile(
+		"<<-?(\\w+)$");
+
+}
