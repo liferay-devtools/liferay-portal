@@ -279,18 +279,21 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 			Entry block = new Entry(lines[i], 0, i);
 
 			for (i = i + 1; i < lines.length; i++) {
+				if (lines[i].equals(StringPool.CLOSE_CURLY_BRACE)) {
+					break;
+				}
+
 				String heredocMarker = _getHeredocMarker(
 					StringUtil.trim(lines[i]));
 
-				if (heredocMarker != null) {
-					i = _getHeredocEndLineIndex(lines, i, heredocMarker);
-
-					if (i == -1) {
-						return content;
-					}
+				if (heredocMarker == null) {
+					continue;
 				}
-				else if (lines[i].equals(StringPool.CLOSE_CURLY_BRACE)) {
-					break;
+
+				i = _getHeredocEndLineIndex(lines, i, heredocMarker);
+
+				if (i == -1) {
+					return content;
 				}
 			}
 
