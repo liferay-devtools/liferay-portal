@@ -31,7 +31,7 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 
 		String[] lines = content.split("\n", -1);
 
-		_sortEntries(lines);
+		_sortNestedEntries(lines);
 		_sortTopLevelBlocks(lines);
 
 		StringBundler sb = new StringBundler(lines.length * 2);
@@ -216,57 +216,7 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 		return true;
 	}
 
-	private void _sortEntries(String[] lines) {
-		for (int i = 0; i < lines.length; i++) {
-			String trimmedLine = StringUtil.trim(lines[i]);
-
-			String heredocMarker = _getHeredocMarker(trimmedLine);
-
-			if (heredocMarker != null) {
-				int heredocEndLineIndex = _getHeredocEndLineIndex(
-					lines, i, heredocMarker);
-
-				if (heredocEndLineIndex == -1) {
-					return;
-				}
-
-				String nextTrimmedLine = StringUtil.trim(lines[i + 1]);
-
-				if (!nextTrimmedLine.equals(StringPool.OPEN_BRACKET) &&
-					!nextTrimmedLine.equals(StringPool.OPEN_CURLY_BRACE)) {
-
-					i = heredocEndLineIndex;
-				}
-
-				continue;
-			}
-
-			boolean list = false;
-
-			if (trimmedLine.endsWith(StringPool.OPEN_BRACKET)) {
-				if (!ArrayUtil.contains(
-						_SORTABLE_LIST_KEYS, _getKey(trimmedLine))) {
-
-					continue;
-				}
-
-				list = true;
-			}
-			else if (!trimmedLine.endsWith(StringPool.OPEN_CURLY_BRACE)) {
-				continue;
-			}
-
-			List<Entry> entries = _getEntries(lines, i);
-
-			if ((entries == null) || !_setSortKeys(entries, list)) {
-				continue;
-			}
-
-			_sortEntries(lines, entries);
-		}
-	}
-
-	private void _sortEntries(String[] lines, List<Entry> entries) {
+	private void _sort(String[] lines, List<Entry> entries) {
 		List<Entry> sortedEntries = new ArrayList<>(entries);
 
 		Collections.sort(sortedEntries, new EntryComparator());
@@ -320,8 +270,58 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 		}
 	}
 
+	private void _sortNestedEntries(String[] lines) {
+		for (int i = 0; i < lines.length; i++) {
+			String trimmedLine = StringUtil.trim(lines[i]);
+
+			String heredocMarker = _getHeredocMarker(trimmedLine);
+
+			if (heredocMarker != null) {
+				int heredocEndLineIndex = _getHeredocEndLineIndex(
+					lines, i, heredocMarker);
+
+				if (heredocEndLineIndex == -1) {
+					return;
+				}
+
+				String nextTrimmedLine = StringUtil.trim(lines[i + 1]);
+
+				if (!nextTrimmedLine.equals(StringPool.OPEN_BRACKET) &&
+					!nextTrimmedLine.equals(StringPool.OPEN_CURLY_BRACE)) {
+
+					i = heredocEndLineIndex;
+				}
+
+				continue;
+			}
+
+			boolean list = false;
+
+			if (trimmedLine.endsWith(StringPool.OPEN_BRACKET)) {
+				if (!ArrayUtil.contains(
+						_SORTABLE_LIST_KEYS, _getKey(trimmedLine))) {
+
+					continue;
+				}
+
+				list = true;
+			}
+			else if (!trimmedLine.endsWith(StringPool.OPEN_CURLY_BRACE)) {
+				continue;
+			}
+
+			List<Entry> entries = _getEntries(lines, i);
+
+			if ((entries == null) || !_setSortKeys(entries, list)) {
+				continue;
+			}
+
+			_sort(lines, entries);
+		}
+	}
+
 	private void _sortTopLevelBlocks(String[] lines) {
-		List<Entry> blocks = new ArrayList<>();
+		List<Entry> entries = new ArrayList<>();
 
 		for (int i = 0; i < lines.length; i++) {
 			Matcher matcher = _topLevelBlockPattern.matcher(lines[i]);
@@ -330,18 +330,18 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 				continue;
 			}
 
-			Entry block = new Entry(0, i);
+			Entry entry = new Entry(0, i);
 
-			block.addLine(lines[i]);
+			entry.addLine(lines[i]);
 
 			for (i = i + 1; i < lines.length; i++) {
-				block.addLine(lines[i]);
+				entry.addLine(lines[i]);
 
 				if (lines[i].equals(StringPool.CLOSE_CURLY_BRACE)) {
 					break;
 				}
 
-				i = _addHeredocLines(block, lines, i);
+				i = _addHeredocLines(entry, lines, i);
 
 				if (i == -1) {
 					return;
@@ -352,12 +352,12 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 				return;
 			}
 
-			block.setSortKey(_getKey(block.getFirstLine()));
+			entry.setSortKey(_getKey(entry.getFirstLine()));
 
-			blocks.add(block);
+			entries.add(entry);
 		}
 
-		_sortEntries(lines, blocks);
+		_sort(lines, entries);
 	}
 
 	private static final String[] _SORTABLE_LIST_KEYS = {"Action", "NotAction"};
