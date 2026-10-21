@@ -14,7 +14,8 @@ import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -28,9 +29,43 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 	protected String doProcess(
 		String fileName, String absolutePath, String content) {
 
-		content = _sortTopLevelBlocks(content);
+		String[] lines = content.split("\n", -1);
 
-		return _sortEntries(content);
+		_sortTopLevelBlocks(lines);
+		_sortEntries(lines);
+
+		StringBundler sb = new StringBundler(lines.length * 2);
+
+		for (String line : lines) {
+			sb.append(line);
+			sb.append(CharPool.NEW_LINE);
+		}
+
+		sb.setIndex(sb.index() - 1);
+
+		return sb.toString();
+	}
+
+	private int _addHeredocLines(Entry entry, String[] lines, int lineIndex) {
+		String heredocMarker = _getHeredocMarker(
+			StringUtil.trim(lines[lineIndex]));
+
+		if (heredocMarker == null) {
+			return lineIndex;
+		}
+
+		int heredocEndLineIndex = _getHeredocEndLineIndex(
+			lines, lineIndex, heredocMarker);
+
+		if (heredocEndLineIndex == -1) {
+			return -1;
+		}
+
+		for (int i = lineIndex + 1; i <= heredocEndLineIndex; i++) {
+			entry.addLine(lines[i]);
+		}
+
+		return heredocEndLineIndex;
 	}
 
 	private List<Entry> _getEntries(String[] lines, int openLineIndex) {
@@ -66,7 +101,7 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 			}
 
 			if (indent.equals(childIndent) && !_isCloseLine(trimmedLine)) {
-				entry = new Entry(trimmedLine, group, i);
+				entry = new Entry(group, i);
 
 				entries.add(entry);
 			}
@@ -76,17 +111,13 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 				return null;
 			}
 
-			String heredocMarker = _getHeredocMarker(trimmedLine);
+			entry.addLine(lines[i]);
 
-			if (heredocMarker != null) {
-				i = _getHeredocEndLineIndex(lines, i, heredocMarker);
+			i = _addHeredocLines(entry, lines, i);
 
-				if (i == -1) {
-					return null;
-				}
+			if (i == -1) {
+				return null;
 			}
-
-			entry.setEndLineIndex(i);
 		}
 
 		return null;
@@ -143,7 +174,9 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 			return _getKey(entry.getFirstLine());
 		}
 
-		if (entry.getStartLineIndex() != entry.getEndLineIndex()) {
+		List<String> lines = entry.getLines();
+
+		if (lines.size() != 1) {
 			return null;
 		}
 
@@ -169,9 +202,21 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 		return false;
 	}
 
-	private String _sortEntries(String content) {
-		String[] lines = content.split("\n", -1);
+	private boolean _setSortKeys(List<Entry> entries, boolean list) {
+		for (Entry entry : entries) {
+			String sortKey = _getSortKey(entry, list);
 
+			if (sortKey == null) {
+				return false;
+			}
+
+			entry.setSortKey(sortKey);
+		}
+
+		return true;
+	}
+
+	private void _sortEntries(String[] lines) {
 		for (int i = 0; i < lines.length; i++) {
 			String trimmedLine = StringUtil.trim(lines[i]);
 
@@ -182,7 +227,7 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 					lines, i, heredocMarker);
 
 				if (heredocEndLineIndex == -1) {
-					return content;
+					return;
 				}
 
 				String nextTrimmedLine = StringUtil.trim(lines[i + 1]);
@@ -213,61 +258,70 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 
 			List<Entry> entries = _getEntries(lines, i);
 
-			if (entries == null) {
+			if ((entries == null) || !_setSortKeys(entries, list)) {
 				continue;
 			}
 
-			String newContent = _sortEntries(lines, entries, list);
-
-			if (newContent != null) {
-				return newContent;
-			}
+			_sortEntries(lines, entries);
 		}
-
-		return content;
 	}
 
-	private String _sortEntries(
-		String[] lines, List<Entry> entries, boolean list) {
+	private void _sortEntries(String[] lines, List<Entry> entries) {
+		List<Entry> sortedEntries = new ArrayList<>(entries);
 
-		List<String> sortKeys = new ArrayList<>();
+		Collections.sort(sortedEntries, new EntryComparator());
 
-		for (Entry entry : entries) {
-			String sortKey = _getSortKey(entry, list);
-
-			if (sortKey == null) {
-				return null;
-			}
-
-			sortKeys.add(sortKey);
+		if (sortedEntries.equals(entries)) {
+			return;
 		}
 
-		NaturalOrderStringComparator naturalOrderStringComparator =
-			new NaturalOrderStringComparator();
+		List<String> newLines = new ArrayList<>();
 
-		for (int i = 1; i < entries.size(); i++) {
-			Entry entry1 = entries.get(i - 1);
-			Entry entry2 = entries.get(i);
+		for (int i = 0; i < entries.size(); i++) {
+			Entry entry = entries.get(i);
 
-			if (entry1.getGroup() != entry2.getGroup()) {
-				continue;
+			if (i > 0) {
+				Entry previousEntry = entries.get(i - 1);
+
+				for (int j = previousEntry.getEndLineIndex() + 1;
+					 j < entry.getStartLineIndex(); j++) {
+
+					newLines.add(lines[j]);
+				}
 			}
 
-			int value = naturalOrderStringComparator.compare(
-				sortKeys.get(i - 1), sortKeys.get(i));
+			Entry sortedEntry = sortedEntries.get(i);
 
-			if (value > 0) {
-				return _swapEntries(lines, entry1, entry2);
+			List<String> entryLines = new ArrayList<>(sortedEntry.getLines());
+
+			int lastIndex = entryLines.size() - 1;
+
+			String lastLine = entryLines.get(lastIndex);
+
+			if (lastLine.endsWith(StringPool.COMMA)) {
+				lastLine = lastLine.substring(0, lastLine.length() - 1);
 			}
+
+			String originalLastLine = entry.getLastLine();
+
+			if (originalLastLine.endsWith(StringPool.COMMA)) {
+				lastLine += StringPool.COMMA;
+			}
+
+			entryLines.set(lastIndex, lastLine);
+
+			newLines.addAll(entryLines);
 		}
 
-		return null;
+		Entry firstEntry = entries.get(0);
+
+		for (int i = 0; i < newLines.size(); i++) {
+			lines[firstEntry.getStartLineIndex() + i] = newLines.get(i);
+		}
 	}
 
-	private String _sortTopLevelBlocks(String content) {
+	private void _sortTopLevelBlocks(String[] lines) {
 		List<Entry> blocks = new ArrayList<>();
-
-		String[] lines = content.split("\n", -1);
 
 		for (int i = 0; i < lines.length; i++) {
 			Matcher matcher = _topLevelBlockPattern.matcher(lines[i]);
@@ -276,97 +330,34 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 				continue;
 			}
 
-			Entry block = new Entry(lines[i], 0, i);
+			Entry block = new Entry(0, i);
+
+			block.addLine(lines[i]);
 
 			for (i = i + 1; i < lines.length; i++) {
+				block.addLine(lines[i]);
+
 				if (lines[i].equals(StringPool.CLOSE_CURLY_BRACE)) {
 					break;
 				}
 
-				String heredocMarker = _getHeredocMarker(
-					StringUtil.trim(lines[i]));
-
-				if (heredocMarker == null) {
-					continue;
-				}
-
-				i = _getHeredocEndLineIndex(lines, i, heredocMarker);
+				i = _addHeredocLines(block, lines, i);
 
 				if (i == -1) {
-					return content;
+					return;
 				}
 			}
 
 			if (i == lines.length) {
-				return content;
+				return;
 			}
 
-			block.setEndLineIndex(i);
+			block.setSortKey(_getKey(block.getFirstLine()));
 
 			blocks.add(block);
 		}
 
-		NaturalOrderStringComparator naturalOrderStringComparator =
-			new NaturalOrderStringComparator();
-
-		for (int i = 1; i < blocks.size(); i++) {
-			Entry block1 = blocks.get(i - 1);
-			Entry block2 = blocks.get(i);
-
-			int value = naturalOrderStringComparator.compare(
-				_getKey(block1.getFirstLine()), _getKey(block2.getFirstLine()));
-
-			if (value > 0) {
-				return _swapEntries(lines, block1, block2);
-			}
-		}
-
-		return content;
-	}
-
-	private String _swapEntries(String[] lines, Entry entry1, Entry entry2) {
-		List<String> lineList = Arrays.asList(lines);
-
-		List<String> lines1 = new ArrayList<>(
-			lineList.subList(
-				entry1.getStartLineIndex(), entry1.getEndLineIndex() + 1));
-		List<String> lines2 = new ArrayList<>(
-			lineList.subList(
-				entry2.getStartLineIndex(), entry2.getEndLineIndex() + 1));
-
-		String lastLine1 = lines1.get(lines1.size() - 1);
-		String lastLine2 = lines2.get(lines2.size() - 1);
-
-		if (lastLine1.endsWith(StringPool.COMMA) &&
-			!lastLine2.endsWith(StringPool.COMMA)) {
-
-			lines1.set(
-				lines1.size() - 1,
-				lastLine1.substring(0, lastLine1.length() - 1));
-			lines2.set(lines2.size() - 1, lastLine2 + StringPool.COMMA);
-		}
-
-		List<String> newLines = new ArrayList<>(
-			lineList.subList(0, entry1.getStartLineIndex()));
-
-		newLines.addAll(lines2);
-		newLines.addAll(
-			lineList.subList(
-				entry1.getEndLineIndex() + 1, entry2.getStartLineIndex()));
-		newLines.addAll(lines1);
-		newLines.addAll(
-			lineList.subList(entry2.getEndLineIndex() + 1, lines.length));
-
-		StringBundler sb = new StringBundler(newLines.size() * 2);
-
-		for (String line : newLines) {
-			sb.append(line);
-			sb.append(CharPool.NEW_LINE);
-		}
-
-		sb.setIndex(sb.index() - 1);
-
-		return sb.toString();
+		_sortEntries(lines, blocks);
 	}
 
 	private static final String[] _SORTABLE_LIST_KEYS = {"Action", "NotAction"};
@@ -385,38 +376,68 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 
 	private class Entry {
 
-		public Entry(String firstLine, int group, int startLineIndex) {
-			_firstLine = firstLine;
+		public Entry(int group, int startLineIndex) {
 			_group = group;
 			_startLineIndex = startLineIndex;
+		}
 
-			_endLineIndex = startLineIndex;
+		public void addLine(String line) {
+			_lines.add(line);
 		}
 
 		public int getEndLineIndex() {
-			return _endLineIndex;
+			return _startLineIndex + _lines.size() - 1;
 		}
 
 		public String getFirstLine() {
-			return _firstLine;
+			return StringUtil.trim(_lines.get(0));
 		}
 
 		public int getGroup() {
 			return _group;
 		}
 
+		public String getLastLine() {
+			return _lines.get(_lines.size() - 1);
+		}
+
+		public List<String> getLines() {
+			return _lines;
+		}
+
+		public String getSortKey() {
+			return _sortKey;
+		}
+
 		public int getStartLineIndex() {
 			return _startLineIndex;
 		}
 
-		public void setEndLineIndex(int endLineIndex) {
-			_endLineIndex = endLineIndex;
+		public void setSortKey(String sortKey) {
+			_sortKey = sortKey;
 		}
 
-		private int _endLineIndex;
-		private final String _firstLine;
 		private final int _group;
+		private final List<String> _lines = new ArrayList<>();
+		private String _sortKey;
 		private final int _startLineIndex;
+
+	}
+
+	private class EntryComparator implements Comparator<Entry> {
+
+		@Override
+		public int compare(Entry entry1, Entry entry2) {
+			if (entry1.getGroup() != entry2.getGroup()) {
+				return entry1.getGroup() - entry2.getGroup();
+			}
+
+			return _naturalOrderStringComparator.compare(
+				entry1.getSortKey(), entry2.getSortKey());
+		}
+
+		private final NaturalOrderStringComparator
+			_naturalOrderStringComparator = new NaturalOrderStringComparator();
 
 	}
 
