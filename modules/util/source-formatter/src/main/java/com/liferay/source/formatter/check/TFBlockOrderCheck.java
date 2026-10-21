@@ -28,7 +28,7 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 	protected String doProcess(
 		String fileName, String absolutePath, String content) {
 
-		content = _sortBlocks(content);
+		content = _sortTopLevelBlocks(content);
 
 		return _sortEntries(content);
 	}
@@ -169,63 +169,6 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 		return false;
 	}
 
-	private String _sortBlocks(String content) {
-		String[] lines = content.split("\n", -1);
-
-		List<Entry> blocks = new ArrayList<>();
-
-		for (int i = 0; i < lines.length; i++) {
-			Matcher matcher = _blockPattern.matcher(lines[i]);
-
-			if (!matcher.matches()) {
-				continue;
-			}
-
-			Entry block = new Entry(lines[i], 0, i);
-
-			for (i = i + 1; i < lines.length; i++) {
-				String heredocMarker = _getHeredocMarker(
-					StringUtil.trim(lines[i]));
-
-				if (heredocMarker != null) {
-					i = _getHeredocEndLineIndex(lines, i, heredocMarker);
-
-					if (i == -1) {
-						return content;
-					}
-				}
-				else if (lines[i].equals(StringPool.CLOSE_CURLY_BRACE)) {
-					break;
-				}
-			}
-
-			if (i == lines.length) {
-				return content;
-			}
-
-			block.setEndLineIndex(i);
-
-			blocks.add(block);
-		}
-
-		NaturalOrderStringComparator naturalOrderStringComparator =
-			new NaturalOrderStringComparator();
-
-		for (int i = 1; i < blocks.size(); i++) {
-			Entry block1 = blocks.get(i - 1);
-			Entry block2 = blocks.get(i);
-
-			int value = naturalOrderStringComparator.compare(
-				_getKey(block1.getFirstLine()), _getKey(block2.getFirstLine()));
-
-			if (value > 0) {
-				return _swapEntries(lines, block1, block2);
-			}
-		}
-
-		return content;
-	}
-
 	private String _sortEntries(String content) {
 		String[] lines = content.split("\n", -1);
 
@@ -319,6 +262,63 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 		}
 
 		return null;
+	}
+
+	private String _sortTopLevelBlocks(String content) {
+		String[] lines = content.split("\n", -1);
+
+		List<Entry> blocks = new ArrayList<>();
+
+		for (int i = 0; i < lines.length; i++) {
+			Matcher matcher = _blockPattern.matcher(lines[i]);
+
+			if (!matcher.matches()) {
+				continue;
+			}
+
+			Entry block = new Entry(lines[i], 0, i);
+
+			for (i = i + 1; i < lines.length; i++) {
+				String heredocMarker = _getHeredocMarker(
+					StringUtil.trim(lines[i]));
+
+				if (heredocMarker != null) {
+					i = _getHeredocEndLineIndex(lines, i, heredocMarker);
+
+					if (i == -1) {
+						return content;
+					}
+				}
+				else if (lines[i].equals(StringPool.CLOSE_CURLY_BRACE)) {
+					break;
+				}
+			}
+
+			if (i == lines.length) {
+				return content;
+			}
+
+			block.setEndLineIndex(i);
+
+			blocks.add(block);
+		}
+
+		NaturalOrderStringComparator naturalOrderStringComparator =
+			new NaturalOrderStringComparator();
+
+		for (int i = 1; i < blocks.size(); i++) {
+			Entry block1 = blocks.get(i - 1);
+			Entry block2 = blocks.get(i);
+
+			int value = naturalOrderStringComparator.compare(
+				_getKey(block1.getFirstLine()), _getKey(block2.getFirstLine()));
+
+			if (value > 0) {
+				return _swapEntries(lines, block1, block2);
+			}
+		}
+
+		return content;
 	}
 
 	private String _swapEntries(String[] lines, Entry entry1, Entry entry2) {
