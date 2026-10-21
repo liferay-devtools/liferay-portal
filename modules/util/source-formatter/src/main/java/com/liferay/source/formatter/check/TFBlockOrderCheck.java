@@ -131,7 +131,7 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 
 		matcher = _nestedBlockPattern.matcher(trimmedLine);
 
-		if (matcher.find()) {
+		if (matcher.matches()) {
 			return StringUtil.removeChars(matcher.group(1), CharPool.QUOTE);
 		}
 
@@ -143,11 +143,13 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 			return _getKey(entry.getFirstLine());
 		}
 
+		if (entry.getStartLineIndex() != entry.getEndLineIndex()) {
+			return null;
+		}
+
 		Matcher matcher = _stringValuePattern.matcher(entry.getFirstLine());
 
-		if ((entry.getStartLineIndex() == entry.getEndLineIndex()) &&
-			matcher.find()) {
-
+		if (matcher.matches()) {
 			return matcher.group(1);
 		}
 
@@ -366,16 +368,16 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 
 	private static final String[] _SORTABLE_LIST_KEYS = {"Action", "NotAction"};
 
-	private static final Pattern _blockPattern = Pattern.compile("^\\w.*\\{$");
+	private static final Pattern _blockPattern = Pattern.compile("\\w.*\\{");
 	private static final Pattern _heredocPattern = Pattern.compile(
 		"<<-?(\\w+)$");
 	private static final Pattern _indentPattern = Pattern.compile("^\\s*");
 	private static final Pattern _keyPattern = Pattern.compile(
 		"^(\"[^\"]+\"|[\\w.-]+)\\s*[:=](?!=)");
 	private static final Pattern _nestedBlockPattern = Pattern.compile(
-		"^([\\w-]+(\\s+\"[^\"]*\")*)\\s*\\{$");
+		"([\\w-]+(\\s+\"[^\"]*\")*)\\s*\\{");
 	private static final Pattern _stringValuePattern = Pattern.compile(
-		"^\"([^\"]*)\",?$");
+		"\"([^\"]*)\",?");
 
 	private class Entry {
 
