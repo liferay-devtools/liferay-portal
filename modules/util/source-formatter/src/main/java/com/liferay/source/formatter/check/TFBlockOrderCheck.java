@@ -270,7 +270,7 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 		List<Entry> blocks = new ArrayList<>();
 
 		for (int i = 0; i < lines.length; i++) {
-			Matcher matcher = _blockPattern.matcher(lines[i]);
+			Matcher matcher = _topLevelBlockPattern.matcher(lines[i]);
 
 			if (!matcher.matches()) {
 				continue;
@@ -368,7 +368,6 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 
 	private static final String[] _SORTABLE_LIST_KEYS = {"Action", "NotAction"};
 
-	private static final Pattern _blockPattern = Pattern.compile("\\w.*\\{");
 	private static final Pattern _heredocPattern = Pattern.compile(
 		"<<-?(\\w+)$");
 	private static final Pattern _indentPattern = Pattern.compile("^\\s*");
@@ -378,6 +377,8 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 		"([\\w-]+(\\s+\"[^\"]*\")*)\\s*\\{");
 	private static final Pattern _stringValuePattern = Pattern.compile(
 		"\"([^\"]*)\",?");
+	private static final Pattern _topLevelBlockPattern = Pattern.compile(
+		"\\w.*\\{");
 
 	private class Entry {
 
