@@ -265,9 +265,9 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 	}
 
 	private String _sortTopLevelBlocks(String content) {
-		String[] lines = content.split("\n", -1);
-
 		List<Entry> blocks = new ArrayList<>();
+
+		String[] lines = content.split("\n", -1);
 
 		for (int i = 0; i < lines.length; i++) {
 			Matcher matcher = _topLevelBlockPattern.matcher(lines[i]);
