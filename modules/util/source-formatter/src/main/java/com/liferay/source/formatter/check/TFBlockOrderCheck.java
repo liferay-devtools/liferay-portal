@@ -154,6 +154,28 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 		return null;
 	}
 
+	private List<String> _getLines(Entry sortedEntry, Entry entry) {
+		List<String> lines = new ArrayList<>(sortedEntry.getLines());
+
+		int lastIndex = lines.size() - 1;
+
+		String lastLine = lines.get(lastIndex);
+
+		if (lastLine.endsWith(StringPool.COMMA)) {
+			lastLine = lastLine.substring(0, lastLine.length() - 1);
+		}
+
+		String originalLastLine = entry.getLastLine();
+
+		if (originalLastLine.endsWith(StringPool.COMMA)) {
+			lastLine += StringPool.COMMA;
+		}
+
+		lines.set(lastIndex, lastLine);
+
+		return lines;
+	}
+
 	private String _getSortKey(Entry entry, boolean list) {
 		if (!list) {
 			return _getKey(entry.getFirstLine());
@@ -239,7 +261,11 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 			return;
 		}
 
-		List<String> newLines = new ArrayList<>();
+		String[] originalLines = lines.clone();
+
+		Entry firstEntry = entries.get(0);
+
+		int lineIndex = firstEntry.getStartLineIndex();
 
 		for (int i = 0; i < entries.size(); i++) {
 			Entry entry = entries.get(i);
@@ -250,37 +276,13 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 				for (int j = previousEntry.getEndLineIndex() + 1;
 					 j < entry.getStartLineIndex(); j++) {
 
-					newLines.add(lines[j]);
+					lines[lineIndex++] = originalLines[j];
 				}
 			}
 
-			Entry sortedEntry = sortedEntries.get(i);
-
-			List<String> entryLines = new ArrayList<>(sortedEntry.getLines());
-
-			int lastIndex = entryLines.size() - 1;
-
-			String lastLine = entryLines.get(lastIndex);
-
-			if (lastLine.endsWith(StringPool.COMMA)) {
-				lastLine = lastLine.substring(0, lastLine.length() - 1);
+			for (String line : _getLines(sortedEntries.get(i), entry)) {
+				lines[lineIndex++] = line;
 			}
-
-			String originalLastLine = entry.getLastLine();
-
-			if (originalLastLine.endsWith(StringPool.COMMA)) {
-				lastLine += StringPool.COMMA;
-			}
-
-			entryLines.set(lastIndex, lastLine);
-
-			newLines.addAll(entryLines);
-		}
-
-		Entry firstEntry = entries.get(0);
-
-		for (int i = 0; i < newLines.size(); i++) {
-			lines[firstEntry.getStartLineIndex() + i] = newLines.get(i);
 		}
 	}
 
