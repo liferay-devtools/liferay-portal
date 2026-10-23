@@ -47,99 +47,37 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 		return sb.toString();
 	}
 
-	private int _addHeredocLines(Entry entry, String[] lines, int lineIndex) {
-		String heredocMarker = TFSourceUtil.getHeredocMarker(
-			StringUtil.trim(lines[lineIndex]));
-
-		if (heredocMarker == null) {
-			return lineIndex;
-		}
-
-		int heredocEndLineIndex = TFSourceUtil.getHeredocEndLineIndex(
-			lines, lineIndex, heredocMarker);
-
-		if (heredocEndLineIndex == -1) {
-			return -1;
-		}
-
-		for (int i = lineIndex + 1; i <= heredocEndLineIndex; i++) {
-			entry.addLine(lines[i]);
-		}
-
-		return heredocEndLineIndex;
-	}
-
 	private List<Entry> _getEntries(String[] lines, int openLineIndex) {
+		int closeLineIndex = TFSourceUtil.getBlockEndLineIndex(
+			lines, openLineIndex + 1, 1);
+
+		if (closeLineIndex == -1) {
+			return null;
+		}
+
 		List<Entry> entries = new ArrayList<>();
 
-		String childIndent = null;
-		Entry entry = null;
 		int group = 0;
-		String openIndent = _getIndent(lines[openLineIndex]);
 
-		for (int i = openLineIndex + 1; i < lines.length; i++) {
-			String trimmedLine = StringUtil.trim(lines[i]);
-
-			if (Validator.isNull(trimmedLine)) {
-				entry = null;
+		for (int i = openLineIndex + 1; i < closeLineIndex; i++) {
+			if (Validator.isNull(StringUtil.trim(lines[i]))) {
 				group++;
 
 				continue;
 			}
 
-			String indent = _getIndent(lines[i]);
+			int endLineIndex = TFSourceUtil.getBlockEndLineIndex(lines, i, 0);
 
-			if (indent.equals(openIndent) &&
-				_startsWithCloseBracket(trimmedLine)) {
-
-				for (Entry curEntry : entries) {
-					if (!_isClosed(curEntry)) {
-						return null;
-					}
-				}
-
-				return entries;
-			}
-
-			if (childIndent == null) {
-				if (indent.length() <= openIndent.length()) {
-					return null;
-				}
-
-				childIndent = indent;
-			}
-
-			if (indent.equals(childIndent) &&
-				!_startsWithCloseBracket(trimmedLine)) {
-
-				entry = new Entry(group, i);
-
-				entries.add(entry);
-			}
-			else if ((entry == null) ||
-					 (indent.length() < childIndent.length())) {
-
+			if ((endLineIndex == -1) || (endLineIndex >= closeLineIndex)) {
 				return null;
 			}
 
-			entry.addLine(lines[i]);
+			entries.add(new Entry(group, lines, i, endLineIndex));
 
-			i = _addHeredocLines(entry, lines, i);
-
-			if (i == -1) {
-				return null;
-			}
+			i = endLineIndex;
 		}
 
-		return null;
-	}
-
-	private String _getIndent(String line) {
-		Matcher matcher = _indentPattern.matcher(line);
-
-		matcher.find();
-
-		return matcher.group();
+		return entries;
 	}
 
 	private String _getKey(String trimmedLine) {
@@ -198,25 +136,6 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 		}
 
 		return null;
-	}
-
-	private boolean _isClosed(Entry entry) {
-		String firstLine = entry.getFirstLine();
-
-		if (!firstLine.endsWith(StringPool.OPEN_BRACKET) &&
-			!firstLine.endsWith(StringPool.OPEN_CURLY_BRACE) &&
-			!firstLine.endsWith(StringPool.OPEN_PARENTHESIS)) {
-
-			return true;
-		}
-
-		List<String> lines = entry.getLines();
-
-		if (lines.size() == 1) {
-			return false;
-		}
-
-		return _startsWithCloseBracket(StringUtil.trim(entry.getLastLine()));
 	}
 
 	private boolean _isCommentLine(String line) {
@@ -279,9 +198,7 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 
 	private void _sortNestedEntries(String[] lines) {
 		for (int i = 0; i < lines.length; i++) {
-			String trimmedLine = StringUtil.trim(lines[i]);
-
-			String heredocMarker = TFSourceUtil.getHeredocMarker(trimmedLine);
+			String heredocMarker = TFSourceUtil.getHeredocMarker(lines[i]);
 
 			if (heredocMarker != null) {
 				int heredocEndLineIndex = TFSourceUtil.getHeredocEndLineIndex(
@@ -301,6 +218,9 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 
 				continue;
 			}
+
+			String trimmedLine = StringUtil.trim(
+				TFSourceUtil.removeComment(lines[i]));
 
 			boolean list = false;
 
@@ -336,19 +256,25 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 			Matcher matcher = _topLevelBlockPattern.matcher(lines[i]);
 
 			if (!matcher.matches()) {
-				String trimmedLine = StringUtil.trim(lines[i]);
+				if (Validator.isNull(StringUtil.trim(lines[i])) ||
+					_isCommentLine(lines[i])) {
 
-				if (Validator.isNull(trimmedLine)) {
 					continue;
 				}
 
-				if (!lines[i].startsWith(trimmedLine) ||
-					_startsWithCloseBracket(trimmedLine)) {
+				return;
+			}
 
-					return;
-				}
+			String sortKey = _getKey(lines[i]);
 
-				continue;
+			if (sortKey == null) {
+				return;
+			}
+
+			int endLineIndex = TFSourceUtil.getBlockEndLineIndex(lines, i, 0);
+
+			if (endLineIndex == -1) {
+				return;
 			}
 
 			int startLineIndex = i;
@@ -359,64 +285,24 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 				startLineIndex--;
 			}
 
-			Entry entry = new Entry(0, startLineIndex);
-
-			for (int j = startLineIndex; j <= i; j++) {
-				entry.addLine(lines[j]);
-			}
-
-			String sortKey = _getKey(lines[i]);
-
-			if (sortKey == null) {
-				return;
-			}
+			Entry entry = new Entry(0, lines, startLineIndex, endLineIndex);
 
 			entry.setSortKey(sortKey);
 
-			for (i = i + 1; i < lines.length; i++) {
-				entry.addLine(lines[i]);
-
-				if (lines[i].equals(StringPool.CLOSE_CURLY_BRACE)) {
-					break;
-				}
-
-				i = _addHeredocLines(entry, lines, i);
-
-				if (i == -1) {
-					return;
-				}
-			}
-
-			if (i == lines.length) {
-				return;
-			}
-
 			entries.add(entry);
 
-			previousEndLineIndex = i;
+			i = endLineIndex;
+
+			previousEndLineIndex = endLineIndex;
 		}
 
 		_sort(lines, entries);
-	}
-
-	private boolean _startsWithCloseBracket(String trimmedLine) {
-		char c = trimmedLine.charAt(0);
-
-		if ((c == CharPool.CLOSE_BRACKET) ||
-			(c == CharPool.CLOSE_CURLY_BRACE) ||
-			(c == CharPool.CLOSE_PARENTHESIS)) {
-
-			return true;
-		}
-
-		return false;
 	}
 
 	private static final String[] _SORTABLE_LIST_KEYS = {"Action", "NotAction"};
 
 	private static final Pattern _blockHeaderPattern = Pattern.compile(
 		"([\\w-]+(\\s+\"[^\"]*\")*)\\s*\\{");
-	private static final Pattern _indentPattern = Pattern.compile("^\\s*");
 	private static final Pattern _keyPattern = Pattern.compile(
 		"^(\"[^\"]+\"|[\\w.-]+)\\s*[:=](?!=)");
 	private static final Pattern _stringValuePattern = Pattern.compile(
@@ -426,13 +312,15 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 
 	private class Entry {
 
-		public Entry(int group, int startLineIndex) {
+		public Entry(
+			int group, String[] lines, int startLineIndex, int endLineIndex) {
+
 			_group = group;
 			_startLineIndex = startLineIndex;
-		}
 
-		public void addLine(String line) {
-			_lines.add(line);
+			for (int i = startLineIndex; i <= endLineIndex; i++) {
+				_lines.add(lines[i]);
+			}
 		}
 
 		public int getEndLineIndex() {

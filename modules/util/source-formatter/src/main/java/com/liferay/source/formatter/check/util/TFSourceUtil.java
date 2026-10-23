@@ -6,6 +6,7 @@
 package com.liferay.source.formatter.check.util;
 
 import com.liferay.petra.string.CharPool;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.util.StringUtil;
 
 import java.util.regex.Matcher;
@@ -15,6 +16,105 @@ import java.util.regex.Pattern;
  * @author Alan Huang
  */
 public class TFSourceUtil {
+
+	public static boolean appendBrackets(
+		String line, boolean blockComment, StringBundler sb) {
+
+		int i = 0;
+
+		if (blockComment) {
+			i = line.indexOf("*/");
+
+			if (i == -1) {
+				return true;
+			}
+
+			i += 2;
+		}
+
+		while (i < line.length()) {
+			char c = line.charAt(i);
+
+			if (c == CharPool.QUOTE) {
+				i = getStringEndIndex(line, i + 1);
+
+				continue;
+			}
+
+			if ((c == CharPool.POUND) || line.startsWith("//", i)) {
+				return false;
+			}
+
+			if (line.startsWith("/*", i)) {
+				i = line.indexOf("*/", i + 2);
+
+				if (i == -1) {
+					return true;
+				}
+
+				i += 2;
+
+				continue;
+			}
+
+			if ((_CLOSE_BRACKETS.indexOf(c) != -1) ||
+				(_OPEN_BRACKETS.indexOf(c) != -1)) {
+
+				sb.append(c);
+			}
+
+			i++;
+		}
+
+		return false;
+	}
+
+	public static int getBlockEndLineIndex(
+		String[] lines, int startLineIndex, int level) {
+
+		boolean blockComment = false;
+
+		for (int i = startLineIndex; i < lines.length; i++) {
+			StringBundler sb = new StringBundler();
+
+			blockComment = appendBrackets(lines[i], blockComment, sb);
+
+			String brackets = sb.toString();
+
+			for (char c : brackets.toCharArray()) {
+				if (_OPEN_BRACKETS.indexOf(c) != -1) {
+					level++;
+				}
+				else {
+					level--;
+				}
+
+				if (level < 0) {
+					return -1;
+				}
+			}
+
+			if (blockComment) {
+				continue;
+			}
+
+			String heredocMarker = getHeredocMarker(lines[i]);
+
+			if (heredocMarker != null) {
+				i = getHeredocEndLineIndex(lines, i, heredocMarker);
+
+				if (i == -1) {
+					return -1;
+				}
+			}
+
+			if (level == 0) {
+				return i;
+			}
+		}
+
+		return -1;
+	}
 
 	public static int getHeredocEndLineIndex(
 		String[] lines, int lineIndex, String heredocMarker) {
@@ -30,7 +130,7 @@ public class TFSourceUtil {
 
 	public static String getHeredocMarker(String line) {
 		Matcher matcher = _heredocPattern.matcher(
-			StringUtil.trim(_removeComment(line)));
+			StringUtil.trim(removeComment(line)));
 
 		if (matcher.find()) {
 			return matcher.group(1);
@@ -73,6 +173,30 @@ public class TFSourceUtil {
 		return Math.min(index, line.length());
 	}
 
+	public static String removeComment(String line) {
+		int i = 0;
+
+		while (i < line.length()) {
+			char c = line.charAt(i);
+
+			if (c == CharPool.QUOTE) {
+				i = getStringEndIndex(line, i + 1);
+
+				continue;
+			}
+
+			if ((c == CharPool.POUND) || line.startsWith("//", i) ||
+				line.startsWith("/*", i)) {
+
+				return line.substring(0, i);
+			}
+
+			i++;
+		}
+
+		return line;
+	}
+
 	private static int _getTemplateEndIndex(String line, int index) {
 		int level = 0;
 
@@ -102,29 +226,9 @@ public class TFSourceUtil {
 		return index;
 	}
 
-	private static String _removeComment(String line) {
-		int i = 0;
+	private static final String _CLOSE_BRACKETS = ")]}";
 
-		while (i < line.length()) {
-			char c = line.charAt(i);
-
-			if (c == CharPool.QUOTE) {
-				i = getStringEndIndex(line, i + 1);
-
-				continue;
-			}
-
-			if ((c == CharPool.POUND) || line.startsWith("//", i) ||
-				line.startsWith("/*", i)) {
-
-				return line.substring(0, i);
-			}
-
-			i++;
-		}
-
-		return line;
-	}
+	private static final String _OPEN_BRACKETS = "([{";
 
 	private static final Pattern _heredocPattern = Pattern.compile(
 		"<<-?([A-Za-z_][\\w-]*)$");

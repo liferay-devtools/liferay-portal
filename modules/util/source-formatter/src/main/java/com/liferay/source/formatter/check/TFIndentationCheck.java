@@ -52,7 +52,8 @@ public class TFIndentationCheck extends BaseFileCheck {
 
 			StringBundler sb = new StringBundler();
 
-			blockComment = _appendBrackets(trimmedLine, blockComment, sb);
+			blockComment = TFSourceUtil.appendBrackets(
+				trimmedLine, blockComment, sb);
 
 			String brackets = sb.toString();
 
@@ -95,58 +96,6 @@ public class TFIndentationCheck extends BaseFileCheck {
 		sb.setIndex(sb.index() - 1);
 
 		return sb.toString();
-	}
-
-	private boolean _appendBrackets(
-		String line, boolean blockComment, StringBundler sb) {
-
-		int i = 0;
-
-		if (blockComment) {
-			i = line.indexOf("*/");
-
-			if (i == -1) {
-				return true;
-			}
-
-			i += 2;
-		}
-
-		while (i < line.length()) {
-			char c = line.charAt(i);
-
-			if (c == CharPool.QUOTE) {
-				i = TFSourceUtil.getStringEndIndex(line, i + 1);
-
-				continue;
-			}
-
-			if ((c == CharPool.POUND) || line.startsWith("//", i)) {
-				return false;
-			}
-
-			if (line.startsWith("/*", i)) {
-				i = line.indexOf("*/", i + 2);
-
-				if (i == -1) {
-					return true;
-				}
-
-				i += 2;
-
-				continue;
-			}
-
-			if ((_CLOSE_BRACKETS.indexOf(c) != -1) ||
-				(_OPEN_BRACKETS.indexOf(c) != -1)) {
-
-				sb.append(c);
-			}
-
-			i++;
-		}
-
-		return false;
 	}
 
 	private String _getIndentedLine(String trimmedLine, int expectedTabCount) {
