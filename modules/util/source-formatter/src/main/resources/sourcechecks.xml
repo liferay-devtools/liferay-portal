@@ -1919,6 +1919,7 @@
 		<check name="TFIndentationCheck">
 			<category name="Styling" />
 			<description name="Checks the indentation in `.tf` files." />
+			<weight>1</weight>
 		</check>
 	</source-processor>
 	<source-processor name="TLDSourceProcessor">

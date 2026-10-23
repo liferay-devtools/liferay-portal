@@ -90,6 +90,12 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 			String indent = _getIndent(lines[i]);
 
 			if (indent.equals(openIndent) && _isCloseLine(trimmedLine)) {
+				for (Entry curEntry : entries) {
+					if (!_isClosed(curEntry)) {
+						return null;
+					}
+				}
+
 				return entries;
 			}
 
@@ -174,6 +180,35 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 		if ((c == CharPool.CLOSE_BRACKET) ||
 			(c == CharPool.CLOSE_CURLY_BRACE) ||
 			(c == CharPool.CLOSE_PARENTHESIS)) {
+
+			return true;
+		}
+
+		return false;
+	}
+
+	private boolean _isClosed(Entry entry) {
+		String firstLine = entry.getFirstLine();
+
+		if (!firstLine.endsWith(StringPool.OPEN_BRACKET) &&
+			!firstLine.endsWith(StringPool.OPEN_CURLY_BRACE) &&
+			!firstLine.endsWith(StringPool.OPEN_PARENTHESIS)) {
+
+			return true;
+		}
+
+		List<String> lines = entry.getLines();
+
+		if (lines.size() == 1) {
+			return false;
+		}
+
+		return _isCloseLine(StringUtil.trim(entry.getLastLine()));
+	}
+
+	private boolean _isCommentLine(String line) {
+		if (line.startsWith(StringPool.POUND) ||
+			line.startsWith(StringPool.DOUBLE_SLASH)) {
 
 			return true;
 		}
@@ -302,16 +337,42 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 	private void _sortTopLevelBlocks(String[] lines) {
 		List<Entry> entries = new ArrayList<>();
 
+		int previousEndLineIndex = -1;
+
 		for (int i = 0; i < lines.length; i++) {
 			Matcher matcher = _topLevelBlockPattern.matcher(lines[i]);
 
 			if (!matcher.matches()) {
+				String trimmedLine = StringUtil.trim(lines[i]);
+
+				if (Validator.isNull(trimmedLine)) {
+					continue;
+				}
+
+				if (!lines[i].startsWith(trimmedLine) ||
+					_isCloseLine(trimmedLine)) {
+
+					return;
+				}
+
 				continue;
 			}
 
-			Entry entry = new Entry(0, i);
+			int startLineIndex = i;
 
-			entry.addLine(lines[i]);
+			while (((startLineIndex - 1) > previousEndLineIndex) &&
+				   _isCommentLine(lines[startLineIndex - 1])) {
+
+				startLineIndex--;
+			}
+
+			Entry entry = new Entry(0, startLineIndex);
+
+			for (int j = startLineIndex; j <= i; j++) {
+				entry.addLine(lines[j]);
+			}
+
+			entry.setSortKey(_getKey(lines[i]));
 
 			for (i = i + 1; i < lines.length; i++) {
 				entry.addLine(lines[i]);
@@ -331,9 +392,9 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 				return;
 			}
 
-			entry.setSortKey(_getKey(entry.getFirstLine()));
-
 			entries.add(entry);
+
+			previousEndLineIndex = i;
 		}
 
 		_sort(lines, entries);
