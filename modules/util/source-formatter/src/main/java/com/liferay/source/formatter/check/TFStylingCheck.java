@@ -97,8 +97,8 @@ public class TFStylingCheck extends BaseFileCheck {
 	}
 
 	private static final Pattern _blockHeaderPattern = Pattern.compile(
-		"(\\s*[A-Za-z_][\\w-]*)((\\s+(\"[^\"]*\"|[A-Za-z_][\\w-]*))+)\\s*\\{");
+		"(\\s*[\\w-]+)((\\s+(\"[^\"]*\"|[\\w-]+))+)\\s*\\{");
 	private static final Pattern _labelPattern = Pattern.compile(
-		"\"[^\"]*\"|[A-Za-z_][\\w-]*");
+		"\"[^\"]*\"|[\\w-]+");
 
 }
