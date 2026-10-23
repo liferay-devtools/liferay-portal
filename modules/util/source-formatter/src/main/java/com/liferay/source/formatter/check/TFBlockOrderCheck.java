@@ -145,7 +145,7 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 			return StringUtil.removeChars(matcher.group(1), CharPool.QUOTE);
 		}
 
-		matcher = _nestedBlockPattern.matcher(trimmedLine);
+		matcher = _blockHeaderPattern.matcher(trimmedLine);
 
 		if (matcher.matches()) {
 			return StringUtil.removeChars(matcher.group(1), CharPool.QUOTE);
@@ -402,11 +402,11 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 
 	private static final String[] _SORTABLE_LIST_KEYS = {"Action", "NotAction"};
 
+	private static final Pattern _blockHeaderPattern = Pattern.compile(
+		"([\\w-]+(\\s+\"[^\"]*\")*)\\s*\\{");
 	private static final Pattern _indentPattern = Pattern.compile("^\\s*");
 	private static final Pattern _keyPattern = Pattern.compile(
 		"^(\"[^\"]+\"|[\\w.-]+)\\s*[:=](?!=)");
-	private static final Pattern _nestedBlockPattern = Pattern.compile(
-		"([\\w-]+(\\s+\"[^\"]*\")*)\\s*\\{");
 	private static final Pattern _stringValuePattern = Pattern.compile(
 		"\"([^\"]*)\",?");
 	private static final Pattern _topLevelBlockPattern = Pattern.compile(
