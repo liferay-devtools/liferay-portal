@@ -58,7 +58,7 @@ public class TFSourceUtil {
 			index++;
 		}
 
-		return index;
+		return Math.min(index, line.length());
 	}
 
 	private static int _getTemplateEndIndex(String line, int index) {
@@ -115,6 +115,6 @@ public class TFSourceUtil {
 	}
 
 	private static final Pattern _heredocPattern = Pattern.compile(
-		"<<-?(\\w+)$");
+		"<<-?([A-Za-z_][\\w-]*)$");
 
 }
