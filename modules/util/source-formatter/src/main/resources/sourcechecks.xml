@@ -1920,6 +1920,10 @@
 			<category name="Styling" />
 			<description name="Checks the indentation in `.tf` files." />
 		</check>
+		<check name="TFStylingCheck">
+			<category name="Styling" />
+			<description name="Applies rules to enforce consistency in code style." />
+		</check>
 	</source-processor>
 	<source-processor name="TLDSourceProcessor">
 		<check name="TLDElementOrderCheck">

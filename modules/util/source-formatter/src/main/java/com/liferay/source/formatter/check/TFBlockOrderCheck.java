@@ -374,7 +374,13 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 				entry.addLine(lines[j]);
 			}
 
-			entry.setSortKey(_getKey(lines[i]));
+			String sortKey = _getKey(lines[i]);
+
+			if (sortKey == null) {
+				return;
+			}
+
+			entry.setSortKey(sortKey);
 
 			for (i = i + 1; i < lines.length; i++) {
 				entry.addLine(lines[i]);
