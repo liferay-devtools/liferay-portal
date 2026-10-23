@@ -78,16 +78,10 @@ public class TFIndentationCheck extends BaseFileCheck {
 				continue;
 			}
 
-			while (true) {
-				i++;
+			i = TFSourceUtil.getHeredocEndLineIndex(lines, i, heredocMarker);
 
-				if (i == lines.length) {
-					return content;
-				}
-
-				if (heredocMarker.equals(StringUtil.trim(lines[i]))) {
-					break;
-				}
+			if (i == -1) {
+				return content;
 			}
 		}
 

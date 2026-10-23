@@ -55,7 +55,7 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 			return lineIndex;
 		}
 
-		int heredocEndLineIndex = _getHeredocEndLineIndex(
+		int heredocEndLineIndex = TFSourceUtil.getHeredocEndLineIndex(
 			lines, lineIndex, heredocMarker);
 
 		if (heredocEndLineIndex == -1) {
@@ -122,18 +122,6 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 		}
 
 		return null;
-	}
-
-	private int _getHeredocEndLineIndex(
-		String[] lines, int lineIndex, String heredocMarker) {
-
-		for (int i = lineIndex + 1; i < lines.length; i++) {
-			if (heredocMarker.equals(StringUtil.trim(lines[i]))) {
-				return i;
-			}
-		}
-
-		return -1;
 	}
 
 	private String _getIndent(String line) {
@@ -268,7 +256,7 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 			String heredocMarker = TFSourceUtil.getHeredocMarker(trimmedLine);
 
 			if (heredocMarker != null) {
-				int heredocEndLineIndex = _getHeredocEndLineIndex(
+				int heredocEndLineIndex = TFSourceUtil.getHeredocEndLineIndex(
 					lines, i, heredocMarker);
 
 				if (heredocEndLineIndex == -1) {

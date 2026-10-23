@@ -16,6 +16,18 @@ import java.util.regex.Pattern;
  */
 public class TFSourceUtil {
 
+	public static int getHeredocEndLineIndex(
+		String[] lines, int lineIndex, String heredocMarker) {
+
+		for (int i = lineIndex + 1; i < lines.length; i++) {
+			if (heredocMarker.equals(StringUtil.trim(lines[i]))) {
+				return i;
+			}
+		}
+
+		return -1;
+	}
+
 	public static String getHeredocMarker(String line) {
 		Matcher matcher = _heredocPattern.matcher(
 			StringUtil.trim(_removeComment(line)));
