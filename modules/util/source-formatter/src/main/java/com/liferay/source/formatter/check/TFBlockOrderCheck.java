@@ -89,7 +89,9 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 
 			String indent = _getIndent(lines[i]);
 
-			if (indent.equals(openIndent) && _isCloseLine(trimmedLine)) {
+			if (indent.equals(openIndent) &&
+				_startsWithCloseBracket(trimmedLine)) {
+
 				for (Entry curEntry : entries) {
 					if (!_isClosed(curEntry)) {
 						return null;
@@ -107,7 +109,9 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 				childIndent = indent;
 			}
 
-			if (indent.equals(childIndent) && !_isCloseLine(trimmedLine)) {
+			if (indent.equals(childIndent) &&
+				!_startsWithCloseBracket(trimmedLine)) {
+
 				entry = new Entry(group, i);
 
 				entries.add(entry);
@@ -196,19 +200,6 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 		return null;
 	}
 
-	private boolean _isCloseLine(String trimmedLine) {
-		char c = trimmedLine.charAt(0);
-
-		if ((c == CharPool.CLOSE_BRACKET) ||
-			(c == CharPool.CLOSE_CURLY_BRACE) ||
-			(c == CharPool.CLOSE_PARENTHESIS)) {
-
-			return true;
-		}
-
-		return false;
-	}
-
 	private boolean _isClosed(Entry entry) {
 		String firstLine = entry.getFirstLine();
 
@@ -225,7 +216,7 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 			return false;
 		}
 
-		return _isCloseLine(StringUtil.trim(entry.getLastLine()));
+		return _startsWithCloseBracket(StringUtil.trim(entry.getLastLine()));
 	}
 
 	private boolean _isCommentLine(String line) {
@@ -352,7 +343,7 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 				}
 
 				if (!lines[i].startsWith(trimmedLine) ||
-					_isCloseLine(trimmedLine)) {
+					_startsWithCloseBracket(trimmedLine)) {
 
 					return;
 				}
@@ -406,6 +397,19 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 		}
 
 		_sort(lines, entries);
+	}
+
+	private boolean _startsWithCloseBracket(String trimmedLine) {
+		char c = trimmedLine.charAt(0);
+
+		if ((c == CharPool.CLOSE_BRACKET) ||
+			(c == CharPool.CLOSE_CURLY_BRACE) ||
+			(c == CharPool.CLOSE_PARENTHESIS)) {
+
+			return true;
+		}
+
+		return false;
 	}
 
 	private static final String[] _SORTABLE_LIST_KEYS = {"Action", "NotAction"};
