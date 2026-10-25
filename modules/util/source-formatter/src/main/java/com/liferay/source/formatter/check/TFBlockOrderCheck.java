@@ -91,7 +91,7 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 				startLineIndex = commentStartLineIndex;
 			}
 
-			Entry entry = new Entry(lines, startLineIndex, endLineIndex);
+			Entry entry = new Entry(endLineIndex, lines, startLineIndex);
 
 			entry.setSortKey(sortKey);
 
@@ -122,8 +122,10 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 	}
 
 	private boolean _isCommentLine(String line) {
-		if (line.startsWith(StringPool.POUND) ||
-			line.startsWith(StringPool.DOUBLE_SLASH)) {
+		String trimmedLine = StringUtil.trim(line);
+
+		if (trimmedLine.startsWith(StringPool.DOUBLE_SLASH) ||
+			trimmedLine.startsWith(StringPool.POUND)) {
 
 			return true;
 		}
@@ -223,7 +225,7 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 				startLineIndex--;
 			}
 
-			Entry entry = new Entry(lines, startLineIndex, endLineIndex);
+			Entry entry = new Entry(endLineIndex, lines, startLineIndex);
 
 			entry.setSortKey(sortKey);
 
@@ -246,7 +248,7 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 
 	private class Entry {
 
-		public Entry(String[] lines, int startLineIndex, int endLineIndex) {
+		public Entry(int endLineIndex, String[] lines, int startLineIndex) {
 			_startLineIndex = startLineIndex;
 
 			for (int i = startLineIndex; i <= endLineIndex; i++) {
