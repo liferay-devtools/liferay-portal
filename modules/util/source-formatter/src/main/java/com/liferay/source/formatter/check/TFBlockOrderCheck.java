@@ -121,28 +121,6 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 		return null;
 	}
 
-	private List<String> _getLines(Entry sortedEntry, Entry entry) {
-		List<String> lines = new ArrayList<>(sortedEntry.getLines());
-
-		int lastIndex = lines.size() - 1;
-
-		String lastLine = lines.get(lastIndex);
-
-		if (lastLine.endsWith(StringPool.COMMA)) {
-			lastLine = lastLine.substring(0, lastLine.length() - 1);
-		}
-
-		String originalLastLine = entry.getLastLine();
-
-		if (originalLastLine.endsWith(StringPool.COMMA)) {
-			lastLine += StringPool.COMMA;
-		}
-
-		lines.set(lastIndex, lastLine);
-
-		return lines;
-	}
-
 	private boolean _isCommentLine(String line) {
 		if (line.startsWith(StringPool.POUND) ||
 			line.startsWith(StringPool.DOUBLE_SLASH)) {
@@ -166,10 +144,8 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 
 		int lineIndex = firstEntry.getStartLineIndex();
 
-		for (int i = 0; i < entries.size(); i++) {
-			for (String line :
-					_getLines(sortedEntries.get(i), entries.get(i))) {
-
+		for (Entry sortedEntry : sortedEntries) {
+			for (String line : sortedEntry.getLines()) {
 				lines[lineIndex++] = line;
 			}
 		}
@@ -187,13 +163,7 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 					return;
 				}
 
-				String nextTrimmedLine = StringUtil.trim(lines[i + 1]);
-
-				if (!nextTrimmedLine.equals(StringPool.OPEN_BRACKET) &&
-					!nextTrimmedLine.equals(StringPool.OPEN_CURLY_BRACE)) {
-
-					i = heredocEndLineIndex;
-				}
+				i = heredocEndLineIndex;
 
 				continue;
 			}
@@ -282,10 +252,6 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 			for (int i = startLineIndex; i <= endLineIndex; i++) {
 				_lines.add(lines[i]);
 			}
-		}
-
-		public String getLastLine() {
-			return _lines.get(_lines.size() - 1);
 		}
 
 		public List<String> getLines() {
