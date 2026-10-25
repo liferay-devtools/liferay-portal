@@ -8,7 +8,6 @@ package com.liferay.source.formatter.check;
 import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
-import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.NaturalOrderStringComparator;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
@@ -118,26 +117,6 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 		return lines;
 	}
 
-	private String _getSortKey(Entry entry, boolean list) {
-		if (!list) {
-			return _getKey(entry.getFirstLine());
-		}
-
-		List<String> lines = entry.getLines();
-
-		if (lines.size() != 1) {
-			return null;
-		}
-
-		Matcher matcher = _stringValuePattern.matcher(entry.getFirstLine());
-
-		if (matcher.matches()) {
-			return matcher.group(1);
-		}
-
-		return null;
-	}
-
 	private boolean _isCommentLine(String line) {
 		if (line.startsWith(StringPool.POUND) ||
 			line.startsWith(StringPool.DOUBLE_SLASH)) {
@@ -148,9 +127,9 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 		return false;
 	}
 
-	private boolean _setSortKeys(List<Entry> entries, boolean list) {
+	private boolean _setSortKeys(List<Entry> entries) {
 		for (Entry entry : entries) {
-			String sortKey = _getSortKey(entry, list);
+			String sortKey = _getKey(entry.getFirstLine());
 
 			if (sortKey == null) {
 				return false;
@@ -222,24 +201,13 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 			String trimmedLine = StringUtil.trim(
 				TFSourceUtil.removeComment(lines[i]));
 
-			boolean list = false;
-
-			if (trimmedLine.endsWith(StringPool.OPEN_BRACKET)) {
-				if (!ArrayUtil.contains(
-						_SORTABLE_LIST_KEYS, _getKey(trimmedLine))) {
-
-					continue;
-				}
-
-				list = true;
-			}
-			else if (!trimmedLine.endsWith(StringPool.OPEN_CURLY_BRACE)) {
+			if (!trimmedLine.endsWith(StringPool.OPEN_CURLY_BRACE)) {
 				continue;
 			}
 
 			List<Entry> entries = _getEntries(lines, i);
 
-			if ((entries == null) || !_setSortKeys(entries, list)) {
+			if ((entries == null) || !_setSortKeys(entries)) {
 				continue;
 			}
 
@@ -299,14 +267,10 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 		_sort(lines, entries);
 	}
 
-	private static final String[] _SORTABLE_LIST_KEYS = {"Action", "NotAction"};
-
 	private static final Pattern _blockHeaderPattern = Pattern.compile(
 		"([\\w-]+(\\s+\"[^\"]*\")*)\\s*\\{");
 	private static final Pattern _keyPattern = Pattern.compile(
 		"^(\"[^\"]+\"|[\\w.-]+)\\s*[:=](?!=)");
-	private static final Pattern _stringValuePattern = Pattern.compile(
-		"\"([^\"]*)\",?");
 	private static final Pattern _topLevelBlockPattern = Pattern.compile(
 		"\\w.*\\{");
 
