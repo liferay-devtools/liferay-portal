@@ -73,7 +73,7 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 				continue;
 			}
 
-			String sortKey = _getKey(trimmedLine);
+			String sortKey = _getSortKey(trimmedLine);
 
 			if (sortKey == null) {
 				return null;
@@ -105,7 +105,7 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 		return entries;
 	}
 
-	private String _getKey(String trimmedLine) {
+	private String _getSortKey(String trimmedLine) {
 		Matcher matcher = _keyPattern.matcher(trimmedLine);
 
 		if (matcher.find()) {
@@ -203,7 +203,7 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 				return;
 			}
 
-			String sortKey = _getKey(lines[i]);
+			String sortKey = _getSortKey(lines[i]);
 
 			if (sortKey == null) {
 				return;
