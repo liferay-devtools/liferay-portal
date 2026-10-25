@@ -56,13 +56,31 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 
 		List<Entry> entries = new ArrayList<>();
 
+		int commentStartLineIndex = -1;
 		int group = 0;
 
 		for (int i = openLineIndex + 1; i < closeLineIndex; i++) {
-			if (Validator.isNull(StringUtil.trim(lines[i]))) {
+			String trimmedLine = StringUtil.trim(lines[i]);
+
+			if (Validator.isNull(trimmedLine)) {
+				commentStartLineIndex = -1;
 				group++;
 
 				continue;
+			}
+
+			if (_isCommentLine(trimmedLine)) {
+				if (commentStartLineIndex == -1) {
+					commentStartLineIndex = i;
+				}
+
+				continue;
+			}
+
+			String sortKey = _getKey(trimmedLine);
+
+			if (sortKey == null) {
+				return null;
 			}
 
 			int endLineIndex = TFSourceUtil.getBlockEndLineIndex(lines, i, 0);
@@ -71,7 +89,19 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 				return null;
 			}
 
-			entries.add(new Entry(group, lines, i, endLineIndex));
+			int startLineIndex = i;
+
+			if (commentStartLineIndex != -1) {
+				startLineIndex = commentStartLineIndex;
+			}
+
+			Entry entry = new Entry(group, lines, startLineIndex, endLineIndex);
+
+			entry.setSortKey(sortKey);
+
+			entries.add(entry);
+
+			commentStartLineIndex = -1;
 
 			i = endLineIndex;
 		}
@@ -125,20 +155,6 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 		}
 
 		return false;
-	}
-
-	private boolean _setSortKeys(List<Entry> entries) {
-		for (Entry entry : entries) {
-			String sortKey = _getKey(entry.getFirstLine());
-
-			if (sortKey == null) {
-				return false;
-			}
-
-			entry.setSortKey(sortKey);
-		}
-
-		return true;
 	}
 
 	private void _sort(String[] lines, List<Entry> entries) {
@@ -207,7 +223,7 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 
 			List<Entry> entries = _getEntries(lines, i);
 
-			if ((entries == null) || !_setSortKeys(entries)) {
+			if (entries == null) {
 				continue;
 			}
 
@@ -289,10 +305,6 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 
 		public int getEndLineIndex() {
 			return _startLineIndex + _lines.size() - 1;
-		}
-
-		public String getFirstLine() {
-			return StringUtil.trim(_lines.get(0));
 		}
 
 		public int getGroup() {
