@@ -8,6 +8,7 @@ package com.liferay.source.formatter.check;
 import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.source.formatter.check.util.TFSourceUtil;
 
 import java.util.regex.Matcher;
@@ -53,22 +54,38 @@ public class TFStylingCheck extends BaseFileCheck {
 	}
 
 	private String _quoteBlockLabels(String line) {
-		Matcher matcher = _blockHeaderPattern.matcher(line);
+		String trimmedLine = StringUtil.trim(line);
 
-		if (!matcher.matches()) {
+		if (!trimmedLine.endsWith(StringPool.OPEN_CURLY_BRACE)) {
+			return line;
+		}
+
+		trimmedLine = StringUtil.trim(
+			trimmedLine.substring(0, trimmedLine.length() - 1));
+
+		String[] parts = trimmedLine.split("\\s+");
+
+		Matcher matcher = _blockTypePattern.matcher(parts[0]);
+
+		if ((parts.length == 1) || (parts.length > 3) || !matcher.matches()) {
 			return line;
 		}
 
 		StringBundler sb = new StringBundler();
 
-		sb.append(matcher.group(1));
+		sb.append(line.substring(0, line.indexOf(trimmedLine)));
+		sb.append(parts[0]);
 
 		boolean quoted = false;
 
-		Matcher labelMatcher = _labelPattern.matcher(matcher.group(2));
+		for (int i = 1; i < parts.length; i++) {
+			String label = parts[i];
 
-		while (labelMatcher.find()) {
-			String label = labelMatcher.group();
+			matcher = _labelPattern.matcher(label);
+
+			if (!matcher.matches()) {
+				return line;
+			}
 
 			sb.append(CharPool.SPACE);
 
@@ -94,8 +111,7 @@ public class TFStylingCheck extends BaseFileCheck {
 		return sb.toString();
 	}
 
-	private static final Pattern _blockHeaderPattern = Pattern.compile(
-		"(\\s*[\\w-]+)((\\s+(\"[^\"]*\"|[\\w-]+))+)\\s*\\{");
+	private static final Pattern _blockTypePattern = Pattern.compile("[\\w-]+");
 	private static final Pattern _labelPattern = Pattern.compile(
 		"\"[^\"]*\"|[\\w-]+");
 
