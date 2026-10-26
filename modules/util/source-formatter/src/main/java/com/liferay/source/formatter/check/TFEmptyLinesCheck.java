@@ -23,9 +23,9 @@ public class TFEmptyLinesCheck extends BaseFileCheck {
 	protected String doProcess(
 		String fileName, String absolutePath, String content) {
 
-		String[] lines = content.split("\n", -1);
-
 		List<String> newLines = new ArrayList<>();
+
+		String[] lines = content.split("\n", -1);
 
 		for (int i = 0; i < lines.length; i++) {
 			String heredocMarker = TFSourceUtil.getHeredocMarker(lines[i]);

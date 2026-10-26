@@ -24,12 +24,12 @@ public class TFIndentationCheck extends BaseFileCheck {
 	protected String doProcess(
 		String fileName, String absolutePath, String content) {
 
-		String[] lines = content.split("\n", -1);
-
 		boolean blockComment = false;
 		String commentIndent = null;
 		String newCommentIndent = null;
 		List<Integer> openIndentLevels = new ArrayList<>();
+
+		String[] lines = content.split("\n", -1);
 
 		for (int i = 0; i < lines.length; i++) {
 			String trimmedLine = StringUtil.trim(lines[i]);
