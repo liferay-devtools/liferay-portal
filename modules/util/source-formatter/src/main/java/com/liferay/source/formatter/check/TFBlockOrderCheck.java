@@ -113,7 +113,7 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 				return null;
 			}
 
-			if (_isCommentLine(trimmedLine)) {
+			if (_isCommentLine(lines[i])) {
 				if (commentStartLineIndex == -1) {
 					commentStartLineIndex = i;
 				}
@@ -202,7 +202,18 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 	}
 
 	private void _sortNestedEntries(String[] lines) {
+		boolean blockComment = false;
+
 		for (int i = 0; i < lines.length; i++) {
+			boolean previousBlockComment = blockComment;
+
+			blockComment = TFSourceUtil.appendBrackets(
+				lines[i], blockComment, new StringBundler());
+
+			if (previousBlockComment || blockComment) {
+				continue;
+			}
+
 			String heredocMarker = TFSourceUtil.getHeredocMarker(lines[i]);
 
 			if (heredocMarker != null) {
@@ -244,9 +255,7 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 			Matcher matcher = _topLevelBlockPattern.matcher(lines[i]);
 
 			if (!matcher.matches()) {
-				if (_isCommentLine(lines[i]) ||
-					(lines[i].isEmpty() && (i == (lines.length - 1)))) {
-
+				if (_isCommentLine(lines[i])) {
 					continue;
 				}
 
