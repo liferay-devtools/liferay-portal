@@ -170,9 +170,9 @@ public class EmbeddedJSONCheck extends BaseFileCheck {
 				sb.append("\n");
 			}
 
-			String jsonString = sb.toString();
+			String json = sb.toString();
 
-			JSONObject jsonObject = JSONSourceUtil.getJSONObject(jsonString);
+			JSONObject jsonObject = JSONSourceUtil.getJSONObject(json);
 
 			if (jsonObject == null) {
 				i = heredocEndLineIndex;
@@ -182,14 +182,13 @@ public class EmbeddedJSONCheck extends BaseFileCheck {
 
 			String line = lines[i + 1];
 
-			String newJSONString = JSONSourceUtil.fixIndentation(
+			String newJSON = JSONSourceUtil.fixIndentation(
 				jsonObject,
 				line.substring(0, line.indexOf(CharPool.OPEN_CURLY_BRACE)));
 
-			if (!jsonString.equals(newJSONString)) {
+			if (!json.equals(newJSON)) {
 				return StringUtil.replaceFirst(
-					content, jsonString, newJSONString,
-					content.indexOf(lines[i] + "\n"));
+					content, json, newJSON, content.indexOf(lines[i] + "\n"));
 			}
 
 			i = heredocEndLineIndex;

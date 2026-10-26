@@ -38,14 +38,14 @@ public class TFIndentationCheck extends BaseFileCheck {
 				continue;
 			}
 
-			int expectedTabCount = 0;
+			int expectedTabsCount = 0;
 
 			if (!openIndentLevels.isEmpty()) {
-				expectedTabCount = openIndentLevels.get(
+				expectedTabsCount = openIndentLevels.get(
 					openIndentLevels.size() - 1);
 
-				if (_CLOSE_BRACKETS.indexOf(trimmedLine.charAt(0)) == -1) {
-					expectedTabCount++;
+				if (")]}".indexOf(trimmedLine.charAt(0)) == -1) {
+					expectedTabsCount++;
 				}
 			}
 
@@ -53,7 +53,7 @@ public class TFIndentationCheck extends BaseFileCheck {
 				0, lines[i].indexOf(trimmedLine.charAt(0)));
 
 			if (!blockComment) {
-				lines[i] = _getIndentedLine(trimmedLine, expectedTabCount);
+				lines[i] = _getIndentedLine(trimmedLine, expectedTabsCount);
 			}
 			else if (lines[i].startsWith(commentIndent)) {
 				lines[i] =
@@ -64,9 +64,9 @@ public class TFIndentationCheck extends BaseFileCheck {
 				lines[i] = newCommentIndent + StringUtil.trimLeading(lines[i]);
 			}
 
-			StringBundler sb = new StringBundler();
-
 			boolean previousBlockComment = blockComment;
+
+			StringBundler sb = new StringBundler();
 
 			blockComment = TFSourceUtil.appendBrackets(
 				trimmedLine, blockComment, sb);
@@ -74,14 +74,17 @@ public class TFIndentationCheck extends BaseFileCheck {
 			if (!previousBlockComment && blockComment) {
 				commentIndent = indent;
 				newCommentIndent = _getIndentedLine(
-					StringPool.BLANK, expectedTabCount);
+					StringPool.BLANK, expectedTabsCount);
 			}
 
 			String brackets = sb.toString();
 
 			for (char c : brackets.toCharArray()) {
-				if (_OPEN_BRACKETS.indexOf(c) != -1) {
-					openIndentLevels.add(expectedTabCount);
+				if ((c == CharPool.OPEN_BRACKET) ||
+					(c == CharPool.OPEN_CURLY_BRACE) ||
+					(c == CharPool.OPEN_PARENTHESIS)) {
+
+					openIndentLevels.add(expectedTabsCount);
 				}
 				else if (openIndentLevels.isEmpty()) {
 					return content;
@@ -120,10 +123,10 @@ public class TFIndentationCheck extends BaseFileCheck {
 		return sb.toString();
 	}
 
-	private String _getIndentedLine(String trimmedLine, int expectedTabCount) {
-		StringBundler sb = new StringBundler(expectedTabCount + 1);
+	private String _getIndentedLine(String trimmedLine, int expectedTabsCount) {
+		StringBundler sb = new StringBundler(expectedTabsCount + 1);
 
-		for (int i = 0; i < expectedTabCount; i++) {
+		for (int i = 0; i < expectedTabsCount; i++) {
 			sb.append(CharPool.TAB);
 		}
 
@@ -131,9 +134,5 @@ public class TFIndentationCheck extends BaseFileCheck {
 
 		return sb.toString();
 	}
-
-	private static final String _CLOSE_BRACKETS = ")]}";
-
-	private static final String _OPEN_BRACKETS = "([{";
 
 }

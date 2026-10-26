@@ -57,8 +57,12 @@ public class TFSourceUtil {
 				continue;
 			}
 
-			if ((_CLOSE_BRACKETS.indexOf(c) != -1) ||
-				(_OPEN_BRACKETS.indexOf(c) != -1)) {
+			if ((c == CharPool.CLOSE_BRACKET) ||
+				(c == CharPool.CLOSE_CURLY_BRACE) ||
+				(c == CharPool.CLOSE_PARENTHESIS) ||
+				(c == CharPool.OPEN_BRACKET) ||
+				(c == CharPool.OPEN_CURLY_BRACE) ||
+				(c == CharPool.OPEN_PARENTHESIS)) {
 
 				sb.append(c);
 			}
@@ -178,10 +182,6 @@ public class TFSourceUtil {
 
 		return index;
 	}
-
-	private static final String _CLOSE_BRACKETS = ")]}";
-
-	private static final String _OPEN_BRACKETS = "([{";
 
 	private static final Pattern _heredocPattern = Pattern.compile(
 		"<<-?([A-Za-z_][\\w-]*)$");

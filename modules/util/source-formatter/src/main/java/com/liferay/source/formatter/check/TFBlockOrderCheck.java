@@ -60,7 +60,10 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 			String brackets = sb.toString();
 
 			for (char c : brackets.toCharArray()) {
-				if (_OPEN_BRACKETS.indexOf(c) != -1) {
+				if ((c == CharPool.OPEN_BRACKET) ||
+					(c == CharPool.OPEN_CURLY_BRACE) ||
+					(c == CharPool.OPEN_PARENTHESIS)) {
+
 					level++;
 				}
 				else {
@@ -295,8 +298,6 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 
 		_sort(lines, entries);
 	}
-
-	private static final String _OPEN_BRACKETS = "([{";
 
 	private static final Pattern _blockHeaderPattern = Pattern.compile(
 		"([\\w-]+(\\s+\"[^\"]*\")*)\\s*\\{");

@@ -21,7 +21,6 @@ public class TFEmptyLinesCheck extends BaseFileCheck {
 		String fileName, String absolutePath, String content) {
 
 		StringBundler sb = new StringBundler();
-
 		String[] lines = content.split("\n", -1);
 
 		for (int i = 0; i < lines.length; i++) {
