@@ -46,9 +46,57 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 		return sb.toString();
 	}
 
+	private int _getBlockEndLineIndex(
+		String[] lines, int startLineIndex, int level) {
+
+		boolean blockComment = false;
+
+		for (int i = startLineIndex; i < lines.length; i++) {
+			StringBundler sb = new StringBundler();
+
+			blockComment = TFSourceUtil.appendBrackets(
+				lines[i], blockComment, sb);
+
+			String brackets = sb.toString();
+
+			for (char c : brackets.toCharArray()) {
+				if (_OPEN_BRACKETS.indexOf(c) != -1) {
+					level++;
+				}
+				else {
+					level--;
+				}
+
+				if (level < 0) {
+					return -1;
+				}
+			}
+
+			if (blockComment) {
+				continue;
+			}
+
+			String heredocMarker = TFSourceUtil.getHeredocMarker(lines[i]);
+
+			if (heredocMarker != null) {
+				i = TFSourceUtil.getHeredocEndLineIndex(
+					lines, i, heredocMarker);
+
+				if (i == -1) {
+					return -1;
+				}
+			}
+
+			if (level == 0) {
+				return i;
+			}
+		}
+
+		return -1;
+	}
+
 	private List<Entry> _getEntries(String[] lines, int openLineIndex) {
-		int closeLineIndex = TFSourceUtil.getBlockEndLineIndex(
-			lines, openLineIndex + 1, 1);
+		int closeLineIndex = _getBlockEndLineIndex(lines, openLineIndex + 1, 1);
 
 		if (closeLineIndex == -1) {
 			return null;
@@ -79,7 +127,7 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 				return null;
 			}
 
-			int endLineIndex = TFSourceUtil.getBlockEndLineIndex(lines, i, 0);
+			int endLineIndex = _getBlockEndLineIndex(lines, i, 0);
 
 			if ((endLineIndex == -1) || (endLineIndex >= closeLineIndex)) {
 				return null;
@@ -211,7 +259,7 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 				return;
 			}
 
-			int endLineIndex = TFSourceUtil.getBlockEndLineIndex(lines, i, 0);
+			int endLineIndex = _getBlockEndLineIndex(lines, i, 0);
 
 			if (endLineIndex == -1) {
 				return;
@@ -238,6 +286,8 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 
 		_sort(lines, entries);
 	}
+
+	private static final String _OPEN_BRACKETS = "([{";
 
 	private static final Pattern _blockHeaderPattern = Pattern.compile(
 		"([\\w-]+(\\s+\"[^\"]*\")*)\\s*\\{");

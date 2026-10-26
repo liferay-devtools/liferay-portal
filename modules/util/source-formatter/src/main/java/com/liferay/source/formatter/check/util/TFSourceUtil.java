@@ -36,7 +36,7 @@ public class TFSourceUtil {
 			char c = line.charAt(i);
 
 			if (c == CharPool.QUOTE) {
-				i = getStringEndIndex(line, i + 1);
+				i = _getStringEndIndex(line, i + 1);
 
 				continue;
 			}
@@ -69,53 +69,6 @@ public class TFSourceUtil {
 		return false;
 	}
 
-	public static int getBlockEndLineIndex(
-		String[] lines, int startLineIndex, int level) {
-
-		boolean blockComment = false;
-
-		for (int i = startLineIndex; i < lines.length; i++) {
-			StringBundler sb = new StringBundler();
-
-			blockComment = appendBrackets(lines[i], blockComment, sb);
-
-			String brackets = sb.toString();
-
-			for (char c : brackets.toCharArray()) {
-				if (_OPEN_BRACKETS.indexOf(c) != -1) {
-					level++;
-				}
-				else {
-					level--;
-				}
-
-				if (level < 0) {
-					return -1;
-				}
-			}
-
-			if (blockComment) {
-				continue;
-			}
-
-			String heredocMarker = getHeredocMarker(lines[i]);
-
-			if (heredocMarker != null) {
-				i = getHeredocEndLineIndex(lines, i, heredocMarker);
-
-				if (i == -1) {
-					return -1;
-				}
-			}
-
-			if (level == 0) {
-				return i;
-			}
-		}
-
-		return -1;
-	}
-
 	public static int getHeredocEndLineIndex(
 		String[] lines, int lineIndex, String heredocMarker) {
 
@@ -139,7 +92,31 @@ public class TFSourceUtil {
 		return null;
 	}
 
-	public static int getStringEndIndex(String line, int index) {
+	public static String removeComment(String line) {
+		int i = 0;
+
+		while (i < line.length()) {
+			char c = line.charAt(i);
+
+			if (c == CharPool.QUOTE) {
+				i = _getStringEndIndex(line, i + 1);
+
+				continue;
+			}
+
+			if ((c == CharPool.POUND) || line.startsWith("//", i) ||
+				line.startsWith("/*", i)) {
+
+				return line.substring(0, i);
+			}
+
+			i++;
+		}
+
+		return line;
+	}
+
+	private static int _getStringEndIndex(String line, int index) {
 		while (index < line.length()) {
 			char c = line.charAt(index);
 
@@ -173,30 +150,6 @@ public class TFSourceUtil {
 		return Math.min(index, line.length());
 	}
 
-	public static String removeComment(String line) {
-		int i = 0;
-
-		while (i < line.length()) {
-			char c = line.charAt(i);
-
-			if (c == CharPool.QUOTE) {
-				i = getStringEndIndex(line, i + 1);
-
-				continue;
-			}
-
-			if ((c == CharPool.POUND) || line.startsWith("//", i) ||
-				line.startsWith("/*", i)) {
-
-				return line.substring(0, i);
-			}
-
-			i++;
-		}
-
-		return line;
-	}
-
 	private static int _getTemplateEndIndex(String line, int index) {
 		int level = 0;
 
@@ -204,7 +157,7 @@ public class TFSourceUtil {
 			char c = line.charAt(index);
 
 			if (c == CharPool.QUOTE) {
-				index = getStringEndIndex(line, index + 1);
+				index = _getStringEndIndex(line, index + 1);
 
 				continue;
 			}
