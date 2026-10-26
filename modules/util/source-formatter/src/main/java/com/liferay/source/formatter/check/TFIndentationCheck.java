@@ -7,6 +7,7 @@ package com.liferay.source.formatter.check;
 
 import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.source.formatter.check.util.TFSourceUtil;
@@ -26,6 +27,8 @@ public class TFIndentationCheck extends BaseFileCheck {
 		String[] lines = content.split("\n", -1);
 
 		boolean blockComment = false;
+		String commentIndent = null;
+		String newCommentIndent = null;
 		List<Integer> openIndentLevels = new ArrayList<>();
 
 		for (int i = 0; i < lines.length; i++) {
@@ -46,14 +49,33 @@ public class TFIndentationCheck extends BaseFileCheck {
 				}
 			}
 
+			String indent = lines[i].substring(
+				0, lines[i].indexOf(trimmedLine.charAt(0)));
+
 			if (!blockComment) {
 				lines[i] = _getIndentedLine(trimmedLine, expectedTabCount);
+			}
+			else if (lines[i].startsWith(commentIndent)) {
+				lines[i] =
+					newCommentIndent +
+						lines[i].substring(commentIndent.length());
+			}
+			else {
+				lines[i] = newCommentIndent + StringUtil.trimLeading(lines[i]);
 			}
 
 			StringBundler sb = new StringBundler();
 
+			boolean previousBlockComment = blockComment;
+
 			blockComment = TFSourceUtil.appendBrackets(
 				trimmedLine, blockComment, sb);
+
+			if (!previousBlockComment && blockComment) {
+				commentIndent = indent;
+				newCommentIndent = _getIndentedLine(
+					StringPool.BLANK, expectedTabCount);
+			}
 
 			String brackets = sb.toString();
 
