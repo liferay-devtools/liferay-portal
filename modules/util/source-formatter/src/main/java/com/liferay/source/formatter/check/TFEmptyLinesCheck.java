@@ -7,6 +7,7 @@ package com.liferay.source.formatter.check;
 
 import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.source.formatter.check.util.TFSourceUtil;
@@ -45,14 +46,16 @@ public class TFEmptyLinesCheck extends BaseFileCheck {
 				continue;
 			}
 
-			if (Validator.isNull(StringUtil.trim(lines[i])) &&
-				(i < (lines.length - 1))) {
-
+			if (Validator.isNull(StringUtil.trim(lines[i]))) {
 				continue;
 			}
 
 			sb.append(lines[i]);
 			sb.append(CharPool.NEW_LINE);
+		}
+
+		if (sb.index() == 0) {
+			return StringPool.BLANK;
 		}
 
 		sb.setIndex(sb.index() - 1);
