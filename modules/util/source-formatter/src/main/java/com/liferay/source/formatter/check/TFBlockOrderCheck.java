@@ -99,9 +99,10 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 	}
 
 	private List<Entry> _getEntries(String[] lines, int openLineIndex) {
-		int closeLineIndex = _getBlockEndLineIndex(lines, openLineIndex + 1, 1);
+		int blockEndLineIndex = _getBlockEndLineIndex(
+			lines, openLineIndex + 1, 1);
 
-		if (closeLineIndex == -1) {
+		if (blockEndLineIndex == -1) {
 			return null;
 		}
 
@@ -109,7 +110,7 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 
 		int commentStartLineIndex = -1;
 
-		for (int i = openLineIndex + 1; i < closeLineIndex; i++) {
+		for (int i = openLineIndex + 1; i < blockEndLineIndex; i++) {
 			String trimmedLine = StringUtil.trim(lines[i]);
 
 			if (Validator.isBlank(trimmedLine)) {
@@ -132,7 +133,7 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 
 			int endLineIndex = _getBlockEndLineIndex(lines, i, 0);
 
-			if ((endLineIndex == -1) || (endLineIndex >= closeLineIndex)) {
+			if ((endLineIndex == -1) || (endLineIndex >= blockEndLineIndex)) {
 				return null;
 			}
 
