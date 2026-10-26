@@ -1912,6 +1912,10 @@
 		</check>
 	</source-processor>
 	<source-processor name="TFSourceProcessor">
+		<check name="EmbeddedJSONCheck">
+			<category name="Styling" />
+			<description name="Ensures consistent formatting for embedded JSON." />
+		</check>
 		<check name="TFBlockOrderCheck">
 			<category name="Styling" />
 			<description name="Checks the order of blocks and attributes in `.tf` file." />
