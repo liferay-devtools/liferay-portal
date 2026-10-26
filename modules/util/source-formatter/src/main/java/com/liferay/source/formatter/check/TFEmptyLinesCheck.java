@@ -11,9 +11,6 @@ import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.source.formatter.check.util.TFSourceUtil;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * @author Alan Huang
  */
@@ -23,9 +20,9 @@ public class TFEmptyLinesCheck extends BaseFileCheck {
 	protected String doProcess(
 		String fileName, String absolutePath, String content) {
 
-		List<String> newLines = new ArrayList<>();
-
 		String[] lines = content.split("\n", -1);
+
+		StringBundler sb = new StringBundler(lines.length * 2);
 
 		for (int i = 0; i < lines.length; i++) {
 			String heredocMarker = TFSourceUtil.getHeredocMarker(lines[i]);
@@ -39,7 +36,8 @@ public class TFEmptyLinesCheck extends BaseFileCheck {
 				}
 
 				for (int j = i; j <= heredocEndLineIndex; j++) {
-					newLines.add(lines[j]);
+					sb.append(lines[j]);
+					sb.append(CharPool.NEW_LINE);
 				}
 
 				i = heredocEndLineIndex;
@@ -53,13 +51,7 @@ public class TFEmptyLinesCheck extends BaseFileCheck {
 				continue;
 			}
 
-			newLines.add(lines[i]);
-		}
-
-		StringBundler sb = new StringBundler(newLines.size() * 2);
-
-		for (String line : newLines) {
-			sb.append(line);
+			sb.append(lines[i]);
 			sb.append(CharPool.NEW_LINE);
 		}
 
