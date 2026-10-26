@@ -7,7 +7,6 @@ package com.liferay.source.formatter.check;
 
 import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringBundler;
-import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.source.formatter.check.util.TFSourceUtil;
@@ -21,9 +20,9 @@ public class TFEmptyLinesCheck extends BaseFileCheck {
 	protected String doProcess(
 		String fileName, String absolutePath, String content) {
 
-		String[] lines = content.split("\n", -1);
+		StringBundler sb = new StringBundler();
 
-		StringBundler sb = new StringBundler(lines.length * 2);
+		String[] lines = content.split("\n", -1);
 
 		for (int i = 0; i < lines.length; i++) {
 			String heredocMarker = TFSourceUtil.getHeredocMarker(lines[i]);
@@ -46,7 +45,7 @@ public class TFEmptyLinesCheck extends BaseFileCheck {
 				continue;
 			}
 
-			if (Validator.isNull(StringUtil.trim(lines[i]))) {
+			if (Validator.isBlank(StringUtil.trim(lines[i]))) {
 				continue;
 			}
 
@@ -54,11 +53,9 @@ public class TFEmptyLinesCheck extends BaseFileCheck {
 			sb.append(CharPool.NEW_LINE);
 		}
 
-		if (sb.index() == 0) {
-			return StringPool.BLANK;
+		if (sb.index() > 0) {
+			sb.setIndex(sb.index() - 1);
 		}
-
-		sb.setIndex(sb.index() - 1);
 
 		return sb.toString();
 	}

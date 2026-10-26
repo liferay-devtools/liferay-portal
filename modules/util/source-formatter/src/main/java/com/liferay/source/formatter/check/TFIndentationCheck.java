@@ -34,7 +34,7 @@ public class TFIndentationCheck extends BaseFileCheck {
 		for (int i = 0; i < lines.length; i++) {
 			String trimmedLine = StringUtil.trim(lines[i]);
 
-			if (Validator.isNull(trimmedLine)) {
+			if (Validator.isBlank(trimmedLine)) {
 				continue;
 			}
 

@@ -61,7 +61,7 @@ public class TFBlockOrderCheck extends BaseFileCheck {
 		for (int i = openLineIndex + 1; i < closeLineIndex; i++) {
 			String trimmedLine = StringUtil.trim(lines[i]);
 
-			if (Validator.isNull(trimmedLine)) {
+			if (Validator.isBlank(trimmedLine)) {
 				return null;
 			}
 
