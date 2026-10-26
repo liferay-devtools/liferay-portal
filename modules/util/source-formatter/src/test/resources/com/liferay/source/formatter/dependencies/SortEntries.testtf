@@ -65,4 +65,3 @@ locals {
 		Environment="prod"
 	}
 }
-

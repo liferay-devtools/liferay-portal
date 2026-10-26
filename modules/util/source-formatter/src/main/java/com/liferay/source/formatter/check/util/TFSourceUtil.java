@@ -20,39 +20,39 @@ public class TFSourceUtil {
 	public static boolean appendBrackets(
 		String line, boolean blockComment, StringBundler sb) {
 
-		int i = 0;
+		int index = 0;
 
 		if (blockComment) {
-			i = line.indexOf("*/");
+			index = line.indexOf("*/");
 
-			if (i == -1) {
+			if (index == -1) {
 				return true;
 			}
 
-			i += 2;
+			index += 2;
 		}
 
-		while (i < line.length()) {
-			char c = line.charAt(i);
+		while (index < line.length()) {
+			char c = line.charAt(index);
 
 			if (c == CharPool.QUOTE) {
-				i = _getStringEndIndex(line, i + 1);
+				index = _getStringEndIndex(line, index + 1);
 
 				continue;
 			}
 
-			if ((c == CharPool.POUND) || line.startsWith("//", i)) {
+			if ((c == CharPool.POUND) || line.startsWith("//", index)) {
 				return false;
 			}
 
-			if (line.startsWith("/*", i)) {
-				i = line.indexOf("*/", i + 2);
+			if (line.startsWith("/*", index)) {
+				index = line.indexOf("*/", index + 2);
 
-				if (i == -1) {
+				if (index == -1) {
 					return true;
 				}
 
-				i += 2;
+				index += 2;
 
 				continue;
 			}
@@ -67,7 +67,7 @@ public class TFSourceUtil {
 				sb.append(c);
 			}
 
-			i++;
+			index++;
 		}
 
 		return false;
