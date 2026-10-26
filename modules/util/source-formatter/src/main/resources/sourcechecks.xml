@@ -1916,6 +1916,10 @@
 			<category name="Styling" />
 			<description name="Checks the order of blocks and attributes in `.tf` file." />
 		</check>
+		<check name="TFEmptyLinesCheck">
+			<category name="Styling" />
+			<description name="Finds unnecessary empty lines." />
+		</check>
 		<check name="TFIndentationCheck">
 			<category name="Styling" />
 			<description name="Checks the indentation in `.tf` files." />
