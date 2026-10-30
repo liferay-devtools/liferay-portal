@@ -3,11 +3,14 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
+export {ApiHelpers} from './ApiHelpers';
+export type {RequestOptions, TDataApiHelpersData} from './ApiHelpers';
 export {FeatureFlagApiHelper} from './FeatureFlagApiHelper';
 export {clearAuthToken, getHeader, readAuthToken} from './authToken';
 export type {ContentType} from './authToken';
 export {backendPageTest} from './fixtures/backendPageTest';
 export type {BackendPage} from './fixtures/backendPageTest';
+export {dataApiHelpersTest} from './fixtures/dataApiHelpersTest';
 export {featureFlagsTest} from './fixtures/featureFlagsTest';
 export type {
 	FeatureFlag,
