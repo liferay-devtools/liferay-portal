@@ -26,3 +26,12 @@ export {
 	userData,
 } from './login';
 export type {LoginScreenName} from './login';
+export {clickAndExpectToBeHidden} from './utils/clickAndExpectToBeHidden';
+export {clickAndExpectToBeVisible} from './utils/clickAndExpectToBeVisible';
+export {getRandomInt} from './utils/getRandomInt';
+export {default as getRandomString} from './utils/getRandomString';
+export {hoverAndExpectToBeVisible} from './utils/hoverAndExpectToBeVisible';
+export {trackPendingApiRequests} from './utils/trackPendingApiRequests';
+export {waitForAlert} from './utils/waitForAlert';
+export {waitForPageToBeLoaded} from './utils/waitForPageToBeLoaded';
+export {waitForSPAToBeLoaded} from './utils/waitForSPAToBeLoaded';
