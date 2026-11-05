@@ -3,6 +3,8 @@ apply plugin: "com.liferay.maven.plugin.builder"
 sourceCompatibility = "1.8"
 targetCompatibility = "1.8"
 
+apply from: "../../build-portal-tool.gradle"
+
 buildPluginDescriptor {
 	ext {
 		autoClean = false
@@ -18,11 +20,8 @@ copyCSS {
 }
 
 dependencies {
+	api group: "com.liferay", name: "com.liferay.portal.tools.java.parser", version: "1.0.59"
 	api group: "com.liferay", name: "org.freemarker", transitive: false, version: "2.3.33.LIFERAY-PATCHED-4"
-
-	api(group: "com.puppycrawl.tools", name: "checkstyle", version: "10.18.0") {
-		exclude group: "org.apache.maven.doxia"
-	}
 
 	api group: "commons-io", name: "commons-io", version: "2.19.0"
 	compileInclude group: "com.beust", name: "jcommander", version: "1.82"
@@ -31,7 +30,6 @@ dependencies {
 	compileOnly group: "com.liferay", name: "com.liferay.petra.io", version: "5.0.5"
 	compileOnly group: "com.liferay", name: "com.liferay.petra.lang", version: "1.0.0"
 	compileOnly group: "com.liferay", name: "com.liferay.petra.string", version: "5.0.1"
-	compileOnly group: "com.liferay", name: "com.liferay.portal.tools.java.parser", version: "1.0.59"
 	compileOnly group: "com.liferay.portal", name: "com.liferay.portal.impl"
 	compileOnly group: "com.liferay.portal", name: "com.liferay.portal.kernel"
 	compileOnly group: "com.liferay", name: "jakarta.ws.rs", version: "3.1.0.LIFERAY-PATCHED-1"
@@ -48,18 +46,6 @@ dependencies {
 			because "Java 8 runtime support is required"
 		}
 	}
-}
-
-deployDependencies {
-	from (configurations.compileClasspath) {
-		include "antlr4-runtime-*.jar"
-		include "checkstyle-*.jar"
-		include "org.freemarker-*.jar"
-	}
-
-	rename(/antlr4-runtime-(.+)\.jar/, "antlr4-runtime" + renameSuffix)
-	rename(/checkstyle-(.+)\.jar/, "checkstyle" + renameSuffix)
-	rename(/org.freemarker-(.+)\.jar/, "org.freemarker" + renameSuffix)
 }
 
 liferay {
