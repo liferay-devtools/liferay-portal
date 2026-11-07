@@ -1,27 +1,28 @@
 /**
- * SPDX-FileCopyrightText: (c) 2000 Liferay, Inc. https://liferay.com
+ * SPDX-FileCopyrightText: (c) 2026 Liferay, Inc. https://liferay.com
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
-import {
-	ObjectDefinition,
-	ObjectDefinitionAPI,
-	ObjectDefinitionSetting,
-	ObjectField,
-	ObjectFolder,
-	ObjectFolderAPI,
-	ObjectRelationship,
-	ObjectRelationshipAPI,
-} from '@liferay/object-admin-rest-client-js/v1_0';
 import {expect} from '@playwright/test';
 
-import {getRandomInt} from '../utils/getRandomInt';
-import {ApiHelpers} from './ApiHelpers';
+import {BaseApiHelpers} from './ApiHelpers';
+import {getRandomInt} from './utils/getRandomInt';
+
+type ObjectDefinition = {[key: string]: any};
+
+type ObjectDefinitionSetting = {[key: string]: any};
+
+type ObjectField = {[key: string]: any};
+
+type ObjectFolder = {[key: string]: any};
+
+type ObjectRelationship = {[key: string]: any};
+
 export class ObjectAdminApiHelper {
-	readonly apiHelpers: ApiHelpers;
+	readonly apiHelpers: BaseApiHelpers;
 	readonly basePath: string;
 
-	constructor(apiHelpers: ApiHelpers) {
+	constructor(apiHelpers: BaseApiHelpers) {
 		this.apiHelpers = apiHelpers;
 		this.basePath = 'object-admin/v1.0';
 	}
@@ -61,12 +62,9 @@ export class ObjectAdminApiHelper {
 		relationship: ObjectRelationship,
 		edge: boolean
 	) {
-		const objectRelationshipAPIClient =
-			await this.apiHelpers.buildRestClient(ObjectRelationshipAPI);
-
-		await objectRelationshipAPIClient.putObjectRelationship(
-			relationship.id!,
-			{...relationship, edge}
+		await this.apiHelpers.put(
+			`${this.apiHelpers.baseUrl}${this.basePath}/object-relationships/${relationship.id}`,
+			{data: {...relationship, edge}, failOnStatusCode: true}
 		);
 	}
 
@@ -74,13 +72,10 @@ export class ObjectAdminApiHelper {
 		parent: ObjectDefinition,
 		child: ObjectDefinition
 	): Promise<ObjectRelationship> {
-		const objectRelationshipAPIClient =
-			await this.apiHelpers.buildRestClient(ObjectRelationshipAPI);
-
-		const {body} =
-			await objectRelationshipAPIClient.postObjectDefinitionByExternalReferenceCodeObjectRelationship(
-				parent.externalReferenceCode!,
-				{
+		return this.apiHelpers.post(
+			`${this.apiHelpers.baseUrl}${this.basePath}/object-definitions/by-external-reference-code/${parent.externalReferenceCode}/object-relationships`,
+			{
+				data: {
 					edge: true,
 					label: {en_US: 'inheritanceRelationship' + getRandomInt()},
 					name: 'rel' + getRandomInt(),
@@ -92,10 +87,10 @@ export class ObjectAdminApiHelper {
 					objectDefinitionId2: child.id,
 					objectDefinitionName2: child.name,
 					type: 'oneToMany',
-				}
-			);
-
-		return body;
+				},
+				failOnStatusCode: true,
+			}
+		);
 	}
 
 	async postObjectDefinitionObjectField(
@@ -123,14 +118,10 @@ export class ObjectAdminApiHelper {
 	}: {
 		objectDefinitionId: number;
 	}): Promise<ObjectDefinition> {
-		const objectDefinitionAPIClient =
-			await this.apiHelpers.buildRestClient(ObjectDefinitionAPI);
-
-		return (
-			await objectDefinitionAPIClient.postObjectDefinitionPublish(
-				objectDefinitionId
-			)
-		).body;
+		return this.apiHelpers.post(
+			`${this.apiHelpers.baseUrl}${this.basePath}/object-definitions/${objectDefinitionId}/publish`,
+			{failOnStatusCode: true}
+		);
 	}
 
 	async postRandomObjectDefinition({
@@ -199,30 +190,29 @@ export class ObjectAdminApiHelper {
 				objectFolderExternalReferenceCode;
 		}
 
-		const objectDefinitionAPIClient =
-			await this.apiHelpers.buildRestClient(ObjectDefinitionAPI);
-
-		return (
-			await objectDefinitionAPIClient.postObjectDefinition(requestBody)
-		).body;
+		return this.apiHelpers.post(
+			`${this.apiHelpers.baseUrl}${this.basePath}/object-definitions`,
+			{data: requestBody, failOnStatusCode: true}
+		);
 	}
 
 	async postRandomObjectFolder(): Promise<ObjectFolder> {
 		const objectFolderExternalReferenceCode =
 			'objectFolder' + getRandomInt();
 
-		const objectFolderAPIClient =
-			await this.apiHelpers.buildRestClient(ObjectFolderAPI);
-
-		return (
-			await objectFolderAPIClient.postObjectFolder({
-				externalReferenceCode: objectFolderExternalReferenceCode,
-				label: {
-					en_US: objectFolderExternalReferenceCode,
+		return this.apiHelpers.post(
+			`${this.apiHelpers.baseUrl}${this.basePath}/object-folders`,
+			{
+				data: {
+					externalReferenceCode: objectFolderExternalReferenceCode,
+					label: {
+						en_US: objectFolderExternalReferenceCode,
+					},
+					name: objectFolderExternalReferenceCode,
 				},
-				name: objectFolderExternalReferenceCode,
-			})
-		).body;
+				failOnStatusCode: true,
+			}
+		);
 	}
 
 	async waitForObjectDefinition(

@@ -1,15 +1,19 @@
 /**
- * SPDX-FileCopyrightText: (c) 2000 Liferay, Inc. https://liferay.com
+ * SPDX-FileCopyrightText: (c) 2026 Liferay, Inc. https://liferay.com
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
-import {liferayConfig} from '../liferay.config';
-import {ApiHelpers, DataApiHelpers} from './ApiHelpers';
+import {BaseApiHelpers} from './ApiHelpers';
+import {liferayConfig} from './liferayConfig';
+
+type DataObject = {[key: string]: unknown};
+
+type ObjectEntry = any;
 
 export class ObjectEntryApiHelper {
-	readonly apiHelpers: ApiHelpers;
+	readonly apiHelpers: BaseApiHelpers;
 
-	constructor(apiHelpers: ApiHelpers) {
+	constructor(apiHelpers: BaseApiHelpers) {
 		this.apiHelpers = apiHelpers;
 	}
 
@@ -171,13 +175,11 @@ export class ObjectEntryApiHelper {
 			{data}
 		);
 
-		if (this.apiHelpers instanceof DataApiHelpers) {
-			this.apiHelpers.data.push({
-				applicationName,
-				id: objectEntry.id,
-				type: 'objectEntry',
-			});
-		}
+		this.apiHelpers.data.push({
+			applicationName,
+			id: objectEntry.id,
+			type: 'objectEntry',
+		});
 
 		return objectEntry;
 	}
