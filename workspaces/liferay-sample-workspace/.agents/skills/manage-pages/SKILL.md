@@ -496,6 +496,15 @@ Discriminators for fragment placement:
 - Custom fragments: `"fragmentReferenceType": "FragmentItemExternalReference"` with `"externalReferenceCode": "<fragmentEntryKey>"` — the fragment entry key IS the ERC
 - Out of the box fragments: `"fragmentReferenceType": "DefaultFragmentReference"` with `defaultFragmentKey` — inlining not required
 
+#### DXP 2026.Q3+: Design Library Fragments, Master Pages, and Editable Values
+
+Verified on 2026.Q3.8 by building a master page and a home page from Design Library fragments, both rendering for Guest:
+
+- **A fragment from a Design Library** needs `"scope": {"type": "AssetLibrary", "externalReferenceCode": "<library ERC>"}` on its `fragmentReference`. Connect the library to the site first (`putAssetLibraryConnectedSite`).
+- **`putSiteMasterPage` takes the same two spec shape as a page, both specs `Approved`,** with top level `markedAsDefault: true`. The content area is a top level element `{"pageElementDefinition": {"type": "DropZone", "addNewFragmentEntries": true, "allowedFragmentReferences": []}}` between the header and footer `BasicFragment` elements. Put `themeName` and `styleBookItemExternalReference` (scoped like a fragment reference) in each spec's `settings`. A page then needs only `settings.masterPageItemExternalReference: {"externalReferenceCode": "<master ERC>"}`.
+- **Classic still draws its own header and footer around a custom master** (`#banner` with an `h1` holding the site name, and `#footer`), so the page shows two headers and two `h1` elements. Add `"themeSettings": {"lfr-theme:regular:show-header": "false", "lfr-theme:regular:show-footer": "false", "lfr-theme:regular:show-header-search": "false", "lfr-theme:regular:wrap-widget-page-content": "false"}` to the master spec settings. With them, `#banner` and `#footer` were gone from the rendered page.
+- **Editable value type ids are short.** For an image the id is `Direct`, not `DirectFragmentImageValue`, and each locale holds an `ImageValue` object rather than a string: `{"type": "Image", "fragmentImage": {"fragmentImageValue": {"type": "Direct", "value_i18n": {"en-US": {"type": "URL", "url": "/documents/…"}}}}, "fragmentEditableElementValueFragmentLink": {"fragmentLink": {"target": "Self", "value": {"type": "FragmentInlineValue", "value_i18n": {"en-US": "/web/<site>"}}}}}`. When a shape is unclear, read an existing page or master back with `page-specifications?nestedFields=pageExperiences,pageElements&nestedFieldsDepth=10` and copy it.
+
 ### Fragment Management API
 
 Fragment CRUD lives in its own module, `headless-admin-fragment` — not in `headless-admin-site`, which is why it looks absent when you check the page API's spec. It is verified working on 2026.Q2 and absent on 2026.Q1, but it does **not** propagate edits to fragments already placed on a page. See `skills/scaffold-fragment/SKILL.md` → "The Live Fragment API". For programmatic placement on pages, use the discriminators above.
