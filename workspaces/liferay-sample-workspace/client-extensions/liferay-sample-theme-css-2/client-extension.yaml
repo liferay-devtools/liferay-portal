@@ -3,11 +3,15 @@ assemble:
         into: static/img
     -   from: build/buildTheme/images
         into: static/images
+    -   from: build/buildTheme/css
+        hashify: "*.css"
+        include: "*.css"
+        into: static/css
 liferay-sample-theme-css-2:
-    clayRTLURL: css/clay_rtl.css
-    clayURL: css/clay.css
-    mainRTLURL: css/main_rtl.css
-    mainURL: css/main.css
+    clayRTLURL: css/clay_rtl.*.css
+    clayURL: css/clay.*.css
+    mainRTLURL: css/main_rtl.*.css
+    mainURL: css/main.*.css
     name: Liferay Sample Theme CSS 2
     scope: controlPanel
     type: themeCSS

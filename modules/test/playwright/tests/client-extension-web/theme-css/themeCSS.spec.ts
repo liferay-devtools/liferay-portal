@@ -32,47 +32,67 @@ testSample.describe('Samples', () => {
 	const SAMPLES = [
 		{
 			erc: 'LXC:liferay-sample-theme-css-1',
-			mainURL: '/o/liferay-sample-theme-css-1/css/main.css',
+			mainURL:
+				/^\/o\/liferay-sample-theme-css-1\/css\/main\.[0-9a-f]{32,40}\.css$/,
 			name: 'Liferay Sample Theme CSS 1',
 		},
 		{
 			erc: 'LXC:liferay-sample-theme-css-2',
-			mainURL: '/o/liferay-sample-theme-css-2/css/main.css',
+			mainURL:
+				/^\/o\/liferay-sample-theme-css-2\/css\/main\.[0-9a-f]{32,40}\.css$/,
 			name: 'Liferay Sample Theme CSS 2',
 		},
 		{
 			erc: 'LXC:liferay-sample-theme-css-3',
-			mainURL: '/o/liferay-sample-theme-css-3/css/main.css',
+			mainURL:
+				/^\/o\/liferay-sample-theme-css-3\/css\/main\.[0-9a-f]{32,40}\.css$/,
 			name: 'Liferay Sample Theme CSS 3',
 		},
 		{
 			erc: 'LXC:liferay-sample-theme-css-4',
-			mainURL: '/o/liferay-sample-theme-css-4/css/main.css',
+			mainURL:
+				/^\/o\/liferay-sample-theme-css-4\/css\/main\.[0-9a-f]{32,40}\.css$/,
 			name: 'Liferay Sample Theme CSS 4',
 		},
 	];
 
 	for (const sample of SAMPLES) {
-		testSample(`${sample.name} is registered`, async ({page}) => {
-			const viewClientExtensionPage = new ViewClientExtensionPage(
-				page,
-				sample.erc
-			);
+		testSample(
+			`${sample.name} is registered`,
+			{tag: '@LPD-82555'},
+			async ({page}) => {
+				const viewClientExtensionPage = new ViewClientExtensionPage(
+					page,
+					sample.erc
+				);
 
-			await viewClientExtensionPage.goto();
+				await viewClientExtensionPage.goto();
 
-			await expect(viewClientExtensionPage.nameInput).toHaveValue(
-				sample.name
-			);
-			await expect(
-				viewClientExtensionPage.getInputByLabel('Main URL')
-			).toHaveValue(sample.mainURL);
-		});
+				await expect(viewClientExtensionPage.nameInput).toHaveValue(
+					sample.name
+				);
+				await expect(
+					viewClientExtensionPage.getInputByLabel('Main URL')
+				).toHaveValue(sample.mainURL);
+			}
+		);
 
 		testSample(
 			`${sample.name}'s .css file can be downloaded`,
+			{tag: '@LPD-82555'},
 			async ({page}) => {
-				const response = await page.goto(sample.mainURL);
+				const viewClientExtensionPage = new ViewClientExtensionPage(
+					page,
+					sample.erc
+				);
+
+				await viewClientExtensionPage.goto();
+
+				const mainURL = await viewClientExtensionPage
+					.getInputByLabel('Main URL')
+					.inputValue();
+
+				const response = await page.goto(mainURL);
 
 				expect(response.status()).toBe(200);
 				expect(await response.headerValue('Content-Type')).toBe(

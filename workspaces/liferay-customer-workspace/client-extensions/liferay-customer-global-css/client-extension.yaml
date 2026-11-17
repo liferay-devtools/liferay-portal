@@ -1,7 +1,8 @@
 assemble:
     -   from: assets
+        hashify: global.css
         into: static
 liferay-customer-global-css:
     name: Liferay Customer Global CSS
     type: globalCSS
-    url: global.css
+    url: global.*.css
