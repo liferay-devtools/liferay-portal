@@ -119,14 +119,17 @@ if (!document.head.querySelector('[data-<name>-assets]')) {
 ```yaml
 assemble:
   - from: css
+    hashify: main.css
     into: static
 
 <workspace-id>-global-css:
   name: <Display Name> Global CSS
   scope: company
   type: globalCSS
-  url: "main.css"
+  url: "main.*.css"
 ```
+
+`hashify` adds a content hash to the file name, and the wildcard in `url` resolves to it at build time. From workspace plugin 18.0.0, the build fails when `url` references a file without a hash, unless the CET sets `hashifyRequired: false`.
 
 `scope: company` injects it on every page. Without it the file is served but never injected; bind it per master instead when it belongs to one site (`rules/client-extension-types.md`). The same `assemble`/`scope` rules apply to `globalJS` below.
 
