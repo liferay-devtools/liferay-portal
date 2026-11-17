@@ -1,0 +1,5 @@
+theme-css-with-invalid-hashify-required:
+    hashifyRequired: foo
+    mainURL: css/main.*.css
+    name: Theme CSS With Invalid Hashify Required
+    type: themeCSS

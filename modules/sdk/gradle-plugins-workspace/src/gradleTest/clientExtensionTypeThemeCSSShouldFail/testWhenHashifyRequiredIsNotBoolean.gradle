@@ -1,0 +1,4 @@
+ext.expectedErrorMessage = 'Client extension theme-css-with-invalid-hashify-required has an invalid value "foo" for the property "hashifyRequired". Valid values are: false, true.'
+ext.taskPath = ":theme-css-with-invalid-hashify-required:validateClientExtensions"
+
+apply from: project.property("commonScript.shouldFailTestCase.gradle")

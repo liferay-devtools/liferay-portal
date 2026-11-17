@@ -1,0 +1,8 @@
+assemble:
+    -   from: build/buildTheme/css
+        include: "*.css"
+        into: static/css
+theme-css-with-hashify-enabled:
+    mainURL: css/main.css
+    name: Theme CSS With Hashify Enabled
+    type: themeCSS

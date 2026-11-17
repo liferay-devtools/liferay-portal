@@ -1,0 +1,4 @@
+ext.expectedErrorMessage = 'Client extension theme-css-with-hashify-disabled property mainURL references css/main.css, which matches no file. Check that an "assemble" entry copies it into the "static" directory.'
+ext.taskPath = ":theme-css-with-hashify-disabled:createClientExtensionConfig"
+
+apply from: project.property("commonScript.shouldFailTestCase.gradle")

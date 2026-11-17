@@ -1,0 +1,8 @@
+assemble:
+    -   from: assets
+        into: static
+theme-favicon-with-hashify-disabled:
+    hashifyRequired: false
+    name: Theme Favicon With Hashify Disabled
+    type: themeFavicon
+    url: favicon.ico

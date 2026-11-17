@@ -1,0 +1,4 @@
+ext.expectedErrorMessage = 'Client extension global-css-with-wildcard-url property url references global.css, which is not a hashed file. Add "hashify" to the "assemble" entry that copies it and use a wildcard in url (for example, global.*.css), or set "hashifyRequired: false" in the client extension definition.'
+ext.taskPath = ":global-css-with-wildcard-url:createClientExtensionConfig"
+
+apply from: project.property("commonScript.shouldFailTestCase.gradle")

@@ -1,0 +1,8 @@
+assemble:
+    -   from: assets
+        into: static
+theme-spritemap-with-hashify-disabled:
+    hashifyRequired: false
+    name: Theme Spritemap With Hashify Disabled
+    type: themeSpritemap
+    url: spritemap.svg

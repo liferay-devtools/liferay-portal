@@ -1,0 +1,7 @@
+assemble:
+    -   from: assets
+        into: static
+theme-favicon-with-hashify-enabled:
+    name: Theme Favicon With Hashify Enabled
+    type: themeFavicon
+    url: favicon.ico

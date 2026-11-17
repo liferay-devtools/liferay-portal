@@ -1,0 +1,7 @@
+assemble:
+    -   from: assets
+        into: static
+global-css-with-wildcard-url:
+    name: Global CSS With Wildcard URL
+    type: globalCSS
+    url: global*.css

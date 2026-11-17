@@ -1,0 +1,8 @@
+assemble:
+    -   from: assets
+        into: static
+global-css-with-hashify-disabled:
+    hashifyRequired: false
+    name: Global CSS With Hashify Disabled
+    type: globalCSS
+    url: global.css

@@ -1,0 +1,5 @@
+theme-css-with-hashify-disabled:
+    hashifyRequired: false
+    mainURL: css/main.css
+    name: Theme CSS With Hashify Disabled
+    type: themeCSS

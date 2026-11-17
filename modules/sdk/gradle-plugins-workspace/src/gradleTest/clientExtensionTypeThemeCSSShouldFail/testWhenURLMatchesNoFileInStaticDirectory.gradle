@@ -1,0 +1,4 @@
+ext.expectedErrorMessage = 'Client extension theme-css-with-unmatched-url property mainURL references css/main.*.css, which matches no file. Check that an "assemble" entry copies it into the "static" directory.'
+ext.taskPath = ":theme-css-with-unmatched-url:createClientExtensionConfig"
+
+apply from: project.property("commonScript.shouldFailTestCase.gradle")

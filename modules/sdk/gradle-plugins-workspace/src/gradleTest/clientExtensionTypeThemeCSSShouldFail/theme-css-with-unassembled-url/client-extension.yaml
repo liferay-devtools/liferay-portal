@@ -1,0 +1,4 @@
+theme-css-with-unassembled-url:
+    mainURL: css/main.*.css
+    name: Theme CSS With Unassembled URL
+    type: themeCSS

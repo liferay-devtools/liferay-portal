@@ -1,7 +1,7 @@
 task runGradleTest
 
 runGradleTest {
-	dependsOn ":client-extension:createClientExtensionConfig"
+	dependsOn ":client-extension:createClientExtensionConfig", ":global-css-with-absolute-url:createClientExtensionConfig", ":global-css-with-hashify-disabled:createClientExtensionConfig", ":global-css-with-hashify-enabled:createClientExtensionConfig", ":global-css-with-query-string:createClientExtensionConfig", ":theme-favicon-with-hashify-disabled:createClientExtensionConfig", ":theme-spritemap-with-hashify-disabled:createClientExtensionConfig", ":theme-spritemap-with-hashify-enabled:createClientExtensionConfig"
 
 	doLast {
 		Project clientExtensionProject = project(":client-extension")
@@ -17,5 +17,57 @@ runGradleTest {
 		File clientExtensionConfigJsonFile = new File(clientExtensionBuildDir, "client-extension.client-extension-config.json")
 
 		assert clientExtensionConfigJsonFile.text.contains("url=${icoFileName}")
+
+		File globalCSSWithAbsoluteURLClientExtensionConfigJsonFile = new File(_getClientExtensionBuildDir("global-css-with-absolute-url"), "global-css-with-absolute-url.client-extension-config.json")
+
+		assert globalCSSWithAbsoluteURLClientExtensionConfigJsonFile.text.contains("url=https://cdn.example.com/main.css")
+
+		_testHashifiedFile("css", "global", "global-css-with-hashify-enabled")
+		_testHashifiedFile("css", "global", "global-css-with-query-string", "?v=1")
+		_testHashifiedFile("svg", "spritemap", "theme-spritemap-with-hashify-enabled")
+		_testUnhashifiedFile("favicon.ico", "theme-favicon-with-hashify-disabled")
+		_testUnhashifiedFile("global.css", "global-css-with-hashify-disabled")
+		_testUnhashifiedFile("spritemap.svg", "theme-spritemap-with-hashify-disabled")
 	}
+}
+
+private File _getClientExtensionBuildDir(String projectName) {
+	Project clientExtensionProject = project(":${projectName}")
+
+	return new File(clientExtensionProject.buildDir, "liferay-client-extension-build")
+}
+
+private void _testHashifiedFile(String extension, String fileName, String projectName, String queryString = "") {
+	File clientExtensionBuildDir = _getClientExtensionBuildDir(projectName)
+
+	File staticDir = new File(clientExtensionBuildDir, "static")
+
+	List<String> fileNames = staticDir.list()
+
+	assert fileNames.size() == 1
+
+	String hashedFileName = fileNames[0]
+
+	assert hashedFileName.matches(fileName + "\\.[0-9a-f]{32,40}\\." + extension)
+
+	File clientExtensionConfigJsonFile = new File(clientExtensionBuildDir, "${projectName}.client-extension-config.json")
+
+	assert clientExtensionConfigJsonFile.text.contains("url=${hashedFileName}${queryString}")
+}
+
+private void _testUnhashifiedFile(String fileName, String projectName) {
+	File clientExtensionBuildDir = _getClientExtensionBuildDir(projectName)
+
+	File staticDir = new File(clientExtensionBuildDir, "static")
+
+	List<String> fileNames = staticDir.list()
+
+	assert fileNames == [fileName]
+
+	File clientExtensionConfigJsonFile = new File(clientExtensionBuildDir, "${projectName}.client-extension-config.json")
+
+	String text = clientExtensionConfigJsonFile.text
+
+	assert !text.contains("hashifyRequired=")
+	assert text.contains("url=${fileName}")
 }

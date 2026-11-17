@@ -1,0 +1,4 @@
+ext.expectedErrorMessage = 'Client extension theme-favicon-with-hashify-enabled property url references favicon.ico, which is not a hashed file. Add "hashify" to the "assemble" entry that copies it and use a wildcard in url (for example, favicon.*.ico), or set "hashifyRequired: false" in the client extension definition.'
+ext.taskPath = ":theme-favicon-with-hashify-enabled:createClientExtensionConfig"
+
+apply from: project.property("commonScript.shouldFailTestCase.gradle")
