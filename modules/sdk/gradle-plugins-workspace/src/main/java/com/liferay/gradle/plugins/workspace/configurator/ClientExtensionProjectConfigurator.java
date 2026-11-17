@@ -1310,6 +1310,14 @@ public class ClientExtensionProjectConfigurator
 			_validateTypeSettingsValues(
 				clientExtension, "scope", "controlPanel", "layout");
 		}
+
+		List<String> hashifyRequiredURLKeys =
+			clientExtension.getHashifyRequiredURLKeys();
+
+		if (!hashifyRequiredURLKeys.isEmpty()) {
+			_validateTypeSettingsValues(
+				clientExtension, "hashifyRequired", false, true);
+		}
 	}
 
 	private void _validateGlobalJSScriptElementAttributes(
@@ -1422,7 +1430,7 @@ public class ClientExtensionProjectConfigurator
 
 	private void _validateTypeSettingsValues(
 			ClientExtension clientExtension, String typeSettingsKey,
-			String... validValues)
+			Object... validValues)
 		throws GradleException {
 
 		Object typeSettingsValue = clientExtension.typeSettings.get(

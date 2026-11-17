@@ -47,6 +47,8 @@ import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -160,7 +162,7 @@ public class CreateClientExtensionConfigTask extends DefaultTask {
 			if (Objects.equals(
 					clientExtension.getClassification(), "frontend")) {
 
-				_expandWildcards(clientExtension.typeSettings);
+				_resolveURLs(clientExtension);
 
 				pluginPackageProperties.put(
 					"Liferay-Client-Extension-Frontend", "static/");
@@ -395,53 +397,6 @@ public class CreateClientExtensionConfigTask extends DefaultTask {
 		}
 	}
 
-	private void _expandWildcards(Map<String, Object> typeSettings) {
-		File clientExtensionBuildDir = new File(
-			_project.getBuildDir(), _buildDir);
-
-		File staticDir = new File(clientExtensionBuildDir, "static");
-
-		if (!staticDir.exists()) {
-			return;
-		}
-
-		Path staticDirPath = staticDir.toPath();
-
-		for (Map.Entry<String, Object> entry : typeSettings.entrySet()) {
-			Object currentValue = entry.getValue();
-
-			String key = StringUtil.toLowerCase(entry.getKey());
-
-			if (currentValue instanceof String) {
-				String currentValueString = (String)currentValue;
-
-				if (key.contains("url") &&
-					_isWildcardValue(currentValueString)) {
-
-					entry.setValue(
-						_getMatchingPaths(staticDirPath, (String)currentValue));
-				}
-			}
-
-			if (!(currentValue instanceof List)) {
-				continue;
-			}
-
-			List<String> values = new ArrayList<>();
-
-			for (String value : (List<String>)currentValue) {
-				if (key.contains("url") && _isWildcardValue(value)) {
-					values.addAll(_getMatchingPaths(staticDirPath, value));
-				}
-				else {
-					values.add(value);
-				}
-			}
-
-			entry.setValue(values);
-		}
-	}
-
 	private String _getFileContent(File file) {
 		if (file.exists()) {
 			try {
@@ -525,11 +480,20 @@ public class CreateClientExtensionConfigTask extends DefaultTask {
 		}
 	}
 
-	private List<String> _getMatchingPaths(Path basePath, String glob) {
+	private List<String> _getMatchingPaths(
+		Path basePath, String clientExtensionId, String key, String url) {
+
+		if (!Files.exists(basePath)) {
+			throw new GradleException(
+				_getNoMatchingFileMessage(clientExtensionId, key, url));
+		}
+
 		FileSystem fileSystem = basePath.getFileSystem();
 
 		AtomicReference<String> queryStringAtomicReference =
 			new AtomicReference<>("");
+
+		String glob = url;
 
 		int index = glob.indexOf("?");
 
@@ -554,7 +518,7 @@ public class CreateClientExtensionConfigTask extends DefaultTask {
 
 			if (matchingPaths.isEmpty()) {
 				throw new GradleException(
-					"No paths matched the glob pattern \"" + glob + "\"");
+					_getNoMatchingFileMessage(clientExtensionId, key, url));
 			}
 
 			Collections.sort(matchingPaths);
@@ -565,6 +529,15 @@ public class CreateClientExtensionConfigTask extends DefaultTask {
 			throw new GradleException(
 				"Unable to expand wildcard paths", ioException);
 		}
+	}
+
+	private String _getNoMatchingFileMessage(
+		String clientExtensionId, String key, String url) {
+
+		return StringUtil.concat(
+			"Client extension ", clientExtensionId, " property ", key,
+			" references ", url, ", which matches no file. Check that an ",
+			"\"assemble\" entry copies it into the \"static\" directory.");
 	}
 
 	private Properties _getPluginPackageProperties() {
@@ -592,6 +565,17 @@ public class CreateClientExtensionConfigTask extends DefaultTask {
 		return String.format(
 			"dependencies/templates/%s/%s.tpl", classificationGrouping,
 			fileName);
+	}
+
+	private String _getWildcardURL(String path) {
+		int index = path.lastIndexOf(".");
+		int slashIndex = path.lastIndexOf("/");
+
+		if ((index == -1) || (index < slashIndex)) {
+			return path + ".*";
+		}
+
+		return path.substring(0, index) + ".*" + path.substring(index);
 	}
 
 	private void _inlineFrontendTokenDefinitionJSON(
@@ -810,6 +794,128 @@ public class CreateClientExtensionConfigTask extends DefaultTask {
 		}
 	}
 
+	private void _resolveURLs(ClientExtension clientExtension) {
+		List<String> hashifyRequiredURLKeys =
+			clientExtension.getHashifyRequiredURLKeys();
+
+		File clientExtensionBuildDir = new File(
+			_project.getBuildDir(), _buildDir);
+
+		File staticDir = new File(clientExtensionBuildDir, "static");
+
+		if (hashifyRequiredURLKeys.isEmpty() && !staticDir.exists()) {
+			return;
+		}
+
+		Map<String, Object> typeSettings = clientExtension.typeSettings;
+
+		boolean hashifyRequired = !Objects.equals(
+			typeSettings.remove("hashifyRequired"), Boolean.FALSE);
+
+		Path staticDirPath = staticDir.toPath();
+
+		for (Map.Entry<String, Object> entry : typeSettings.entrySet()) {
+			String key = entry.getKey();
+
+			String lowerCaseKey = StringUtil.toLowerCase(key);
+
+			if (!lowerCaseKey.contains("url")) {
+				continue;
+			}
+
+			boolean validate = hashifyRequiredURLKeys.contains(key);
+			Object value = entry.getValue();
+
+			if (value instanceof String) {
+				String url = (String)value;
+
+				List<String> urls = _resolveURLs(
+					clientExtension, hashifyRequired, key, staticDirPath, url,
+					validate);
+
+				if (_isWildcardValue(url)) {
+					entry.setValue(urls);
+				}
+			}
+			else if (value instanceof List) {
+				List<String> urls = new ArrayList<>();
+
+				for (String url : (List<String>)value) {
+					urls.addAll(
+						_resolveURLs(
+							clientExtension, hashifyRequired, key,
+							staticDirPath, url, validate));
+				}
+
+				entry.setValue(urls);
+			}
+		}
+	}
+
+	private List<String> _resolveURLs(
+		ClientExtension clientExtension, boolean hashifyRequired, String key,
+		Path staticDirPath, String url, boolean validate) {
+
+		List<String> urls = Collections.singletonList(url);
+
+		if (_isWildcardValue(url)) {
+			urls = _getMatchingPaths(
+				staticDirPath, clientExtension.id, key, url);
+		}
+
+		if (!validate || StringUtil.isBlank(url) || StringUtil.isUrl(url)) {
+			return urls;
+		}
+
+		for (String resolvedURL : urls) {
+			String path = resolvedURL;
+
+			int index = path.indexOf("?");
+
+			if (index != -1) {
+				path = path.substring(0, index);
+			}
+
+			if (!Files.exists(staticDirPath.resolve(path))) {
+				throw new GradleException(
+					_getNoMatchingFileMessage(clientExtension.id, key, url));
+			}
+
+			if (!hashifyRequired) {
+				continue;
+			}
+
+			int slashIndex = path.lastIndexOf("/");
+
+			Matcher matcher = _hashedFileNamePattern.matcher(
+				path.substring(slashIndex + 1));
+
+			if (matcher.matches()) {
+				continue;
+			}
+
+			String fix =
+				"Add \"hashify\" to the \"assemble\" entry that copies it";
+
+			if (Objects.equals(clientExtension.type, "themeCSS")) {
+				fix = StringUtil.concat(
+					"Copy \"build/buildTheme/css\" into \"static/css\" with ",
+					"an \"assemble\" entry whose \"hashify\" is \"*.css\"");
+			}
+
+			throw new GradleException(
+				StringUtil.concat(
+					"Client extension ", clientExtension.id, " property ", key,
+					" references ", resolvedURL, ", which is not a hashed ",
+					"file. ", fix, " and use a wildcard in ", key,
+					" (for example, ", _getWildcardURL(path),
+					"), or set \"hashifyRequired: false\" in the client ",
+					"extension definition."));
+		}
+
+		return urls;
+	}
+
 	private void _setLiferayVirtualInstanceId(
 		Properties pluginPackageProperties) {
 
@@ -939,6 +1045,8 @@ public class CreateClientExtensionConfigTask extends DefaultTask {
 		"configuration", "frontend");
 	private static final Set<String> _groupMicroservice = Sets.newHashSet(
 		"configuration", "microservice");
+	private static final Pattern _hashedFileNamePattern = Pattern.compile(
+		".+\\.[0-9a-f]{32,40}(\\.[^.]+)?");
 	private static final Map<String, String>
 		_typeSettingsToSiteInitializerJsonKeyMap =
 			new HashMap<String, String>() {
