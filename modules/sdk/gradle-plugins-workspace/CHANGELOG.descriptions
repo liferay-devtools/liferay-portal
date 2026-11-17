@@ -1,3 +1,15 @@
+18.0.0:description
+
+- [LPD-82555] `globalCSS`, `themeCSS`, `themeFavicon`, and `themeSpritemap`
+client extensions fail to build when their URL properties reference files
+without a content hash. Add `hashify` to the `assemble` entry that copies each
+file and use a wildcard in the URL (for example, `url: global.*.css`), or set
+`hashifyRequired: false` in the client extension definition to keep the original
+file names. A URL that references no file in `static` also fails the build.
+`themeCSS` client extensions no longer copy their CSS files into `static`, so add
+an `assemble` entry that copies `build/buildTheme/css` into `static/css`, with
+`hashify: "*.css"` unless `hashifyRequired` is `false`.
+
 2.2.2:description
 
 - Updated target platform dependency which switches to native Gradle5 BOM
