@@ -1,7 +1,12 @@
+assemble:
+    -   from: build/buildTheme/css
+        hashify: "*.css"
+        include: "*.css"
+        into: static/css
 theme-css-with-rtl-css-properties:
-    clayRTLURL: css/clay_rtl.css
-    clayURL: css/clay.css
-    mainRTLURL: css/main_rtl.css
-    mainURL: css/main.css
+    clayRTLURL: css/clay_rtl.*.css
+    clayURL: css/clay.*.css
+    mainRTLURL: css/main_rtl.*.css
+    mainURL: css/main.*.css
     name: Theme CSS With RTL CSS Properties
     type: themeCSS

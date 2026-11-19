@@ -47,6 +47,12 @@ public class ClientExtension {
 				id, type));
 	}
 
+	public List<String> getHashifyRequiredURLKeys() {
+		return StringUtil.split(
+			_clientExtensionProperties.getProperty(
+				type + ".hashifyRequiredURLKeys"));
+	}
+
 	@JsonAnySetter
 	public void ignored(String name, Object value) {
 		typeSettings.put(name, value);

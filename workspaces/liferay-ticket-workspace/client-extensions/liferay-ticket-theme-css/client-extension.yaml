@@ -1,11 +1,14 @@
 assemble:
     -   from: build/buildTheme/img
         into: static/img
-assemble:
     -   from: build/buildTheme/images
         into: static/images
+    -   from: build/buildTheme/css
+        hashify: "*.css"
+        include: "*.css"
+        into: static/css
 liferay-ticket-theme-css:
-    clayURL: css/clay.css
-    mainURL: css/main.css
+    clayURL: css/clay.*.css
+    mainURL: css/main.*.css
     name: Liferay Ticket Theme CSS
     type: themeCSS

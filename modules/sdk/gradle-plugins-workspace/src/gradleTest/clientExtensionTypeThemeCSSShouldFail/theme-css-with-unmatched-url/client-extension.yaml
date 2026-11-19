@@ -1,0 +1,7 @@
+assemble:
+    -   from: assets
+        into: static
+theme-css-with-unmatched-url:
+    mainURL: css/main.*.css
+    name: Theme CSS With Unmatched URL
+    type: themeCSS

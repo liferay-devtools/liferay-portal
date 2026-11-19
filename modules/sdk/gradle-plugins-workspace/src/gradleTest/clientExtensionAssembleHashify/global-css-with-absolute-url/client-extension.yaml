@@ -1,0 +1,4 @@
+global-css-with-absolute-url:
+    name: Global CSS With Absolute URL
+    type: globalCSS
+    url: https://cdn.example.com/main.css

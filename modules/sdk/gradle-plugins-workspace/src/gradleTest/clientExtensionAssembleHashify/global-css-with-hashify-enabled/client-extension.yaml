@@ -1,0 +1,8 @@
+assemble:
+    -   from: assets
+        hashify: global.css
+        into: static
+global-css-with-hashify-enabled:
+    name: Global CSS With Hashify Enabled
+    type: globalCSS
+    url: global.*.css

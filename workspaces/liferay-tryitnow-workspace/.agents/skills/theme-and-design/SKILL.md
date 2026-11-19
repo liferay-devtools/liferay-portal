@@ -62,16 +62,24 @@ client-extensions/<name>/
 **`client-extension.yaml`:**
 
 ```yaml
+assemble:
+  - from: build/buildTheme/css
+    hashify: "*.css"
+    include: "*.css"
+    into: static/css
+
 <workspace-id>-theme-css:
-  clayRTLURL: css/clay_rtl.css
-  clayURL: css/clay.css
-  mainRTLURL: css/main_rtl.css
-  mainURL: css/main.css
+  clayRTLURL: css/clay_rtl.*.css
+  clayURL: css/clay.*.css
+  mainRTLURL: css/main_rtl.*.css
+  mainURL: css/main.*.css
   name: <WorkspaceId> Theme CSS
   type: themeCSS
 ```
 
 The keys are `mainURL` and `clayURL` — capital `URL`. All four paths are outputs of the theme build (the `build/buildTheme/css` directory), not files you author.
+
+`hashify` adds a content hash to each CSS file name, and each wildcard resolves to the hashed name at build time, so browsers and CDNs fetch the new file after every redeploy. From workspace plugin 18.0.0, the build fails when one of these URLs references a file without a hash. Set `hashifyRequired: false` on the CET only when it must keep the original file names, and still copy the CSS into `static/css` with an `assemble` entry, without `hashify`.
 
 **`src/css/_custom.scss`** — Clay variable overrides:
 
@@ -420,14 +428,21 @@ Follow WCAG 2.1 AA as the baseline:
 To replace the Liferay favicon or icon spritemap, use the companion CET types:
 
 ```yaml
+assemble:
+  - from: assets/images
+    hashify: "{favicon.ico,icons.svg}"
+    into: static/images
+
 <workspace-id>-favicon:
-  url: "images/favicon.ico"
+  url: "images/favicon.*.ico"
   type: themeFavicon
 
 <workspace-id>-spritemap:
-  url: "images/icons.svg"
+  url: "images/icons.*.svg"
   type: themeSpritemap
 ```
+
+`hashify` takes a file name glob, so `{favicon.ico,icons.svg}` adds a content hash to both file names, and each wildcard resolves to the hashed name at build time. From workspace plugin 18.0.0, the build fails when either URL references a file without a hash. Set `hashifyRequired: false` on a CET only when it must keep the original file name.
 
 Ship these in the same `frontend` project as the `themeCSS` CET, with the icon files actually present. A `url` that points at nothing deploys cleanly and delivers no icon.
 

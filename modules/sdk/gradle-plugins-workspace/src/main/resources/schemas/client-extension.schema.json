@@ -46,6 +46,16 @@
 					],
 					"type": "object"
 				},
+				"hashifyRequired": {
+					"properties": {
+						"hashifyRequired": {
+							"default": true,
+							"description": "Whether the files referenced by this client extension's URL properties must have content-hashed names. The build fails when a URL references a file without a hash. Set it to false to keep the original file names; an 'assemble' entry must still copy the files into 'static'. Use 'hashify' in 'assemble' to select the files to hash.",
+							"type": "boolean"
+						}
+					},
+					"type": "object"
+				},
 				"url": {
 					"properties": {
 						"url": {
@@ -102,9 +112,20 @@
 							"description": "The name of a Gradle task. The outputs of the declared task will be copied. Mutually exclusive with 'from'.",
 							"type": "string"
 						},
+						"hashify": {
+							"description": "A glob pattern matching the names of the copied files to rename with a content hash (for example, '*.css' copies main.css as main.<hash>.css). Reference the hashed files with a wildcard in the client extension's URL properties (for example, 'css/main.*.css').",
+							"type": "string"
+						},
 						"include": {
-							"$ref": "#/definitions/datatypes/properties/uniqueStringArray",
-							"description": "An array of glob patterns to include from the 'from' or 'fromTask' source. If none are provided, all contents will be copied."
+							"anyOf": [
+								{
+									"type": "string"
+								},
+								{
+									"$ref": "#/definitions/datatypes/properties/uniqueStringArray"
+								}
+							],
+							"description": "A glob pattern, or an array of glob patterns, to include from the 'from' or 'fromTask' source. If none are provided, all contents will be copied."
 						},
 						"into": {
 							"description": "The destination directory inside the project's build directory. If none is provided, it it will go to the build directory root.",
@@ -215,6 +236,9 @@
 				},
 				"globalCSS": {
 					"allOf": [
+						{
+							"$ref": "#/definitions/propertySets/properties/hashifyRequired"
+						},
 						{
 							"$ref": "#/definitions/propertySets/properties/url"
 						},
@@ -427,6 +451,9 @@
 				"themeCSS": {
 					"allOf": [
 						{
+							"$ref": "#/definitions/propertySets/properties/hashifyRequired"
+						},
+						{
 							"properties": {
 								"clayRTLURL": {
 									"type": "string"
@@ -456,6 +483,9 @@
 				"themeFavicon": {
 					"allOf": [
 						{
+							"$ref": "#/definitions/propertySets/properties/hashifyRequired"
+						},
+						{
 							"$ref": "#/definitions/propertySets/properties/url"
 						}
 					],
@@ -463,6 +493,9 @@
 				},
 				"themeSpritemap": {
 					"allOf": [
+						{
+							"$ref": "#/definitions/propertySets/properties/hashifyRequired"
+						},
 						{
 							"$ref": "#/definitions/propertySets/properties/url"
 						}

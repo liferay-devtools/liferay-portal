@@ -1,7 +1,8 @@
 assemble:
     -   from: assets
+        hashify: global.css
         into: static
 liferay-commerceminium4-global-css:
     name: Liferay Commerce Minium 4 Global CSS
     type: globalCSS
-    url: global.css
+    url: global.*.css

@@ -16,15 +16,12 @@ import com.liferay.gradle.plugins.workspace.internal.util.GradleUtil;
 
 import groovy.json.JsonSlurper;
 
-import groovy.lang.Closure;
-
 import java.io.File;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.Callable;
 
 import org.gradle.api.Action;
 import org.gradle.api.Project;
@@ -65,31 +62,8 @@ public class ThemeCSSTypeConfigurer implements ClientExtensionConfigurer {
 			new Action<Copy>() {
 
 				@Override
-				@SuppressWarnings("serial")
 				public void execute(Copy copy) {
 					copy.dependsOn(buildCSSTask);
-
-					copy.into(
-						new Callable<String>() {
-
-							@Override
-							public String call() throws Exception {
-								return "static";
-							}
-
-						},
-						new Closure<Void>(copy) {
-
-							@SuppressWarnings("unused")
-							public void doCall(CopySpec copySpec) {
-								copySpec.from(
-									new File(
-										project.getBuildDir(), "buildTheme"));
-								copySpec.include("css/*.css");
-								copySpec.into("static");
-							}
-
-						});
 				}
 
 			});
