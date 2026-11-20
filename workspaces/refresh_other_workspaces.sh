@@ -41,6 +41,8 @@ function refresh_workspaces {
 			--exclude gradle-local.properties \
 			--exclude gradle.properties \
 			--exclude language \
+			--exclude lmnr \
+			--exclude lmnr.gradle \
 			--exclude modules \
 			--exclude node_modules \
 			--exclude node_modules_cache \
