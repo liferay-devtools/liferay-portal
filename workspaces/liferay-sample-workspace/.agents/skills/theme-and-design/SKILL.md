@@ -323,6 +323,21 @@ Verify the book landed by fetching a page and checking the override lands *after
 
 > **The style book REST API is behind a flag.** `headless-admin-content` has no style book resource. The one in `headless-admin-site` (`/sites/{siteERC}/style-books`) answers every call with `400 UnsupportedOperationException` unless its flag is on: `LPD-57283` (release, off by default) on 2026.Q3 and later, the hidden `LPD-56718` on 2026.Q1 and 2026.Q2 (`StyleBookResourceImpl`; see `rules/headless-apis.md`). Without the flag, author style books in the site initializer tree as above, or in Site Administration → Design → Style Books.
 
+#### DXP 2026.Q3+: A Design Library Style Book Accepts Tokens Over `headless-admin-site`
+
+`postDesignLibraryStyleBook` in `headless-admin-site-v1.0` creates a style book in a Design Library with its token values. Verified on 2026.Q3.8: the response echoed the tokens, and they rendered after Classic's defaults on a page whose master referenced the book. Whether the `/design-libraries/{erc}/style-books` path is gated by the flag above was not checked; that instance's flag state was not read. `frontendTokensValues` is a **JSON string**, in the same shape as `frontend-tokens-values.json`:
+
+```json
+{
+	"externalReferenceCode": "<style-book-erc>",
+	"frontendTokensValues": "{\"primaryColor\":{\"cssVariableMapping\":\"primary\",\"value\":\"#15B2F5\"}}",
+	"name": "<Style Book Name>",
+	"themeId": "classic_WAR_classictheme"
+}
+```
+
+Apply it by setting `settings.styleBookItemExternalReference` on the master page specs, `{"externalReferenceCode": "<style-book-erc>", "scope": {"type": "AssetLibrary", "externalReferenceCode": "<library ERC>"}}` (see `skills/manage-pages/SKILL.md` → "Design Library Fragments, Master Pages, and Editable Values").
+
 Consult learn.liferay.com for the full style book token reference (search `style book tokens`).
 
 ### Layer 3: Master Page

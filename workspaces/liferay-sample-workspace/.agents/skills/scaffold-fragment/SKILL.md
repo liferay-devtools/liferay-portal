@@ -468,6 +468,25 @@ The code lives in `fragmentVersions[]`, which carries `html`, `css`, `js`, `conf
 - **Authoring a fragment that no page places yet**, so an author can drop it in the page editor.
 - **Auditing** — enumerating what exists in a site's sets.
 
+#### DXP 2026.Q3+: Design Libraries Are Read Only Over Headless
+
+A Design Library (an asset library with `type: DesignLibrary`, listed by `getAssetLibrariesPage` in `headless-asset-library-v1.0`) cannot receive fragment sets or fragments over `headless-admin-fragment`. Verified on 2026.Q3.8:
+
+- Every `/sites/{erc}/…` endpoint, read or write, returns `400 UnsupportedOperationException` when `{erc}` is a Design Library, even though the library's group (`siteId` in the asset library DTO) carries that same ERC.
+- The `/design-libraries/{erc}/fragment-sets` paths offer only `GET` and `DELETE`. Resource files have no Design Library path at all.
+
+This is a gap in the headless surface; name it to the user instead of working around it (see `rules/headless-apis.md` → "Never Recommend JSONWS"). The route that remains is a manual UI step: build the collection as a zip (the format is in `skills/figma-to-liferay-fragment/SKILL.md` → "Package and Deliver") and import it on the Design Library's Fragments page. That import was not exercised here. Once the set exists, `getDesignLibraryFragmentSetsPage` lists it.
+
+The rest of a Design Library build is headless and verified:
+
+- **Images:** `POST /o/headless-delivery/v1.0/asset-libraries/<assetLibraryId>/documents` (multipart, `viewableBy: Anyone`). They are served at `/documents/<siteId>/0/<title>`, and a Guest request returned `200`.
+- **Connection:** `putAssetLibraryConnectedSite` connects the library to the consuming site. Without it, the library's fragments and style books do not appear there.
+- **Placement and style books:** see `skills/manage-pages/SKILL.md` → "Design Library Fragments, Master Pages, and Editable Values" and `skills/theme-and-design/SKILL.md` → "A Design Library Style Book Accepts Tokens Over `headless-admin-site`".
+
+#### Reset List Margins With `:where()`, or They Override Your BEM Rules
+
+`#wrapper .my-fragment ul { margin: 0 }` scores one ID, one class and one type, which beats `#wrapper .my-fragment__list { margin-top: 9rem }` (one ID, one class). Every spacing rule on a `ul` silently resolves to `0`, and the layout looks merely compressed. Verified on 2026.Q3.8: a hero's highlights bar rendered 150px higher than designed until the reset became `#wrapper .my-fragment :where(ul)`, which contributes no specificity.
+
 #### One Bad `type` Makes the Whole Set Unlistable
 
 `Fragment.type` is an enum whose **only** accepted value is `Component`. A fragment whose `fragment.json` declares `"type": "section"` (or `input`, or `react`) imports fine and renders fine, but poisons the listing endpoint for **every fragment in its set**:

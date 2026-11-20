@@ -1,0 +1,1 @@
+../../../../.agents/skills/figma-to-liferay-fragment/scripts/lookup_tokens.node.js
