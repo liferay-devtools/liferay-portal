@@ -1,0 +1,18 @@
+{
+	"devDependencies": {
+		"@playwright/test": "1.55.1",
+		"@types/node": "24.19.2",
+		"dotenv": "16.6.1",
+		"typescript": "5.7.2"
+	},
+	"name": "@liferay/playwright-liferay",
+	"private": true,
+	"scripts": {
+		"postinstall": "./install_custom.sh",
+		"start": "./start.sh",
+		"stop": "./stop.sh",
+		"test": "./test.sh",
+		"typecheck": "if [ -f ../playwright-custom/tsconfig.json ]; then tsc --project ../playwright-custom; else tsc; fi"
+	},
+	"version": "0.0.0"
+}
