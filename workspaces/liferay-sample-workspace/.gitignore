@@ -1,6 +1,10 @@
 .DS_Store
 /.idea
 /bundles
+/playwright-custom/.env.local
+/playwright-liferay/.env.local
+/playwright-liferay/playwright-report
+/playwright-liferay/test-results
 /poshi/poshi-ext.properties
 /poshi/test-results
 /poshi/tests
